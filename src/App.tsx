@@ -10,7 +10,9 @@ import Login from './components/Login';
 import AdminDashboard from './components/AdminDashboard';
 import InductionList from './components/InductionList';
 import './App.css';
+import './components/Footer.css';
 import contentData from './data/content.json';
+
 
 const App: React.FC = () => {
   const [currentSection, setCurrentSection] = useState(0);

@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { RegistrationData } from '../types';
 import { api } from '../api/client';
 import './Login.css';
+import './Auth.css';
+
 
 interface LoginProps {
   onSelect: (reg: RegistrationData) => void;
@@ -90,22 +92,27 @@ const Login: React.FC<LoginProps> = ({ onSelect, onNew, logo, description }) => 
 
   return (
     <div className="login-page">
-      <div className="login-card">
+      <div className="auth-form-card">
+        {logo && (
+          <div className="auth-logo">
+            <img src={logo} alt="Logo" />
+          </div>
+        )}
+
         <div className="login-header">
-          {logo && (
-            <div className="login-logo">
-              <img src={logo} alt="Logo" />
-            </div>
-          )}
-          <h1>Connexion à la plateforme PM13</h1>
-          <p>
+          <h1 style={{ color: '#667eea', fontSize: '1.75rem', fontWeight: '700', marginBottom: '0.5rem' }}>
+            Connexion à la plateforme
+          </h1>
+          <p className="auth-description">
             {description || 'Connectez-vous avec votre email professionnel.'}
           </p>
         </div>
 
         {users.length > 0 && (
           <div className="login-users">
-            <h2>Sélectionnez votre compte</h2>
+            <h2 style={{ fontSize: '1.1rem', color: '#333', marginBottom: '1rem', fontWeight: '600' }}>
+              Sélectionnez votre compte
+            </h2>
             <div className="login-users-list">
               {users.map(user => (
                 <button
@@ -125,9 +132,10 @@ const Login: React.FC<LoginProps> = ({ onSelect, onNew, logo, description }) => 
         )}
 
         <form className="login-form" onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label>Email professionnel</label>
+          <div className="auth-form-group">
+            <label className="auth-form-label">Email professionnel</label>
             <input
+              className="auth-form-input"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -135,9 +143,10 @@ const Login: React.FC<LoginProps> = ({ onSelect, onNew, logo, description }) => 
               disabled={loading}
             />
           </div>
-          <div className="form-group">
-            <label>Mot de passe</label>
+          <div className="auth-form-group">
+            <label className="auth-form-label">Mot de passe</label>
             <input
+              className="auth-form-input"
               id="login-password"
               type="password"
               value={password}
@@ -146,14 +155,16 @@ const Login: React.FC<LoginProps> = ({ onSelect, onNew, logo, description }) => 
               disabled={loading}
             />
           </div>
-          {error && <div className="form-error">{error}</div>}
-          <button type="submit" className="btn-login" disabled={loading}>
+          {error && <div className="auth-error">{error}</div>}
+          <button type="submit" className="auth-submit-btn" disabled={loading}>
             {loading ? 'Connexion...' : 'Se connecter'}
           </button>
         </form>
 
         <div className="login-footer">
-          <p>Vous n'avez pas encore de compte&nbsp;?</p>
+          <p style={{ textAlign: 'center', color: '#666', marginBottom: '0.75rem' }}>
+            Vous n'avez pas encore de compte&nbsp;?
+          </p>
           <button type="button" className="btn-new-account" onClick={onNew}>
             Créer un nouveau compte
           </button>
@@ -161,6 +172,7 @@ const Login: React.FC<LoginProps> = ({ onSelect, onNew, logo, description }) => 
       </div>
     </div>
   );
+
 };
 
 export default Login;

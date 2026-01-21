@@ -44,22 +44,54 @@
 }
 
 .login-users-list {
-  max-height: 220px;
+  max-height: 240px;
   overflow-y: auto;
-  margin-bottom: 1.25rem;
-  border-radius: 8px;
-  border: 1px solid #e0e0e0;
+  margin-bottom: 1.5rem;
+  border-radius: 12px;
+  border: 2px solid #e0e0e0;
   background: #f8f9fa;
+}
+
+.login-users-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.login-users-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.login-users-list::-webkit-scrollbar-thumb {
+  background: #667eea;
+  border-radius: 10px;
+}
+
+.login-users-list::-webkit-scrollbar-thumb:hover {
+  background: #764ba2;
 }
 
 .login-user-item {
   width: 100%;
   text-align: left;
-  padding: 0.75rem 1rem;
+  padding: 1rem 1.25rem;
   border: none;
-  background: transparent;
+  background: white;
   cursor: pointer;
   border-bottom: 1px solid #e0e0e0;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.login-user-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .login-user-item:last-child {
@@ -67,17 +99,25 @@
 }
 
 .login-user-item:hover {
-  background: #e9f3ff;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+  transform: translateX(5px);
+}
+
+.login-user-item:hover::before {
+  opacity: 1;
 }
 
 .login-user-name {
-  font-weight: 600;
-  color: #1a5490;
+  font-weight: 700;
+  color: #667eea;
+  font-size: 1rem;
+  margin-bottom: 0.25rem;
 }
 
 .login-user-meta {
   font-size: 0.9rem;
   color: #555;
+  margin-bottom: 0.15rem;
 }
 
 .login-user-email {
@@ -87,10 +127,31 @@
 
 .login-divider {
   text-align: center;
-  margin: 1rem 0;
+  margin: 1.5rem 0;
   font-size: 0.9rem;
-  color: #888;
+  color: #999;
+  position: relative;
+  font-weight: 500;
 }
+
+.login-divider::before,
+.login-divider::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 40%;
+  height: 1px;
+  background: linear-gradient(to right, transparent, #ddd, transparent);
+}
+
+.login-divider::before {
+  left: 0;
+}
+
+.login-divider::after {
+  right: 0;
+}
+
 
 .login-form {
   display: flex;
@@ -170,21 +231,44 @@
 }
 
 .btn-new-account {
-  padding: 0.65rem 1.25rem;
-  border-radius: 8px;
-  border: 1px solid #1a5490;
-  background: white;
-  color: #1a5490;
-  font-size: 0.95rem;
-  font-weight: 600;
+  width: 100%;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  border: 2px solid transparent;
+  background: linear-gradient(white, white) padding-box,
+    linear-gradient(135deg, #667eea 0%, #764ba2 100%) border-box;
+  color: #667eea;
+  font-size: 1rem;
+  font-weight: 700;
   cursor: pointer;
-  transition: background 0.3s ease, color 0.3s ease;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-new-account::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: -1;
 }
 
 .btn-new-account:hover {
-  background: #1a5490;
   color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
 }
+
+.btn-new-account:hover::before {
+  opacity: 1;
+}
+
 
 @media (max-width: 768px) {
   .login-card {

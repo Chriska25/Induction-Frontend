@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { RegistrationData } from '../types';
 import { api } from '../api/client';
 import './Registration.css';
+import './Auth.css';
+
 
 interface RegistrationProps {
   onComplete: (data: RegistrationData) => void;
@@ -93,19 +95,22 @@ const Registration: React.FC<RegistrationProps> = ({ onComplete }) => {
 
   return (
     <div className="registration-page">
-      <div className="registration-card">
+      <div className="auth-form-card">
         <div className="registration-header">
-          <h1>Inscription à la plateforme PM13</h1>
-          <p>
+          <h1 style={{ color: '#667eea', fontSize: '1.75rem', fontWeight: '700', marginBottom: '0.5rem' }}>
+            Inscription à la plateforme
+          </h1>
+          <p className="auth-description">
             Créez votre compte d'accès en renseignant vos informations professionnelles. Ces données
-            sont utilisées pour tracer la participation et générer votre certificat PM13.
+            sont utilisées pour tracer la participation et générer votre certificat.
           </p>
         </div>
 
         <form className="registration-form" onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label>Nom complet *</label>
+          <div className="auth-form-group">
+            <label className="auth-form-label">Nom complet *</label>
             <input
+              className="auth-form-input"
               type="text"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
@@ -113,9 +118,10 @@ const Registration: React.FC<RegistrationProps> = ({ onComplete }) => {
               disabled={isSubmitting}
             />
           </div>
-          <div className="form-group">
-            <label>Poste / Fonction *</label>
+          <div className="auth-form-group">
+            <label className="auth-form-label">Poste / Fonction *</label>
             <input
+              className="auth-form-input"
               type="text"
               value={jobTitle}
               onChange={(e) => setJobTitle(e.target.value)}
@@ -123,9 +129,10 @@ const Registration: React.FC<RegistrationProps> = ({ onComplete }) => {
               disabled={isSubmitting}
             />
           </div>
-          <div className="form-group">
-            <label>Organisation / Projet *</label>
+          <div className="auth-form-group">
+            <label className="auth-form-label">Organisation / Projet *</label>
             <input
+              className="auth-form-input"
               type="text"
               value={organization}
               onChange={(e) => setOrganization(e.target.value)}
@@ -133,9 +140,10 @@ const Registration: React.FC<RegistrationProps> = ({ onComplete }) => {
               disabled={isSubmitting}
             />
           </div>
-          <div className="form-group">
-            <label>Email professionnel *</label>
+          <div className="auth-form-group">
+            <label className="auth-form-label">Email professionnel *</label>
             <input
+              className="auth-form-input"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -143,9 +151,10 @@ const Registration: React.FC<RegistrationProps> = ({ onComplete }) => {
               disabled={isSubmitting}
             />
           </div>
-          <div className="form-group">
-            <label>Ville / Zone de travail *</label>
+          <div className="auth-form-group">
+            <label className="auth-form-label">Ville / Zone de travail *</label>
             <input
+              className="auth-form-input"
               type="text"
               value={city}
               onChange={(e) => setCity(e.target.value)}
@@ -154,9 +163,10 @@ const Registration: React.FC<RegistrationProps> = ({ onComplete }) => {
             />
           </div>
 
-          <div className="form-group">
-            <label>Mot de passe *</label>
+          <div className="auth-form-group">
+            <label className="auth-form-label">Mot de passe *</label>
             <input
+              className="auth-form-input"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -165,9 +175,10 @@ const Registration: React.FC<RegistrationProps> = ({ onComplete }) => {
             />
           </div>
 
-          <div className="form-group">
-            <label>Confirmer le mot de passe *</label>
+          <div className="auth-form-group">
+            <label className="auth-form-label">Confirmer le mot de passe *</label>
             <input
+              className="auth-form-input"
               type="password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
@@ -176,25 +187,28 @@ const Registration: React.FC<RegistrationProps> = ({ onComplete }) => {
             />
           </div>
 
-          <div className="form-group">
-            <label>Photo de profil (Optionnel)</label>
+          <div className="auth-form-group">
+            <label className="auth-form-label">Photo de profil (Optionnel)</label>
             <input
+              className="auth-form-input"
               type="file"
               accept="image/*"
               onChange={(e) => setPhoto(e.target.files ? e.target.files[0] : null)}
               disabled={isSubmitting}
+              style={{ padding: '0.75rem 1rem' }}
             />
           </div>
 
-          {error && <div className="form-error">{error}</div>}
+          {error && <div className="auth-error">{error}</div>}
 
-          <button type="submit" className="btn-register" disabled={isSubmitting}>
+          <button type="submit" className="auth-submit-btn" disabled={isSubmitting}>
             {isSubmitting ? 'Inscription en cours...' : "Créer mon compte d'accès"}
           </button>
         </form>
       </div>
     </div>
   );
+
 };
 
 export default Registration;
