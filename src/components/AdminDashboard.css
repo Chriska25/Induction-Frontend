@@ -1,0 +1,334 @@
+.admin-dashboard-page {
+    padding: 0;
+    background: #f0f2f5;
+    min-height: 100vh;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.admin-dashboard-header {
+    background: #1a1a2e;
+    color: white;
+    padding: 1.5rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.header-title h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.header-title p {
+    margin: 0.25rem 0 0;
+    font-size: 0.85rem;
+    opacity: 0.7;
+}
+
+.btn-close-admin {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 0.5rem 1.25rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-close-admin:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.admin-tabs {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem 2rem;
+    background: white;
+    border-bottom: 1px solid #ddd;
+}
+
+.tab-btn {
+    background: none;
+    border: none;
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #666;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+}
+
+.tab-btn:hover {
+    color: #1a1a2e;
+}
+
+.tab-btn.active {
+    color: #1a1a2e;
+    border-bottom-color: #1a1a2e;
+}
+
+.admin-tab-content {
+    padding: 2rem;
+}
+
+.table-container {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.admin-table th {
+    background: #f8f9fa;
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+    color: #444;
+    border-bottom: 1px solid #eee;
+}
+
+.admin-table td {
+    padding: 1rem;
+    border-bottom: 1px solid #f5f5f5;
+    vertical-align: middle;
+}
+
+.user-info-cell {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-info-cell span {
+    font-size: 0.8rem;
+    color: #888;
+}
+
+.role-badge {
+    padding: 0.25rem 0.6rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.role-badge.admin {
+    background: #e3f2fd;
+    color: #1976d2;
+}
+
+.role-badge.user {
+    background: #f0f2f5;
+    color: #666;
+}
+
+.action-icon {
+    background: none;
+    border: none;
+    font-size: 1.1rem;
+    cursor: pointer;
+    margin-right: 0.5rem;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+
+.action-icon:hover {
+    opacity: 1;
+}
+
+.settings-container {
+    max-width: 600px;
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.admin-form .form-group {
+    margin-bottom: 1.5rem;
+}
+
+.admin-form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.admin-form input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
+}
+
+.btn-save-settings {
+    background: #1a1a2e;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.logs-container {
+    background: #2a2a2a;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.logs-viewer {
+    padding: 1rem;
+    height: 600px;
+    overflow-y: auto;
+    font-family: 'Monaco', 'Courier New', monospace;
+    font-size: 0.85rem;
+    color: #e0e0e0;
+}
+
+.log-line {
+    margin-bottom: 0.25rem;
+    white-space: pre-wrap;
+}
+
+.log-line.error {
+    color: #ff6b6b;
+}
+
+.log-line.warn {
+    color: #fcc419;
+}
+
+.log-time {
+    color: #888;
+    margin-right: 0.5rem;
+}
+
+.log-level {
+    margin-right: 0.5rem;
+    font-weight: bold;
+}
+
+.modal-content.wide {
+    width: 800px;
+}
+
+.training-card-admin {
+    background: #f8f9fa;
+    border-left: 4px solid #1a1a2e;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 0 6px 6px 0;
+    position: relative;
+}
+
+.t-head {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+}
+
+.t-type {
+    font-size: 0.75rem;
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    background: #eee;
+}
+
+.t-body {
+    display: flex;
+    gap: 1.5rem;
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.cert-badge {
+    position: absolute;
+    top: 1rem;
+    right: 5rem;
+    color: #28a745;
+    font-weight: 700;
+    font-size: 0.8rem;
+}
+
+.trainings-scroll {
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+}
+
+.action-link {
+    background: none;
+    border: none;
+    color: #1976d2;
+    cursor: pointer;
+    font-weight: 500;
+    text-decoration: underline;
+}
+
+.admin-actions-bar {
+    padding: 1rem 2rem 0;
+}
+
+.btn-add-item {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 0.6rem 1.25rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.btn-add-item:hover {
+    background: #218838;
+}
+
+.logo-upload-zone {
+    border: 2px dashed #ddd;
+    padding: 1.5rem;
+    border-radius: 8px;
+    text-align: center;
+    background: #fcfcfc;
+}
+
+.current-logo-preview {
+    margin-bottom: 1rem;
+    max-width: 200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.current-logo-preview img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.help-text {
+    font-size: 0.8rem;
+    color: #888;
+    margin-top: 0.5rem;
+}
+
+.admin-form textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
+    min-height: 100px;
+    font-family: inherit;
+}

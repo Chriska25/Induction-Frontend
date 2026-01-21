@@ -1,0 +1,136 @@
+{
+    "appTitle": "Formation Application TUDIENZELE",
+    "sections": [
+        {
+            "id": "intro-app",
+            "title": "1. Introduction à l'Application",
+            "subtitle": "Présentation générale",
+            "content": [
+                {
+                    "type": "paragraph",
+                    "text": "Bienvenue dans le module de formation sur l'Application TUDIENZELE. Cette application mobile permet la collecte de données sur le terrain en mode déconnecté."
+                },
+                {
+                    "type": "heading",
+                    "text": "Objectifs du module"
+                },
+                {
+                    "type": "list",
+                    "items": [
+                        "Comprendre l'installation et la configuration",
+                        "Savoir synchroniser les données",
+                        "Maîtriser la saisie des formulaires mobiles"
+                    ]
+                },
+                {
+                    "type": "image",
+                    "src": "/uploads/logalto_login.png",
+                    "alt": "Illustration Application",
+                    "caption": "Interface mobile de collecte"
+                }
+            ]
+        },
+        {
+            "id": "config",
+            "title": "2. Installation & Configuration",
+            "subtitle": "Premiers pas",
+            "content": [
+                {
+                    "type": "heading",
+                    "text": "Téléchargement"
+                },
+                {
+                    "type": "steps",
+                    "items": [
+                        "Accéder au Play Store",
+                        "Rechercher 'LogAlto Mobile'",
+                        "Installer l'application"
+                    ]
+                },
+                {
+                    "type": "heading",
+                    "text": "Connexion"
+                },
+                {
+                    "type": "paragraph",
+                    "text": "Utilisez vos identifiants LogAlto habituels. Une connexion internet est requise pour la première authentification."
+                }
+            ]
+        },
+        {
+            "id": "sync",
+            "title": "3. Synchronisation",
+            "subtitle": "Gestion des données",
+            "content": [
+                {
+                    "type": "heading",
+                    "text": "Quand synchroniser ?"
+                },
+                {
+                    "type": "list",
+                    "items": [
+                        "Avant de partir sur le terrain (récupérer les formulaires)",
+                        "Au retour du terrain (envoyer les données)",
+                        "En cas de mise à jour des modèles"
+                    ]
+                },
+                {
+                    "type": "checklist",
+                    "items": [
+                        "Avoir une connexion internet stable",
+                        "Vérifier que toutes les données sont envoyées (flèches vertes)"
+                    ]
+                }
+            ]
+        }
+    ],
+    "quiz": {
+        "title": "Quiz - Application TUDIENZELE",
+        "instructions": "Validez vos connaissances sur l'application mobile.",
+        "questions": [
+            {
+                "id": 1,
+                "question": "La connexion internet est-elle obligatoire pour saisir des données ?",
+                "options": [
+                    "Oui, toujours",
+                    "Non, l'application fonctionne en mode hors-ligne",
+                    "Uniquement pour les photos",
+                    "Uniquement le matin"
+                ],
+                "correct": 1
+            },
+            {
+                "id": 2,
+                "question": "Quand faut-il synchroniser l'application ?",
+                "options": [
+                    "Une fois par an",
+                    "Jamais",
+                    "Avant le départ et au retour du terrain",
+                    "Seulement en cas de bug"
+                ],
+                "correct": 2
+            },
+            {
+                "id": 3,
+                "question": "Où télécharger l'application ?",
+                "options": [
+                    "Play Store / App Store",
+                    "Par SMS",
+                    "Sur une clé USB",
+                    "Au bureau uniquement"
+                ],
+                "correct": 0
+            }
+        ]
+    },
+    "certificate": {
+        "title": "Certificat de participation – App TUDIENZELE",
+        "subtitle": "TUDIENZELE / ADRA",
+        "successMessage": "A complété avec succès le module sur l'utilisation de l'application mobile TUDIENZELE.",
+        "logoText": "ADRA TUDIENZELE",
+        "leftLogoUrl": "",
+        "rightLogoUrl": "",
+        "signatureName": "Responsable IT",
+        "signatureTitle": "Projet TUDIENZELE"
+    }
+}

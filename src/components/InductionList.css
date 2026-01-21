@@ -1,0 +1,158 @@
+.induction-list-page {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.induction-header {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.induction-header h1 {
+  font-size: 2.5rem;
+  color: #1a365d;
+  margin-bottom: 10px;
+}
+
+.induction-header p {
+  color: #718096;
+  font-size: 1.2rem;
+}
+
+.induction-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2rem;
+}
+
+.induction-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.induction-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.induction-icon {
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+  background: #f0f9ff;
+  width: 72px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20px;
+  color: #0369a1;
+}
+
+.induction-card h2 {
+  color: #1e293b;
+  margin-bottom: 0.75rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.induction-card p {
+  color: #64748b;
+  margin-bottom: 1.5rem;
+  flex-grow: 1;
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+.btn-start-module {
+  background: #3182ce;
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 25px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  width: 100%;
+}
+
+.btn-start-module:hover {
+  background: #2c5282;
+}
+
+.create-card {
+  border: 2px dashed #cbd5e0;
+  background: #f7fafc;
+  cursor: pointer;
+}
+
+.create-card:hover {
+  border-color: #3182ce;
+  background: #ebf8ff;
+}
+
+.admin-card {
+  border: 2px solid #ed64a6;
+  background: #fff5f7;
+}
+
+.admin-card .induction-icon {
+  background: #fff5f7;
+  border: 2px solid #fed7e2;
+}
+
+.admin-card h2 {
+  color: #d53f8c;
+}
+
+.admin-card .btn-start-module {
+  background: #d53f8c;
+}
+
+.admin-card .btn-start-module:hover {
+  background: #b83280;
+}
+
+.module-status-badge {
+  margin-bottom: 15px;
+}
+
+.badge {
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.badge.completed {
+  background: #c6f6d5;
+  color: #22543d;
+}
+
+.badge.in-progress {
+  background: #feebc8;
+  color: #744210;
+}
+
+.btn-delete-module {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  margin-top: 10px;
+  opacity: 0.5;
+  transition: opacity 0.2s;
+}
+
+.btn-delete-module:hover {
+  opacity: 1;
+}

@@ -1,0 +1,367 @@
+{
+  "appTitle": "Formation PM13 - ADRA TUDIENZELE",
+  "sections": [
+    {
+      "id": "contexte",
+      "title": "1. Contexte & Accès",
+      "subtitle": "Pourquoi PM13 pour TUDIENZELE",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Les formulaires PM13 jouent un rôle stratégique essentiel pour le projet TUDIENZELE. Ils permettent le suivi-évaluation, la traçabilité et l'analyse cross-sectorielle des activités de formation."
+        },
+        {
+          "type": "heading",
+          "text": "Inscription et compte actif (obligatoire)"
+        },
+        {
+          "type": "steps",
+          "items": [
+            "Créer un compte LogAlto avec un email professionnel ou validé par le projet",
+            "Valider le mail d'activation et définir un mot de passe robuste",
+            "Se connecter avec ce compte actif avant d'accéder aux formulaires",
+            "Si le compte est inactif ou bloqué, contacter l'admin LogAlto du projet"
+          ]
+        },
+        {
+          "type": "image",
+          "src": "/uploads/logalto_login.png",
+          "alt": "Illustration de connexion LogAlto",
+          "caption": "Connexion LogAlto : utilisez un compte actif validé par le projet avant d'ouvrir PM13."
+        },
+        {
+          "type": "heading",
+          "text": "Rôle des formulaires PM13"
+        },
+        {
+          "type": "list",
+          "items": [
+            "PM13 01 (En-tête) : Capture les informations générales de l'activité de formation",
+            "PM13 02 (Participants) : Enregistre les données individuelles de chaque participant et leur présence"
+          ]
+        },
+        {
+          "type": "heading",
+          "text": "Accès à LogAlto"
+        },
+        {
+          "type": "steps",
+          "items": [
+            "Se connecter à LogAlto (Web ou Mobile)",
+            "Accéder à la section \"Formulaires personnalisés\"",
+            "Localiser les vignettes PM13 01 et PM13 02",
+            "Vérifier le trimestre fiscal en cours avant de commencer la saisie"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pm13-01",
+      "title": "2. PM13 01 – En-tête",
+      "subtitle": "Saisie des informations générales",
+      "content": [
+        {
+          "type": "heading",
+          "text": "Champs obligatoires"
+        },
+        {
+          "type": "list",
+          "items": [
+            "Composant P1/P2",
+            "Zoning sanitaire complet (zone de santé → aire de santé → village)",
+            "Sujet de la formation",
+            "Rempli par (nom de l'agent)",
+            "Secteur d'intervention",
+            "Date de l'activité",
+            "Type de participant",
+            "Trimestre et année fiscale",
+            "Partenaire",
+            "Type d'activité",
+            "Formateur"
+          ]
+        },
+        {
+          "type": "heading",
+          "text": "Localisation & GPS"
+        },
+        {
+          "type": "paragraph",
+          "text": "La hiérarchie géographique doit être complète : Zone de santé → Aire de santé → Village. La capture GPS diffère selon la plateforme :"
+        },
+        {
+          "type": "list",
+          "items": [
+            "Mobile : Capture automatique des coordonnées GPS",
+            "Web : Saisie manuelle ou import depuis un appareil GPS"
+          ]
+        },
+        {
+          "type": "heading",
+          "text": "Validation et ID unique"
+        },
+        {
+          "type": "steps",
+          "items": [
+            "Relire attentivement tous les champs remplis",
+            "Enregistrer le formulaire",
+            "Noter l'ID unique généré (ex. PM13-01-2025-00123)",
+            "Cet ID est essentiel pour lier PM13 02 à PM13 01"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pm13-02",
+      "title": "3. PM13 02 – Participants & Présence",
+      "subtitle": "Enregistrement des participants et pointage",
+      "content": [
+        {
+          "type": "heading",
+          "text": "Liaison avec PM13 01"
+        },
+        {
+          "type": "paragraph",
+          "text": "Le formulaire PM13 02 doit être lié à un PM13 01 validé via le champ \"Information générale / En-tête\". Une liste déroulante affiche tous les IDs PM13 01 disponibles."
+        },
+        {
+          "type": "heading",
+          "text": "Champs à saisir pour chaque participant"
+        },
+        {
+          "type": "list",
+          "items": [
+            "Nom et prénom",
+            "Sexe",
+            "Âge",
+            "Organisation",
+            "Contact (téléphone/email)",
+            "Première participation TDZ (Oui/Non)",
+            "Type/Fonction",
+            "Jours de présence"
+          ]
+        },
+        {
+          "type": "heading",
+          "text": "Pointage journalier"
+        },
+        {
+          "type": "paragraph",
+          "text": "Le pointage se fait jour par jour (Jour 1 à Jour 5). Chaque présence impacte directement les indicateurs et le taux de complétion de l'activité."
+        },
+        {
+          "type": "heading",
+          "text": "Finalisation"
+        },
+        {
+          "type": "steps",
+          "items": [
+            "Enregistrer chaque participant individuellement",
+            "Contrôler avec la feuille d'émargement papier",
+            "Vérifier que le nombre de fiches correspond aux signatures",
+            "Finaliser le statut \"Complet\"",
+            "La notification sera envoyée à Database Management"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "qualite",
+      "title": "4. Qualité, Check-list & FAQ",
+      "subtitle": "Contrôles avant soumission",
+      "content": [
+        {
+          "type": "heading",
+          "text": "Check-list avant soumission ME"
+        },
+        {
+          "type": "checklist",
+          "items": [
+            "Tous les champs obligatoires de PM13 01 sont remplis",
+            "Tous les champs obligatoires de PM13 02 sont remplis",
+            "Les coordonnées GPS sont cohérentes avec la localisation",
+            "Les dates sont dans le bon trimestre fiscal",
+            "Le nombre de fiches PM13 02 correspond aux signatures papier",
+            "Les contacts téléphone/email sont valides",
+            "Les présences sont complètes et cohérentes"
+          ]
+        },
+        {
+          "type": "heading",
+          "text": "Erreurs fréquentes et solutions"
+        },
+        {
+          "type": "faq",
+          "items": [
+            {
+              "question": "L'ID PM13 01 n'est pas retrouvé dans la liste déroulante",
+              "answer": "Vérifier que le PM13 01 a bien été enregistré et validé. Rafraîchir la page si nécessaire."
+            },
+            {
+              "question": "Doublon de participant détecté",
+              "answer": "Vérifier l'orthographe exacte du nom et prénom. Un même participant peut avoir plusieurs participations si les dates diffèrent."
+            },
+            {
+              "question": "GPS manquant ou incorrect",
+              "answer": "Sur mobile, activer la localisation. Sur web, saisir manuellement les coordonnées ou utiliser un appareil GPS externe."
+            },
+            {
+              "question": "Trimestre fiscal fermé",
+              "answer": "Contacter le superviseur ME pour ouvrir le trimestre ou utiliser le trimestre suivant si l'activité a eu lieu après la clôture."
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "text": "Action finale"
+        },
+        {
+          "type": "paragraph",
+          "text": "Après validation complète, exporter le récapitulatif en PDF et obtenir la signature du superviseur ME pour l'audit."
+        }
+      ]
+    },
+    {
+      "id": "recap",
+      "title": "5. Récapitulatif \"ADRA en une minute\"",
+      "subtitle": "Les étapes clés à retenir",
+      "content": [
+        {
+          "type": "steps",
+          "items": [
+            "Se connecter à l'espace TUDIENZELE dans LogAlto",
+            "Créer un PM13 01 complet avec tous les champs obligatoires",
+            "Noter l'ID unique généré (ex. PM13-01-2025-00123)",
+            "Ouvrir PM13 02 et lier l'ID du PM13 01",
+            "Saisir tous les participants avec leurs présences, contrôler avec la feuille d'émargement, puis finaliser"
+          ]
+        }
+      ]
+    }
+  ],
+  "quiz": {
+    "title": "Quiz Final - Évaluation des connaissances",
+    "instructions": "Répondez aux questions suivantes. Un score d'au moins 80% est requis pour obtenir la certification.",
+    "questions": [
+      {
+        "id": 1,
+        "question": "Quel est le rôle principal des formulaires PM13 pour le projet TUDIENZELE ?",
+        "options": [
+          "Uniquement la saisie administrative",
+          "Suivi-évaluation, traçabilité et analyse cross-sectorielle",
+          "Gestion des paiements",
+          "Communication avec les partenaires"
+        ],
+        "correct": 1
+      },
+      {
+        "id": 2,
+        "question": "Quel formulaire doit être créé en premier ?",
+        "options": [
+          "PM13 02",
+          "PM13 01",
+          "Les deux simultanément",
+          "Peu importe l'ordre"
+        ],
+        "correct": 1
+      },
+      {
+        "id": 3,
+        "question": "Quel champ est obligatoire dans PM13 01 ?",
+        "options": [
+          "Commentaires",
+          "Zoning sanitaire complet",
+          "Photo de l'activité",
+          "Nom du superviseur"
+        ],
+        "correct": 1
+      },
+      {
+        "id": 4,
+        "question": "Comment lier PM13 02 à PM13 01 ?",
+        "options": [
+          "Par saisie manuelle du nom",
+          "Via la liste déroulante d'IDs validés dans le champ \"Information générale / En-tête\"",
+          "En copiant-collant les données",
+          "Automatiquement sans action"
+        ],
+        "correct": 1
+      },
+      {
+        "id": 5,
+        "question": "Quelle est la différence de capture GPS entre mobile et web ?",
+        "options": [
+          "Aucune différence",
+          "Mobile : capture automatique, Web : saisie manuelle",
+          "Web : capture automatique, Mobile : saisie manuelle",
+          "Le GPS n'est pas disponible sur mobile"
+        ],
+        "correct": 1
+      },
+      {
+        "id": 6,
+        "question": "Que faire si l'ID PM13 01 n'apparaît pas dans la liste déroulante ?",
+        "options": [
+          "Créer un nouveau PM13 01",
+          "Vérifier que le PM13 01 a été enregistré et validé, puis rafraîchir la page",
+          "Ignorer la liaison",
+          "Contacter le développeur"
+        ],
+        "correct": 1
+      },
+      {
+        "id": 7,
+        "question": "Quel élément est essentiel à vérifier avant la soumission ME ?",
+        "options": [
+          "La couleur du formulaire",
+          "Le nombre de fiches PM13 02 correspond aux signatures papier",
+          "La météo du jour",
+          "L'heure de saisie"
+        ],
+        "correct": 1
+      },
+      {
+        "id": 8,
+        "question": "Que contient l'ID unique généré par PM13 01 ?",
+        "options": [
+          "Uniquement le numéro séquentiel",
+          "Le code PM13-01, l'année et un numéro séquentiel (ex. PM13-01-2025-00123)",
+          "Le nom du formateur",
+          "La date de création"
+        ],
+        "correct": 1
+      },
+      {
+        "id": 9,
+        "question": "Combien de jours de présence peuvent être pointés dans PM13 02 ?",
+        "options": [
+          "3 jours maximum",
+          "5 jours (Jour 1 à Jour 5)",
+          "10 jours",
+          "Un seul jour"
+        ],
+        "correct": 1
+      },
+      {
+        "id": 10,
+        "question": "Quel est le score minimum requis pour obtenir la certification ?",
+        "options": [
+          "50%",
+          "70%",
+          "80%",
+          "100%"
+        ],
+        "correct": 2
+      }
+    ]
+  },
+  "certificate": {
+    "title": "Certificat de participation – Formation PM13",
+    "subtitle": "TUDIENZELE / ADRA",
+    "successMessage": "A complété avec succès le module d'induction sur la saisie des formulaires PM13 01 et PM13 02 dans LogAlto, avec un score d'au moins 80% au quiz final.",
+    "logoText": "ADRA TUDIENZELE",
+    "leftLogoUrl": "",
+    "rightLogoUrl": "",
+    "signatureName": "Superviseur ME",
+    "signatureTitle": "Projet TUDIENZELE / ADRA"
+  }
+}

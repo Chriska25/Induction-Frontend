@@ -1,0 +1,201 @@
+import React, { useState } from 'react';
+import { RegistrationData } from '../types';
+import { api } from '../api/client';
+import './Registration.css';
+
+interface RegistrationProps {
+  onComplete: (data: RegistrationData) => void;
+}
+
+const Registration: React.FC<RegistrationProps> = ({ onComplete }) => {
+  const [fullName, setFullName] = useState('');
+  const [jobTitle, setJobTitle] = useState('');
+  const [organization, setOrganization] = useState('');
+  const [email, setEmail] = useState('');
+  const [city, setCity] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [photo, setPhoto] = useState<File | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+
+    if (!fullName || !jobTitle || !organization || !email || !city || !password || !confirmPassword) {
+      setError('Merci de remplir tous les champs obligatoires.');
+      return;
+    }
+
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(email.trim())) {
+      setError("L'adresse email n'est pas valide.");
+      return;
+    }
+
+    if (password.length < 6) {
+      setError("Le mot de passe doit contenir au moins 6 caractères.");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError("Les mots de passe ne correspondent pas.");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      // 1. Create User via API
+      const userData = {
+        fullName: fullName.trim(),
+        jobTitle: jobTitle.trim(),
+        organization: organization.trim(),
+        email: email.trim().toLowerCase(),
+        city: city.trim(),
+        password: password
+      };
+
+      const newUser = await api.createUser(userData);
+      console.log("User created via API:", newUser);
+
+      if (!newUser || !newUser.id) {
+        throw new Error("La réponse du serveur ne contient pas d'ID utilisateur.");
+      }
+
+      // 2. Upload Photo if selected
+      if (photo && newUser.id) {
+        try {
+          await api.uploadImage(photo, newUser.id);
+        } catch (imgError) {
+          console.error("Failed to upload image", imgError);
+          // We don't block registration if image fails, but we could warn
+        }
+      }
+
+      // 3. Complete registration
+      const registration: RegistrationData = {
+        ...userData,
+        registeredAt: newUser.registered_at || new Date().toISOString(),
+        id: newUser.id.toString(),
+        role: newUser.role
+      };
+
+      onComplete(registration);
+    } catch (err: any) {
+      console.error(err);
+      setError("Une erreur est survenue lors de l'inscription. Veuillez réessayer. " + (err.message || ''));
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="registration-page">
+      <div className="registration-card">
+        <div className="registration-header">
+          <h1>Inscription à la plateforme PM13</h1>
+          <p>
+            Créez votre compte d'accès en renseignant vos informations professionnelles. Ces données
+            sont utilisées pour tracer la participation et générer votre certificat PM13.
+          </p>
+        </div>
+
+        <form className="registration-form" onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label>Nom complet *</label>
+            <input
+              type="text"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              placeholder="Ex. Marie KABILA"
+              disabled={isSubmitting}
+            />
+          </div>
+          <div className="form-group">
+            <label>Poste / Fonction *</label>
+            <input
+              type="text"
+              value={jobTitle}
+              onChange={(e) => setJobTitle(e.target.value)}
+              placeholder="Ex. Superviseur ME"
+              disabled={isSubmitting}
+            />
+          </div>
+          <div className="form-group">
+            <label>Organisation / Projet *</label>
+            <input
+              type="text"
+              value={organization}
+              onChange={(e) => setOrganization(e.target.value)}
+              placeholder="Ex. ADRA TUDIENZELE"
+              disabled={isSubmitting}
+            />
+          </div>
+          <div className="form-group">
+            <label>Email professionnel *</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="prenom.nom@exemple.com"
+              disabled={isSubmitting}
+            />
+          </div>
+          <div className="form-group">
+            <label>Ville / Zone de travail *</label>
+            <input
+              type="text"
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+              placeholder="Ex. Kananga"
+              disabled={isSubmitting}
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Mot de passe *</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Au moins 6 caractères"
+              disabled={isSubmitting}
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Confirmer le mot de passe *</label>
+            <input
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              placeholder="Confirmez votre mot de passe"
+              disabled={isSubmitting}
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Photo de profil (Optionnel)</label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => setPhoto(e.target.files ? e.target.files[0] : null)}
+              disabled={isSubmitting}
+            />
+          </div>
+
+          {error && <div className="form-error">{error}</div>}
+
+          <button type="submit" className="btn-register" disabled={isSubmitting}>
+            {isSubmitting ? 'Inscription en cours...' : "Créer mon compte d'accès"}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default Registration;
+
