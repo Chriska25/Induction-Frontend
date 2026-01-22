@@ -85,9 +85,8 @@ const App: React.FC = () => {
 
     const refreshUser = async (id: string) => {
       try {
-        const response = await fetch(`/api/users/${id}`);
-        if (response.ok) {
-          const userData = await response.json();
+        const userData = await api.getUser(id);
+        if (userData) {
           const mappedUser = {
             id: userData.id.toString(),
             fullName: userData.full_name,
@@ -101,7 +100,7 @@ const App: React.FC = () => {
           setRegistration(mappedUser);
           setUserName(mappedUser.fullName);
           localStorage.setItem('pm13_current_registration', JSON.stringify(mappedUser));
-        } else if (response.status === 404) {
+        } else {
           silentLogout();
         }
       } catch (e) {
@@ -127,7 +126,7 @@ const App: React.FC = () => {
     if (currentView === 'dashboard' && registration) {
       const loadDashboardData = async () => {
         try {
-          const userId = parseInt(registration.id);
+          const userId = registration.id;
           const [trainingsData, modulesData] = await Promise.all([
             api.getUserTrainings(userId),
             api.getModules()
@@ -167,13 +166,10 @@ const App: React.FC = () => {
     };
 
     if (registration?.id) {
-      const userId = parseInt(registration.id, 10);
-      if (!isNaN(userId)) {
-        try {
-          await api.saveTraining({ userId, type: 'quiz', score, moduleId });
-        } catch (err) {
-          console.error("Failed to save training result to backend", err);
-        }
+      try {
+        await api.saveTraining({ userId: registration.id, type: 'quiz', score, moduleId });
+      } catch (err) {
+        console.error("Failed to save training result to backend", err);
       }
     }
 

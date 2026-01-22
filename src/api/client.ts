@@ -23,6 +23,17 @@ export const api = {
         return await response.json();
     },
 
+    getUser: async (id: string) => {
+        const response = await fetch(`${API_URL}/users/${id}`);
+        // Handle 404 specifically for logout logic in App.tsx
+        if (response.status === 404) return null;
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch user');
+        }
+        return await response.json();
+    },
+
     // Create user
     createUser: async (user: Omit<RegistrationData, 'id' | 'registeredAt'> & { password?: string }) => {
         const response = await fetch(`${API_URL}/users`, {
@@ -54,7 +65,7 @@ export const api = {
     },
 
     // Save quiz/training result
-    saveTraining: async (data: { userId: number, type: string, score: number, moduleId?: string | null }) => {
+    saveTraining: async (data: { userId: string, type: string, score: number, moduleId?: string | null }) => {
         const response = await fetch(`${API_URL}/trainings`, {
             method: 'POST',
             headers: {
@@ -70,7 +81,7 @@ export const api = {
         return await response.json();
     },
 
-    getUserTrainings: async (userId: number) => {
+    getUserTrainings: async (userId: string) => {
         const response = await fetch(`${API_URL}/trainings/user/${userId}`);
         if (!response.ok) {
             throw new Error('Failed to fetch user trainings');
@@ -79,7 +90,7 @@ export const api = {
     },
 
     // Upload image
-    uploadImage: async (file: File, userId?: number) => {
+    uploadImage: async (file: File, userId?: string) => {
         const formData = new FormData();
         formData.append('image', file);
         if (userId) {
@@ -185,7 +196,7 @@ export const api = {
         return await response.json();
     },
 
-    updateUserRole: async (userId: number, role: string) => {
+    updateUserRole: async (userId: string, role: string) => {
         const response = await fetch(`${API_URL}/admin/users/${userId}`, {
             method: 'PUT',
             headers: {
@@ -199,7 +210,7 @@ export const api = {
         return await response.json();
     },
 
-    resetUserPassword: async (userId: number, password: string) => {
+    resetUserPassword: async (userId: string, password: string) => {
         const response = await fetch(`${API_URL}/admin/users/${userId}`, {
             method: 'PUT',
             headers: {
