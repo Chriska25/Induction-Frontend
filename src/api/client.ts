@@ -143,5 +143,73 @@ export const api = {
             throw new Error('Failed to delete module');
         }
         return await response.json();
+    },
+
+    // Settings
+    getSettings: async () => {
+        const response = await fetch(`${API_URL}/settings`);
+        if (!response.ok) {
+            throw new Error('Failed to fetch settings');
+        }
+        return await response.json();
+    },
+
+    updateSettings: async (settings: any) => {
+        const response = await fetch(`${API_URL}/settings`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(settings),
+        });
+        if (!response.ok) {
+            throw new Error('Failed to update settings');
+        }
+        return await response.json();
+    },
+
+    // Admin
+    getAdminUsers: async () => {
+        const response = await fetch(`${API_URL}/admin/users`);
+        if (!response.ok) {
+            throw new Error('Failed to fetch users');
+        }
+        return await response.json();
+    },
+
+    getAdminLogs: async () => {
+        const response = await fetch(`${API_URL}/admin/logs`);
+        if (!response.ok) {
+            throw new Error('Failed to fetch logs');
+        }
+        return await response.json();
+    },
+
+    updateUserRole: async (userId: number, role: string) => {
+        const response = await fetch(`${API_URL}/admin/users/${userId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ role }),
+        });
+        if (!response.ok) {
+            throw new Error('Failed to update role');
+        }
+        return await response.json();
+    },
+
+    resetUserPassword: async (userId: number, password: string) => {
+        const response = await fetch(`${API_URL}/admin/users/${userId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ password }),
+        });
+        if (!response.ok) {
+            throw new Error('Failed to reset password');
+        }
+        return await response.json();
     }
 };

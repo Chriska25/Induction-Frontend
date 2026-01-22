@@ -111,11 +111,8 @@ const App: React.FC = () => {
 
     const fetchSettings = async () => {
       try {
-        const response = await fetch('/api/settings');
-        if (response.ok) {
-          const settingsData = await response.json();
-          setSiteSettings((prev: any) => ({ ...prev, ...settingsData }));
-        }
+        const settingsData = await api.getSettings();
+        setSiteSettings((prev: any) => ({ ...prev, ...settingsData }));
       } catch (e) {
         console.error("Failed to fetch settings", e);
       }

@@ -74,21 +74,11 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
         try {
             if (activeTab === 'users') {
                 try {
-                    const response = await fetch('/api/admin/users');
-                    if (!response.ok) {
-                        throw new Error(`HTTP ${response.status}`);
-                    }
-                    const contentType = response.headers.get('content-type');
-                    if (contentType && contentType.includes('application/json')) {
-                        const data = await response.json();
-                        setUsers(data);
-                    } else {
-                        console.warn('API returned non-JSON response for users');
-                        setUsers([]); // Fallback to empty array
-                    }
+                    const data = await api.getAdminUsers();
+                    setUsers(data);
                 } catch (error) {
                     console.error('Failed to fetch users:', error);
-                    setUsers([]); // Fallback to empty array
+                    setUsers([]);
                 }
             } else if (activeTab === 'modules') {
                 try {
@@ -96,31 +86,14 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
                     setModules(data);
                 } catch (error) {
                     console.error('Failed to fetch modules:', error);
-                    setModules([]); // Fallback to empty array
+                    setModules([]);
                 }
             } else if (activeTab === 'settings') {
                 try {
-                    const response = await fetch('/api/settings');
-                    if (!response.ok) {
-                        throw new Error(`HTTP ${response.status}`);
-                    }
-                    const contentType = response.headers.get('content-type');
-                    if (contentType && contentType.includes('application/json')) {
-                        const data = await response.json();
-                        setSettings(data);
-                    } else {
-                        console.warn('API returned non-JSON response for settings');
-                        // Fallback to default settings
-                        setSettings({
-                            site_name: 'Plateforme PM13',
-                            org_name: 'ADRA TUDIENZELE',
-                            copyright: '© 2026 ADRA TUDIENZELE. Tous droits réservés.',
-                            site_description: 'Plateforme de formation en ligne'
-                        });
-                    }
+                    const data = await api.getSettings();
+                    setSettings(data);
                 } catch (error) {
                     console.error('Failed to fetch settings:', error);
-                    // Fallback to default settings
                     setSettings({
                         site_name: 'Plateforme PM13',
                         org_name: 'ADRA TUDIENZELE',
@@ -130,21 +103,11 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
                 }
             } else if (activeTab === 'logs') {
                 try {
-                    const response = await fetch('/api/admin/logs');
-                    if (!response.ok) {
-                        throw new Error(`HTTP ${response.status}`);
-                    }
-                    const contentType = response.headers.get('content-type');
-                    if (contentType && contentType.includes('application/json')) {
-                        const data = await response.json();
-                        setLogs(data);
-                    } else {
-                        console.warn('API returned non-JSON response for logs');
-                        setLogs([]); // Fallback to empty array
-                    }
+                    const data = await api.getAdminLogs();
+                    setLogs(data);
                 } catch (error) {
                     console.error('Failed to fetch logs:', error);
-                    setLogs([]); // Fallback to empty array
+                    setLogs([]);
                 }
             }
         } catch (error) {
@@ -157,14 +120,10 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
     const handleUpdateSettings = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            await fetch('/api/settings', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(settings)
-            });
+            await api.updateSettings(settings);
             alert("Paramètres enregistrés !");
         } catch (e) {
-            alert("Erreur");
+            alert("Erreur lors de l'enregistrement");
         }
     };
 
@@ -181,30 +140,22 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
     const handlePromote = async (user: AdminUser) => {
         const newRole = user.role === 'admin' ? 'user' : 'admin';
         try {
-            await fetch(`/api/admin/users/${user.id}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ role: newRole })
-            });
+            await api.updateUserRole(user.id, newRole);
             loadData();
         } catch (e) {
-            alert("Erreur");
+            alert("Erreur lors du changement de rôle");
         }
     };
 
     const handleResetPassword = async () => {
         if (!editingUser || !auditPassword) return;
         try {
-            await fetch(`/api/admin/users/${editingUser.id}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ password: auditPassword })
-            });
+            await api.resetUserPassword(editingUser.id, auditPassword);
             alert("Mot de passe mis à jour.");
             setEditingUser(null);
             setAuditPassword('');
         } catch (e) {
-            alert("Erreur");
+            alert("Erreur lors de la réinitialisation");
         }
     };
 
@@ -240,7 +191,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
             await api.deleteModule(id);
             loadData();
         } catch (e) {
-            alert("Erreur");
+            alert("Erreur lors de la suppression");
         }
     };
 
