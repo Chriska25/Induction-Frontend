@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { RegistrationData } from '../types';
 import { api } from '../api/client';
-import './Login.css';
+
 import './Auth.css';
 
 
@@ -101,7 +101,7 @@ const Login: React.FC<LoginProps> = ({ onSelect, onNew, logo, description }) => 
 
   return (
     <div className="login-page">
-      <div className="login-card">
+      <div className="auth-form-card">
         {logo && (
           <div className="auth-logo">
             <img src={logo} alt="Logo" />
@@ -109,7 +109,7 @@ const Login: React.FC<LoginProps> = ({ onSelect, onNew, logo, description }) => 
         )}
 
         <div className="login-header">
-          <h1>
+          <h1 style={{ color: '#667eea', fontSize: '1.75rem', fontWeight: '700', marginBottom: '0.5rem' }}>
             Connexion à la plateforme
           </h1>
           <p className="auth-description">
@@ -119,7 +119,7 @@ const Login: React.FC<LoginProps> = ({ onSelect, onNew, logo, description }) => 
 
         {users.length > 0 && (
           <div className="login-users">
-            <h2>
+            <h2 style={{ fontSize: '1.1rem', color: '#333', marginBottom: '1rem', fontWeight: '600' }}>
               Sélectionnez votre compte
             </h2>
             <div className="login-users-list">
@@ -171,7 +171,7 @@ const Login: React.FC<LoginProps> = ({ onSelect, onNew, logo, description }) => 
         </form>
 
         <div className="login-footer">
-          <p>
+          <p style={{ textAlign: 'center', color: '#666', marginBottom: '0.75rem' }}>
             Vous n'avez pas encore de compte&nbsp;?
           </p>
           <button type="button" className="btn-new-account" onClick={onNew}>
