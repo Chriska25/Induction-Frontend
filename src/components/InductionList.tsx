@@ -6,7 +6,7 @@ import './InductionList.css';
 interface InductionListProps {
     onSelect: (data: ContentData, moduleId: string) => void;
     userName: string;
-    userId: number;
+    userId: string;
     userRole?: string;
     isAdminMode?: boolean;
     onAdminClick?: () => void;

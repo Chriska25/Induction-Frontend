@@ -488,7 +488,7 @@ const App: React.FC = () => {
 
           <div className="main-content">
             <InductionList
-              userId={parseInt(registration.id)}
+              userId={registration.id}
               userName={registration.fullName}
               userRole={isAdmin ? 'admin' : registration.role}
               isAdminMode={isAdmin}
