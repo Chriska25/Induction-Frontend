@@ -84,7 +84,9 @@ export const api = {
     getUserTrainings: async (userId: string) => {
         const response = await fetch(`${API_URL}/trainings/user/${userId}`);
         if (!response.ok) {
-            throw new Error('Failed to fetch user trainings');
+            const errorText = await response.text();
+            console.error('getUserTrainings failed:', response.status, errorText);
+            throw new Error(`Failed to fetch user trainings: ${response.status} ${errorText}`);
         }
         return await response.json();
     },
