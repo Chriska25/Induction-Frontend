@@ -130,7 +130,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
     const handleViewDetails = async (user: AdminUser) => {
         setViewingUser(user);
         try {
-            const trainings = await api.getUserTrainings(user.id);
+            const trainings = await api.getUserTrainings(String(user.id));
             setUserTrainings(trainings);
         } catch (e) {
             console.error(e);
@@ -140,7 +140,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
     const handlePromote = async (user: AdminUser) => {
         const newRole = user.role === 'admin' ? 'user' : 'admin';
         try {
-            await api.updateUserRole(user.id, newRole);
+            await api.updateUserRole(String(user.id), newRole);
             loadData();
         } catch (e) {
             alert("Erreur lors du changement de rôle");
@@ -150,7 +150,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
     const handleResetPassword = async () => {
         if (!editingUser || !auditPassword) return;
         try {
-            await api.resetUserPassword(editingUser.id, auditPassword);
+            await api.resetUserPassword(String(editingUser.id), auditPassword);
             alert("Mot de passe mis à jour.");
             setEditingUser(null);
             setAuditPassword('');
@@ -175,11 +175,29 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
     const handleAddModule = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
+            // Create the module with default empty content structure
             await api.createModule(newModule);
-            alert("Formation ajoutée !");
+
             setShowAddModuleModal(false);
             setNewModule({ id: '', title: '', description: '', icon: '' });
-            if (activeTab === 'modules') loadData();
+
+            // Reload modules list
+            if (activeTab === 'modules') {
+                await loadData();
+            }
+
+            // Automatically open the content editor for the newly created module
+            // Find the module we just created and open it for editing
+            const createdModule = await api.getModules().then(mods =>
+                mods.find((m: Module) => m.id === newModule.id)
+            );
+
+            if (createdModule && onEditModule) {
+                alert("Formation créée ! Vous pouvez maintenant ajouter des sections, questions de quiz et configurer le certificat.");
+                onEditModule(createdModule);
+            } else {
+                alert("Formation ajoutée avec succès !");
+            }
         } catch (e) {
             alert("Erreur lors de l'ajout de la formation");
         }
@@ -345,8 +363,21 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
                                                 <td>{module.description}</td>
                                                 <td>{new Date(module.created_at).toLocaleDateString()}</td>
                                                 <td>
-                                                    <button onClick={() => onEditModule?.(module)} className="action-icon" title="Éditer">✏️</button>
-                                                    <button onClick={() => handleDeleteModule(module.id)} className="action-icon" title="Supprimer">🗑️</button>
+                                                    <button
+                                                        onClick={() => onEditModule?.(module)}
+                                                        className="action-icon"
+                                                        title="Éditer le contenu (Sections, Quiz, Certificat)"
+                                                        style={{ fontSize: '1rem' }}
+                                                    >
+                                                        📝
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleDeleteModule(module.id)}
+                                                        className="action-icon"
+                                                        title="Supprimer"
+                                                    >
+                                                        🗑️
+                                                    </button>
                                                 </td>
                                             </tr>
                                         ))}
