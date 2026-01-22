@@ -78,7 +78,7 @@ const Login: React.FC<LoginProps> = ({ onSelect, onNew, logo, description }) => 
       });
 
       // Backend should return user object
-      if (response.status === 'logged_in' && response.user) {
+      if (response && response.user) {
         // Map backend user to RegistrationData format expected by App
         const user = response.user;
         onSelect({
