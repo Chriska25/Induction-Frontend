@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { RegistrationData } from '../types';
 import { api } from '../api/client';
 
+import './Login.css';
 import './Auth.css';
 
 
