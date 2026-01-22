@@ -127,6 +127,7 @@ const App: React.FC = () => {
       const loadDashboardData = async () => {
         try {
           const userId = registration.id;
+          console.log('[DEBUG] Fetching dashboard data for userId:', userId);
           const [trainingsData, modulesData] = await Promise.all([
             api.getUserTrainings(userId),
             api.getModules()
