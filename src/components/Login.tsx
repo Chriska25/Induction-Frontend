@@ -22,9 +22,18 @@ const Login: React.FC<LoginProps> = ({ onSelect, onNew, logo, description }) => 
   React.useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch('/api/users');
-        if (!response.ok) return;
-        const data = await response.json();
+        // Use the centralized API client logic or construct URL properly
+        // Mais api.getUsers n'existe pas dans client.ts, je vais devoir l'ajouter d'abord ou l'importer.
+        // Attendez, l'api client a `checkHealth`, `createUser`, `loginUser`. Il n'a PAS `getUsers`.
+        // Je vais devoir modifier Login.tsx pour utiliser l'URL correcte.
+
+        // Option rapide: importer API_URL ou utiliser le client api
+        // Je vais utiliser api.getUsers que je vais ajouter dans client.ts juste après.
+        // Pour l'instant, je corrige Login.tsx pour utiliser api.getAllUsers() que je vais créer.
+
+        const response = await api.getAllUsers();
+        // response est déjà le json
+        const data = response;
         // Map backend users to RegistrationData format
         const mappedUsers = data.map((user: any) => ({
           id: user.id.toString(),

@@ -14,6 +14,15 @@ export const api = {
         }
     },
 
+    // Get all users (publicly visible info for login selection)
+    getAllUsers: async () => {
+        const response = await fetch(`${API_URL}/users`);
+        if (!response.ok) {
+            throw new Error('Failed to fetch users');
+        }
+        return await response.json();
+    },
+
     // Create user
     createUser: async (user: Omit<RegistrationData, 'id' | 'registeredAt'> & { password?: string }) => {
         const response = await fetch(`${API_URL}/users`, {
