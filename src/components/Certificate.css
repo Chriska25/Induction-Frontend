@@ -160,6 +160,36 @@
   color: #555;
 }
 
+.signature-img {
+  height: 60px;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto 5px auto;
+}
+
+.certificate-partners {
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.certificate-partner-logo {
+  max-height: 30px;
+  max-width: 80px;
+  object-fit: contain;
+  opacity: 0.8;
+  transition: opacity 0.3s ease;
+}
+
+.certificate-partner-logo:hover {
+  opacity: 1;
+}
+
 @media (max-width: 768px) {
   .certificate-wrapper {
     padding: 1rem;

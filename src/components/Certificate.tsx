@@ -142,16 +142,18 @@ const Certificate: React.FC<CertificateProps> = ({ certificateData, userName, sc
                   margin: 0 auto 5px auto;
                 }
                 .certificate-partners {
-                  margin-top: 40px;
+                  margin-top: 30px;
+                  padding-top: 20px;
+                  border-top: 1px solid #e0e0e0;
                   display: flex;
                   justify-content: center;
-                  gap: 30px;
+                  gap: 20px;
                   align-items: center;
                   flex-wrap: wrap;
                 }
                 .certificate-partner-logo {
-                  max-height: 50px;
-                  max-width: 120px;
+                  max-height: 30px;
+                  max-width: 80px;
                   object-fit: contain;
                 }
               </style>
