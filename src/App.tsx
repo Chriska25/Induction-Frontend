@@ -498,7 +498,7 @@ const App: React.FC = () => {
                 {(() => {
                   const earnedCertificates = modules.filter(module => {
                     const moduleTrainings = userTrainings.filter(t => String(t.module_id) === String(module.id));
-                    return moduleTrainings.some(t => t.type === 'quiz' && t.score >= 80);
+                    return moduleTrainings.some(t => t.type === 'quiz' && (t.score >= 80 || t.progress >= 80));
                   });
 
                   if (earnedCertificates.length === 0) {
@@ -510,7 +510,12 @@ const App: React.FC = () => {
                   }
 
                   return earnedCertificates.map(module => (
-                    <div key={module.id} className="certificate-item">
+                    <div
+                      key={module.id}
+                      className="certificate-item"
+                      onClick={() => handleCourseSelect(module.data ? JSON.parse(module.data) : null, module.id)}
+                      style={{ cursor: 'pointer' }}
+                    >
                       <span className="certificate-icon">{module.icon || '📘'}</span>
                       <div className="certificate-info">
                         <span className="certificate-title">{module.title}</span>
