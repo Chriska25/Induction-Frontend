@@ -9,6 +9,8 @@ import Registration from './components/Registration';
 import Login from './components/Login';
 import AdminDashboard from './components/AdminDashboard';
 import InductionList from './components/InductionList';
+import UserProfile from './components/UserProfile';
+import { getImageUrl } from './utils/imageUrl';
 import './App.css';
 import './components/Footer.css';
 import contentData from './data/content.json';
@@ -47,6 +49,9 @@ const App: React.FC = () => {
 
   // Exit confirmation popup
   const [showExitConfirm, setShowExitConfirm] = useState(false);
+
+  // Profile modal
+  const [showProfileModal, setShowProfileModal] = useState(false);
 
   const sections = data.sections;
 
@@ -405,11 +410,61 @@ const App: React.FC = () => {
             <h3>Menu Principal</h3>
             <div className="sidebar-section">
               <h4>👤 Profil</h4>
-              <div className="user-info">
+              <div className="user-info" style={{ textAlign: 'center' }}>
+                <div
+                  className="user-avatar"
+                  style={{
+                    width: 80,
+                    height: 80,
+                    borderRadius: '50%',
+                    margin: '0 auto 1rem',
+                    overflow: 'hidden',
+                    border: '3px solid #667eea',
+                    boxShadow: '0 4px 15px rgba(102, 126, 234, 0.3)'
+                  }}
+                >
+                  {(registration as any).profilePhoto ? (
+                    <img
+                      src={getImageUrl((registration as any).profilePhoto)}
+                      alt="Photo de profil"
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
+                  ) : (
+                    <div style={{
+                      width: '100%',
+                      height: '100%',
+                      background: 'linear-gradient(135deg, #667eea, #764ba2)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: 'white',
+                      fontSize: '2rem',
+                      fontWeight: 'bold'
+                    }}>
+                      {registration.fullName.charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                </div>
                 <p><strong>{registration.fullName}</strong></p>
                 <p>{registration.jobTitle}</p>
                 <p>{registration.organization}</p>
                 <p style={{ fontSize: '0.9rem', color: '#666' }}>{registration.email}</p>
+                <button
+                  onClick={() => setShowProfileModal(true)}
+                  style={{
+                    marginTop: '0.75rem',
+                    padding: '0.5rem 1rem',
+                    background: 'linear-gradient(135deg, #667eea, #764ba2)',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '20px',
+                    cursor: 'pointer',
+                    fontSize: '0.85rem',
+                    fontWeight: '600'
+                  }}
+                >
+                  ✏️ Modifier mon profil
+                </button>
               </div>
             </div>
 
@@ -500,6 +555,26 @@ const App: React.FC = () => {
         <footer className="site-footer" style={{ textAlign: 'center', padding: '1.5rem', background: '#fff', borderTop: '1px solid #eee', color: '#666', fontSize: '0.85rem' }}>
           {siteSettings.copyright}
         </footer>
+
+        {showProfileModal && (
+          <UserProfile
+            user={{
+              id: registration.id,
+              fullName: registration.fullName,
+              email: registration.email,
+              jobTitle: registration.jobTitle,
+              organization: registration.organization,
+              city: registration.city,
+              profilePhoto: (registration as any).profilePhoto
+            }}
+            onUpdate={(updatedUser) => {
+              setRegistration(updatedUser);
+              setUserName(updatedUser.fullName);
+              localStorage.setItem('pm13_current_registration', JSON.stringify(updatedUser));
+            }}
+            onClose={() => setShowProfileModal(false)}
+          />
+        )}
       </div>
     );
   }

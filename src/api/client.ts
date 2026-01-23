@@ -49,6 +49,21 @@ export const api = {
         return await response.json();
     },
 
+    // Update user profile
+    updateUserProfile: async (userId: string, data: { fullName?: string, jobTitle?: string, organization?: string, city?: string, profilePhoto?: string }) => {
+        const response = await fetch(`${API_URL}/users/${userId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        });
+        if (!response.ok) {
+            throw new Error('Failed to update profile');
+        }
+        return await response.json();
+    },
+
     // Login user
     loginUser: async (credentials: { email: string, password?: string, userId?: string, fullName?: string }) => {
         const response = await fetch(`${API_URL}/login`, {
