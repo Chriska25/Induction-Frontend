@@ -108,7 +108,15 @@ export const api = {
             throw new Error('Failed to upload image');
         }
 
-        return await response.json();
+        const result = await response.json();
+
+        // Ajouter l'URL complète du backend si le path est relatif
+        if (result.path && result.path.startsWith('/')) {
+            const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+            result.path = `${backendUrl}${result.path}`;
+        }
+
+        return result;
     },
 
     // Module Management
