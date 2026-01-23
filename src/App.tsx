@@ -91,7 +91,7 @@ const App: React.FC = () => {
       try {
         const userData = await api.getUser(id);
         if (userData) {
-          const mappedUser = {
+          const mappedUser: RegistrationData = {
             id: userData.id.toString(),
             fullName: userData.full_name,
             email: userData.email,
@@ -99,7 +99,8 @@ const App: React.FC = () => {
             organization: userData.organization,
             city: userData.city,
             registeredAt: userData.registered_at,
-            role: userData.role
+            role: userData.role,
+            profilePhoto: userData.profile_photo
           };
           setRegistration(mappedUser);
           setUserName(mappedUser.fullName);
@@ -356,6 +357,15 @@ const App: React.FC = () => {
           border: 'none',
           boxShadow: 'none'
         }}>
+          {siteSettings.site_logo && (
+            <div style={{ marginBottom: '1.2rem' }}>
+              <img
+                src={getImageUrl(siteSettings.site_logo)}
+                alt="Logo"
+                style={{ maxHeight: '70px', maxWidth: '200px', objectFit: 'contain' }}
+              />
+            </div>
+          )}
           <h1 style={{ fontSize: '3.5rem', fontWeight: 800, marginBottom: '0.5rem', letterSpacing: '-2px', textShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
             {siteSettings.site_name || 'Plateforme de Formation TUDIENZELE'}
           </h1>
@@ -491,11 +501,16 @@ const App: React.FC = () => {
                 👤 Profil
               </h4>
               <div className="user-info" style={{ textAlign: 'left' }}>
-                <div style={{
-                  width: 80, height: 80, borderRadius: '50%', overflow: 'hidden',
-                  marginBottom: '1.2rem', border: '3px solid #667eea',
-                  boxShadow: '0 8px 20px rgba(102, 126, 234, 0.3)'
-                }}>
+                <div
+                  onClick={() => setShowProfileModal(true)}
+                  style={{
+                    width: 90, height: 90, borderRadius: '24px', overflow: 'hidden',
+                    marginBottom: '1.2rem', border: '3px solid #667eea',
+                    boxShadow: '0 8px 25px rgba(102, 126, 234, 0.3)',
+                    cursor: 'pointer',
+                    position: 'relative'
+                  }}
+                >
                   {(registration as any).profilePhoto ? (
                     <img src={getImageUrl((registration as any).profilePhoto)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   ) : (
@@ -503,16 +518,38 @@ const App: React.FC = () => {
                       width: '100%', height: '100%',
                       background: 'linear-gradient(135deg, #667eea, #764ba2)',
                       color: 'white', display: 'flex', alignItems: 'center',
-                      justifyContent: 'center', fontSize: '2rem', fontWeight: 'bold'
+                      justifyContent: 'center', fontSize: '2.5rem', fontWeight: 'bold'
                     }}>
                       {registration.fullName.charAt(0)}
                     </div>
                   )}
+                  <div style={{
+                    position: 'absolute', bottom: 0, left: 0, right: 0,
+                    background: 'rgba(0,0,0,0.4)', color: 'white', fontSize: '0.6rem',
+                    textAlign: 'center', padding: '2px 0', fontWeight: 800
+                  }}>MODIFIER</div>
                 </div>
                 <p style={{ margin: '0 0 0.3rem', fontWeight: 800, color: '#1a202c', fontSize: '1.2rem' }}>{registration.fullName}</p>
                 <p style={{ margin: 0, fontSize: '0.95rem', color: '#718096', lineHeight: 1.4 }}>{registration.jobTitle}</p>
                 <p style={{ margin: 0, fontSize: '0.95rem', color: '#718096' }}>{registration.organization}</p>
-                <p style={{ margin: '0.8rem 0 0', fontSize: '0.85rem', color: '#a0aec0', fontStyle: 'italic' }}>{registration.email}</p>
+                <p style={{ margin: '0.8rem 0 1rem', fontSize: '0.85rem', color: '#a0aec0', fontStyle: 'italic' }}>{registration.email}</p>
+
+                <button
+                  onClick={() => setShowProfileModal(true)}
+                  style={{
+                    padding: '0.6rem 1.2rem',
+                    background: 'linear-gradient(135deg, #667eea, #764ba2)',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '12px',
+                    cursor: 'pointer',
+                    fontSize: '0.85rem',
+                    fontWeight: '700',
+                    boxShadow: '0 4px 12px rgba(102, 126, 234, 0.2)'
+                  }}
+                >
+                  ✏️ Modifier mon profil
+                </button>
               </div>
             </div>
 

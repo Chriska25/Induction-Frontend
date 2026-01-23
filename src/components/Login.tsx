@@ -90,7 +90,8 @@ const Login: React.FC<LoginProps> = ({ onSelect, onNew, logo, description }) => 
           organization: user.organization,
           city: user.city,
           registeredAt: user.registered_at,
-          role: user.role
+          role: user.role,
+          profilePhoto: user.profile_photo
         });
       }
     } catch (err) {

@@ -67,9 +67,11 @@ const Registration: React.FC<RegistrationProps> = ({ onComplete }) => {
       }
 
       // 2. Upload Photo if selected
+      let profilePhoto = newUser.profile_photo;
       if (photo && newUser.id) {
         try {
-          await api.uploadImage(photo, newUser.id);
+          const uploadResult = await api.uploadImage(photo, newUser.id);
+          profilePhoto = uploadResult.path;
         } catch (imgError) {
           console.error("Failed to upload image", imgError);
           // We don't block registration if image fails, but we could warn
@@ -81,7 +83,8 @@ const Registration: React.FC<RegistrationProps> = ({ onComplete }) => {
         ...userData,
         registeredAt: newUser.registered_at || new Date().toISOString(),
         id: newUser.id.toString(),
-        role: newUser.role
+        role: newUser.role,
+        profilePhoto: profilePhoto
       };
 
       onComplete(registration);

@@ -63,6 +63,7 @@ export interface RegistrationData {
   registeredAt: string;
   id: string;
   role?: string;
+  profilePhoto?: string;
 }
 
 export interface ActivityData {
