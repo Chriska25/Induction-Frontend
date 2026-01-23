@@ -11,7 +11,6 @@ import AdminDashboard from './components/AdminDashboard';
 import InductionList from './components/InductionList';
 import UserProfile from './components/UserProfile';
 import { getImageUrl } from './utils/imageUrl';
-import './App.css';
 import './components/Footer.css';
 import contentData from './data/content.json';
 
