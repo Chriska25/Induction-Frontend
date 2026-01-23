@@ -341,211 +341,265 @@ const App: React.FC = () => {
   // Logged In - Dashboard View
   if (currentView === 'dashboard') {
     return (
-      <div className="app">
-        <div className="app-header">
-          {siteSettings.site_logo && (
-            <div className="app-logo-small">
-              <img src={siteSettings.site_logo} alt="Logo" />
-            </div>
-          )}
-          <h1>{siteSettings.site_name}</h1>
-          <div className="app-registrant">
-            <span>
+      <div className="app dashboard-theme" style={{
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        display: 'flex',
+        flexDirection: 'column',
+        fontFamily: "'Inter', sans-serif"
+      }}>
+        <div className="app-header" style={{
+          padding: '2.5rem 1rem 1.5rem',
+          textAlign: 'center',
+          color: 'white',
+          background: 'transparent',
+          border: 'none',
+          boxShadow: 'none'
+        }}>
+          <h1 style={{ fontSize: '3.5rem', fontWeight: 800, marginBottom: '0.5rem', letterSpacing: '-2px', textShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+            {siteSettings.site_name || 'Plateforme de Formation TUDIENZELE'}
+          </h1>
+
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem', marginTop: '1.5rem', flexWrap: 'wrap' }}>
+            <div style={{
+              background: 'rgba(255,255,255,0.15)',
+              padding: '0.6rem 1.8rem',
+              borderRadius: '50px',
+              fontSize: '1rem',
+              backdropFilter: 'blur(15px)',
+              border: '1px solid rgba(255,255,255,0.3)',
+              color: 'white',
+              boxShadow: '0 4px 15px rgba(0,0,0,0.1)'
+            }}>
               Compte : <strong>{registration.fullName}</strong> – {registration.organization}
-            </span>
+            </div>
+
             {(registration.role === 'admin' || isAdmin) && (
               <button
                 onClick={() => setCurrentView('admin')}
-                className="btn-admin-header"
                 style={{
-                  marginLeft: '10px',
-                  padding: '0.25rem 0.75rem',
-                  background: 'rgba(255, 255, 255, 0.2)',
-                  color: '#fff',
-                  borderRadius: '999px',
-                  border: '1px solid rgba(255, 255, 255, 0.5)',
-                  fontSize: '0.8rem',
-                  cursor: 'pointer'
+                  padding: '0.6rem 1.8rem',
+                  background: 'rgba(255,255,255,0.2)',
+                  border: '1px solid rgba(255,255,255,0.4)',
+                  color: 'white',
+                  borderRadius: '50px',
+                  cursor: 'pointer',
+                  fontSize: '0.95rem',
+                  fontWeight: '600',
+                  backdropFilter: 'blur(15px)',
+                  transition: 'all 0.3s ease',
+                  boxShadow: '0 4px 15px rgba(0,0,0,0.1)'
                 }}
               >
                 ⚙️ Administration
               </button>
             )}
-            <button onClick={handleLogout} className="btn-logout" style={{ marginLeft: '10px' }}>
+
+            <button
+              onClick={handleLogout}
+              style={{
+                padding: '0.6rem 1.8rem',
+                background: 'rgba(255,255,255,0.2)',
+                border: '1px solid rgba(255,255,255,0.4)',
+                color: 'white',
+                borderRadius: '50px',
+                cursor: 'pointer',
+                fontSize: '0.95rem',
+                fontWeight: '600',
+                backdropFilter: 'blur(15px)',
+                transition: 'all 0.3s ease',
+                boxShadow: '0 4px 15px rgba(0,0,0,0.1)'
+              }}
+            >
               Déconnexion
             </button>
           </div>
-          <div className="admin-toggle" style={{ marginTop: '1rem' }}>
+
+          <div style={{ marginTop: '2rem', textAlign: 'center' }}>
             {askAdminCode ? (
-              <div className="admin-login">
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '0.8rem' }}>
                 <input
                   type="password"
-                  className="admin-input"
-                  placeholder="Code administrateur"
+                  style={{ padding: '0.6rem 1.5rem', borderRadius: '50px', border: 'none', width: '220px', boxShadow: '0 8px 25px rgba(0,0,0,0.2)' }}
+                  placeholder="Code de sécurité"
                   value={adminCodeInput}
                   onChange={(e) => setAdminCodeInput(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleAdminCodeSubmit()}
                 />
-                <button className="btn-admin-login" onClick={handleAdminCodeSubmit}>
+                <button
+                  onClick={handleAdminCodeSubmit}
+                  style={{ padding: '0.6rem 2rem', background: '#10b981', color: 'white', border: 'none', borderRadius: '50px', cursor: 'pointer', fontWeight: '800' }}
+                >
                   Valider
                 </button>
                 <button
-                  className="btn-admin-cancel"
                   onClick={() => setAskAdminCode(false)}
+                  style={{ padding: '0.6rem 2rem', background: 'rgba(255,255,255,0.2)', color: 'white', border: 'none', borderRadius: '50px', cursor: 'pointer' }}
                 >
                   Annuler
                 </button>
               </div>
             ) : (
-              <button className="btn-admin-toggle" onClick={handleAdminLoginClick}>
-                {isAdmin ? '🔒 Désactiver le mode édition' : '🛠️ Mode administrateur (édition)'}
+              <button
+                onClick={handleAdminLoginClick}
+                style={{
+                  background: isAdmin ? 'rgba(255,182,193,0.3)' : 'rgba(255,255,255,0.1)',
+                  color: 'white',
+                  border: '1px solid rgba(255,255,255,0.2)',
+                  padding: '0.5rem 1.8rem',
+                  borderRadius: '50px',
+                  fontSize: '0.9rem',
+                  cursor: 'pointer',
+                  backdropFilter: 'blur(10px)',
+                  boxShadow: '0 4px 15px rgba(0,0,0,0.1)'
+                }}
+              >
+                {isAdmin ? '🔒 Désactiver le mode édition' : '🛠️ Activer le mode édition'}
               </button>
             )}
           </div>
         </div>
 
-        <div className="app-container">
-          <div className="sidebar">
-            <h3>Menu Principal</h3>
+        <div className="app-container" style={{
+          display: 'flex',
+          flex: 1,
+          padding: '1.5rem 3rem 3rem',
+          gap: '3rem',
+          maxWidth: '1600px',
+          margin: '0 auto',
+          width: '100%',
+          boxSizing: 'border-box'
+        }}>
+          {/* SIDEBAR */}
+          <div className="sidebar" style={{
+            width: '350px',
+            background: 'white',
+            borderRadius: '30px',
+            padding: '2.5rem',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '2.5rem',
+            boxShadow: '0 25px 60px rgba(0,0,0,0.25)',
+            height: 'fit-content'
+          }}>
+            <h3 style={{ margin: 0, color: '#1a5490', fontSize: '1.4rem', fontWeight: 800, borderBottom: '2px solid #f0f4f8', paddingBottom: '0.8rem' }}>
+              Menu Principal
+            </h3>
+
             <div className="sidebar-section">
-              <h4>👤 Profil</h4>
-              <div className="user-info" style={{ textAlign: 'center' }}>
-                <div
-                  className="user-avatar"
-                  style={{
-                    width: 80,
-                    height: 80,
-                    borderRadius: '50%',
-                    margin: '0 auto 1rem',
-                    overflow: 'hidden',
-                    border: '3px solid #667eea',
-                    boxShadow: '0 4px 15px rgba(102, 126, 234, 0.3)'
-                  }}
-                >
+              <h4 style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', color: '#4a5568', margin: '0 0 1.2rem', fontSize: '1.1rem' }}>
+                👤 Profil
+              </h4>
+              <div className="user-info" style={{ textAlign: 'left' }}>
+                <div style={{
+                  width: 80, height: 80, borderRadius: '50%', overflow: 'hidden',
+                  marginBottom: '1.2rem', border: '3px solid #667eea',
+                  boxShadow: '0 8px 20px rgba(102, 126, 234, 0.3)'
+                }}>
                   {(registration as any).profilePhoto ? (
-                    <img
-                      src={getImageUrl((registration as any).profilePhoto)}
-                      alt="Photo de profil"
-                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                    />
+                    <img src={getImageUrl((registration as any).profilePhoto)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   ) : (
                     <div style={{
-                      width: '100%',
-                      height: '100%',
+                      width: '100%', height: '100%',
                       background: 'linear-gradient(135deg, #667eea, #764ba2)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      color: 'white',
-                      fontSize: '2rem',
-                      fontWeight: 'bold'
+                      color: 'white', display: 'flex', alignItems: 'center',
+                      justifyContent: 'center', fontSize: '2rem', fontWeight: 'bold'
                     }}>
-                      {registration.fullName.charAt(0).toUpperCase()}
+                      {registration.fullName.charAt(0)}
                     </div>
                   )}
                 </div>
-                <p><strong>{registration.fullName}</strong></p>
-                <p>{registration.jobTitle}</p>
-                <p>{registration.organization}</p>
-                <p style={{ fontSize: '0.9rem', color: '#666' }}>{registration.email}</p>
-                <button
-                  onClick={() => setShowProfileModal(true)}
-                  style={{
-                    marginTop: '0.75rem',
-                    padding: '0.5rem 1rem',
-                    background: 'linear-gradient(135deg, #667eea, #764ba2)',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '20px',
-                    cursor: 'pointer',
-                    fontSize: '0.85rem',
-                    fontWeight: '600'
-                  }}
-                >
-                  ✏️ Modifier mon profil
-                </button>
+                <p style={{ margin: '0 0 0.3rem', fontWeight: 800, color: '#1a202c', fontSize: '1.2rem' }}>{registration.fullName}</p>
+                <p style={{ margin: 0, fontSize: '0.95rem', color: '#718096', lineHeight: 1.4 }}>{registration.jobTitle}</p>
+                <p style={{ margin: 0, fontSize: '0.95rem', color: '#718096' }}>{registration.organization}</p>
+                <p style={{ margin: '0.8rem 0 0', fontSize: '0.85rem', color: '#a0aec0', fontStyle: 'italic' }}>{registration.email}</p>
               </div>
             </div>
 
             <div className="sidebar-section">
-              <h4>📚 Navigation</h4>
-              <ul className="section-nav">
-                <li>
-                  <button
-                    className="nav-item active"
-                    onClick={() => setCurrentView('dashboard')}
-                  >
-                    Mes Formations
-                  </button>
-                </li>
-                {(registration.role === 'admin' || isAdmin) && (
-                  <li>
-                    <button
-                      className="nav-item"
-                      onClick={() => setCurrentView('admin')}
-                    >
-                      Admin Dashboard
-                    </button>
-                  </li>
-                )}
-              </ul>
+              <h4 style={{ color: '#4a5568', margin: '0 0 1.2rem', fontSize: '1.1rem' }}>📚 Navigation</h4>
+              <button
+                onClick={() => setCurrentView('dashboard')}
+                style={{
+                  width: '100%', padding: '1.2rem', textAlign: 'left',
+                  background: '#1a5490', color: 'white', border: 'none',
+                  borderRadius: '16px', fontWeight: 800, cursor: 'pointer',
+                  marginBottom: '0.8rem', boxShadow: '0 8px 20px rgba(26, 84, 144, 0.3)',
+                  fontSize: '1rem'
+                }}
+              >
+                Mes Formations
+              </button>
+              {(registration.role === 'admin' || isAdmin) && (
+                <button
+                  onClick={() => setCurrentView('admin')}
+                  style={{
+                    width: '100%', padding: '1.2rem', textAlign: 'left',
+                    background: 'white', color: '#4a5568', border: '2px solid #e2e8f0',
+                    borderRadius: '16px', fontWeight: 700, cursor: 'pointer',
+                    fontSize: '1rem', transition: 'all 0.3s ease'
+                  }}
+                >
+                  Admin Dashboard
+                </button>
+              )}
             </div>
 
             <div className="sidebar-section">
-              <h4>📜 Certificats</h4>
+              <h4 style={{ color: '#4a5568', margin: '0 0 1.2rem', fontSize: '1.1rem' }}>📜 Certificats</h4>
               <div className="certificate-list">
                 {(() => {
                   const earnedCertificates = modules.filter(module => {
                     const moduleTrainings = userTrainings.filter(t => String(t.module_id) === String(module.id));
-                    return moduleTrainings.some(t => t.type === 'quiz' && (t.score >= 80 || t.progress >= 80));
+                    return moduleTrainings.some(t =>
+                      (t.status === 'quiz' || t.type === 'quiz') &&
+                      (t.progress >= 80 || (t.score !== undefined && t.score >= 80))
+                    );
                   });
 
                   if (earnedCertificates.length === 0) {
-                    return (
-                      <p style={{ fontSize: '0.9rem', color: '#999', fontStyle: 'italic', margin: '0.5rem 0' }}>
-                        Aucun certificat pour le moment
-                      </p>
-                    );
+                    return <p style={{ fontSize: '0.95rem', color: '#cbd5e0', fontStyle: 'italic' }}>Aucun certificat pour le moment</p>;
                   }
 
                   return earnedCertificates.map(module => (
-                    <div
-                      key={module.id}
-                      className="certificate-item"
-                      onClick={() => handleCourseSelect(module.data ? JSON.parse(module.data) : null, module.id)}
-                      style={{ cursor: 'pointer' }}
-                    >
-                      <span className="certificate-icon">{module.icon || '📘'}</span>
-                      <div className="certificate-info">
-                        <span className="certificate-title">{module.title}</span>
-                        <span className="certificate-badge">✅ Obtenu</span>
-                      </div>
+                    <div key={module.id} onClick={() => handleCourseSelect(module.data ? JSON.parse(module.data) : null, module.id)}
+                      style={{
+                        padding: '1rem', background: '#f8fafc', borderRadius: '16px',
+                        cursor: 'pointer', marginBottom: '0.8rem', border: '2px solid #edf2f7',
+                        transition: 'all 0.3s ease'
+                      }}>
+                      <div style={{ fontSize: '1rem', fontWeight: 800, color: '#1a5490', marginBottom: '0.2rem' }}>{module.title}</div>
+                      <div style={{ fontSize: '0.8rem', color: '#10b981', fontWeight: 700 }}>✅ Certificat Obtenu</div>
                     </div>
                   ));
                 })()}
               </div>
             </div>
 
-            <div style={{ marginTop: 'auto', borderTop: '1px solid #eee', paddingTop: '1rem' }}>
-              <button
-                onClick={handleLogout}
-                style={{
-                  width: '100%',
-                  padding: '0.75rem',
-                  background: '#fff',
-                  border: '1px solid #dc3545',
-                  color: '#dc3545',
-                  borderRadius: '6px',
-                  cursor: 'pointer',
-                  fontWeight: 'bold'
-                }}
-              >
-                🚪 Déconnexion
-              </button>
-            </div>
+            <button
+              onClick={handleLogout}
+              style={{
+                marginTop: 'auto', padding: '1rem', background: '#fff',
+                color: '#e53e3e', border: '2px solid #fed7d7', borderRadius: '16px',
+                fontWeight: 800, cursor: 'pointer', fontSize: '1rem',
+                transition: 'all 0.3s ease'
+              }}
+            >
+              🚪 Déconnexion
+            </button>
           </div>
 
-          <div className="main-content">
+          {/* MAIN CONTENT Area */}
+          <div className="main-content" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+            <div style={{ textAlign: 'center', marginBottom: '4.5rem', color: 'white' }}>
+              <h2 style={{ fontSize: '4.2rem', fontWeight: 900, margin: '0 0 0.8rem', letterSpacing: '-2px', textShadow: '0 4px 20px rgba(0,0,0,0.2)' }}>
+                Bienvenue, {registration.fullName.split(' ')[0]}
+              </h2>
+              <p style={{ opacity: 0.95, fontSize: '1.5rem', fontWeight: 500, letterSpacing: '0.5px' }}>
+                Veuillez sélectionner votre module de formation
+              </p>
+            </div>
+
             <InductionList
               userId={registration.id}
               userName={registration.fullName}
@@ -556,8 +610,20 @@ const App: React.FC = () => {
             />
           </div>
         </div>
-        <footer className="site-footer" style={{ textAlign: 'center', padding: '1.5rem', background: '#fff', borderTop: '1px solid #eee', color: '#666', fontSize: '0.85rem' }}>
-          {siteSettings.copyright}
+        <footer style={{ padding: '3rem', textAlign: 'center' }}>
+          <div style={{
+            background: 'white',
+            padding: '1rem 3.5rem',
+            borderRadius: '50px',
+            display: 'inline-block',
+            color: '#4a5568',
+            fontWeight: 700,
+            fontSize: '0.95rem',
+            boxShadow: '0 10px 30px rgba(0,0,0,0.15)',
+            letterSpacing: '0.5px'
+          }}>
+            {siteSettings.copyright}
+          </div>
         </footer>
 
         {showProfileModal && (
