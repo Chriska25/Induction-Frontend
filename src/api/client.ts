@@ -50,7 +50,7 @@ export const api = {
     },
 
     // Update user profile
-    updateUserProfile: async (userId: string, data: { fullName?: string, jobTitle?: string, organization?: string, city?: string, profilePhoto?: string }) => {
+    updateUserProfile: async (userId: string, data: { fullName?: string, jobTitle?: string, organization?: string, city?: string, profilePhoto?: string, password?: string }) => {
         const response = await fetch(`${API_URL}/users/${userId}`, {
             method: 'PUT',
             headers: {

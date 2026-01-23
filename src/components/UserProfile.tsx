@@ -23,6 +23,8 @@ const UserProfile: React.FC<UserProfileProps> = ({ user, onUpdate, onClose }) =>
     const [organization, setOrganization] = useState(user.organization || '');
     const [city, setCity] = useState(user.city || '');
     const [profilePhoto, setProfilePhoto] = useState(user.profilePhoto || '');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [message, setMessage] = useState('');
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -47,13 +49,28 @@ const UserProfile: React.FC<UserProfileProps> = ({ user, onUpdate, onClose }) =>
         setIsLoading(true);
         setMessage('');
 
+        // Validate passwords if at least one is typed
+        if (password || confirmPassword) {
+            if (password !== confirmPassword) {
+                setMessage('Erreur: Les mots de passe ne correspondent pas');
+                setIsLoading(false);
+                return;
+            }
+            if (password.length < 6) {
+                setMessage('Erreur: Le mot de passe doit faire au moins 6 caractères');
+                setIsLoading(false);
+                return;
+            }
+        }
+
         try {
             const updatedData = await api.updateUserProfile(user.id, {
                 fullName,
                 jobTitle,
                 organization,
                 city,
-                profilePhoto
+                profilePhoto,
+                ...(password ? { password } : {})
             });
 
             // Map backend response to frontend format
@@ -70,6 +87,8 @@ const UserProfile: React.FC<UserProfileProps> = ({ user, onUpdate, onClose }) =>
 
             onUpdate(mappedUser);
             setMessage('Profil mis à jour avec succès!');
+            setPassword('');
+            setConfirmPassword('');
         } catch (error) {
             setMessage('Erreur lors de la mise à jour du profil');
         }
@@ -163,6 +182,34 @@ const UserProfile: React.FC<UserProfileProps> = ({ user, onUpdate, onClose }) =>
                             onChange={(e) => setCity(e.target.value)}
                             className="profile-input"
                             placeholder="Ex: Kinshasa"
+                        />
+                    </div>
+
+                    <div className="profile-divider" style={{ margin: '2rem 0 1rem', borderTop: '1px solid #eee' }}>
+                        <h4 style={{ color: '#4a5568', fontSize: '0.9rem' }}>Changer le mot de passe</h4>
+                    </div>
+
+                    <div className="profile-field">
+                        <label>Nouveau mot de passe</label>
+                        <input
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className="profile-input"
+                            placeholder="Laissez vide pour ne pas changer"
+                            autoComplete="new-password"
+                        />
+                    </div>
+
+                    <div className="profile-field">
+                        <label>Confirmer le mot de passe</label>
+                        <input
+                            type="password"
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            className="profile-input"
+                            placeholder="Confirmez le nouveau mot de passe"
+                            autoComplete="new-password"
                         />
                     </div>
 
