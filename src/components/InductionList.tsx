@@ -93,21 +93,38 @@ const InductionList: React.FC<InductionListProps> = ({ onSelect, userName, userI
         return 'new';
     };
 
-    const handleCreateModule = async () => {
-        const title = prompt("Titre du nouveau module :");
-        if (!title) return;
-        const id = title.toLowerCase().replace(/[^a-z0-9]/g, '-');
+    const [showCreateModal, setShowCreateModal] = useState(false);
+    const [newModuleTitle, setNewModuleTitle] = useState('');
+    const [newModuleDesc, setNewModuleDesc] = useState('');
+    const [newModuleIcon, setNewModuleIcon] = useState('📘');
+    const [isCreating, setIsCreating] = useState(false);
+
+    const handleCreateModule = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!newModuleTitle) return;
+
+        setIsCreating(true);
+        const id = newModuleTitle.toLowerCase()
+            .replace(/ /g, '-')
+            .replace(/[^\w-]/g, '') + '-' + Math.random().toString(36).substring(2, 5);
+
         try {
             await api.createModule({
                 id,
-                title,
-                description: "Nouvelle formation",
-                icon: "🆕",
+                title: newModuleTitle,
+                description: newModuleDesc || "Nouvelle formation",
+                icon: newModuleIcon || "📘",
                 data: null
             });
+            setShowCreateModal(false);
+            setNewModuleTitle('');
+            setNewModuleDesc('');
+            setNewModuleIcon('📘');
             loadData();
         } catch (err) {
             alert("Erreur lors de la création du module.");
+        } finally {
+            setIsCreating(false);
         }
     };
 
@@ -137,28 +154,7 @@ const InductionList: React.FC<InductionListProps> = ({ onSelect, userName, userI
                 {modules.map((module) => {
                     const status = getModuleStatus(module.id);
                     return (
-                        <div key={module.id} className={`induction-card status-${status}`}>
-                            <div className="induction-icon">
-                                {module.icon && (module.icon.startsWith('http') || module.icon.startsWith('/')) ? (
-                                    <img src={module.icon} alt={module.title} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-                                ) : (
-                                    module.icon || '📘'
-                                )}
-                            </div>
-                            <h2>{module.title}</h2>
-                            <p>{module.description}</p>
-
-                            <div className="module-status-badge">
-                                {status === 'completed' && <span className="badge completed">Terminé ✅</span>}
-                                {status === 'in-progress' && <span className="badge in-progress">En cours ⏳</span>}
-                            </div>
-
-                            <button
-                                className="btn-start-module"
-                                onClick={() => handleSelect(module)}
-                            >
-                                {status === 'completed' ? 'Revoir' : (status === 'in-progress' ? 'Continuer' : 'Commencer')}
-                            </button>
+                        <div key={module.id} className={`induction-card status-${status}`} onClick={() => handleSelect(module)}>
                             {isAdminMode && (
                                 <button
                                     className="btn-delete-module"
@@ -168,12 +164,37 @@ const InductionList: React.FC<InductionListProps> = ({ onSelect, userName, userI
                                     🗑️
                                 </button>
                             )}
+
+                            <div className="induction-icon">
+                                {module.icon && (module.icon.startsWith('http') || module.icon.startsWith('/')) ? (
+                                    <img src={module.icon} alt={module.title} style={{ width: '60%', height: '60%', objectFit: 'contain' }} />
+                                ) : (
+                                    <span style={{ fontSize: '3rem' }}>{module.icon || '📘'}</span>
+                                )}
+                            </div>
+
+                            <h2>{module.title}</h2>
+                            <p>{module.description || "Complétez ce module pour obtenir votre certificat."}</p>
+
+                            <div className="module-status-badge">
+                                {status === 'completed' ? (
+                                    <span className="badge completed">Terminé ✅</span>
+                                ) : status === 'in-progress' ? (
+                                    <span className="badge in-progress">En cours ⏳</span>
+                                ) : (
+                                    <span className="badge new">Nouveau ✨</span>
+                                )}
+                            </div>
+
+                            <button className="btn-start-module">
+                                {status === 'completed' ? 'Revoir' : (status === 'in-progress' ? 'Continuer' : 'Commencer')}
+                            </button>
                         </div>
                     );
                 })}
 
                 {isAdminMode && (
-                    <div className="induction-card create-card" onClick={handleCreateModule}>
+                    <div className="induction-card create-card" onClick={() => setShowCreateModal(true)}>
                         <div className="induction-icon">➕</div>
                         <h2>Créer un module</h2>
                         <p>Ajouter une nouvelle formation</p>
@@ -189,6 +210,56 @@ const InductionList: React.FC<InductionListProps> = ({ onSelect, userName, userI
                     </div>
                 )}
             </div>
+
+            {showCreateModal && (
+                <div className="profile-modal-overlay">
+                    <div className="profile-modal" style={{ maxWidth: '600px' }}>
+                        <div className="profile-header">
+                            <h2>🆕 Nouveau Module</h2>
+                            <button className="profile-close-btn" onClick={() => setShowCreateModal(false)}>✕</button>
+                        </div>
+                        <form onSubmit={handleCreateModule} className="profile-form">
+                            <div className="profile-field">
+                                <label>Titre de la formation *</label>
+                                <input
+                                    type="text"
+                                    className="profile-input"
+                                    value={newModuleTitle}
+                                    onChange={(e) => setNewModuleTitle(e.target.value)}
+                                    placeholder="Ex: Hygiène et Sécurité"
+                                    required
+                                />
+                            </div>
+                            <div className="profile-field">
+                                <label>Description courte</label>
+                                <textarea
+                                    className="profile-input"
+                                    style={{ minHeight: '100px', resize: 'vertical' }}
+                                    value={newModuleDesc}
+                                    onChange={(e) => setNewModuleDesc(e.target.value)}
+                                    placeholder="Décrivez brièvement le contenu de cette formation..."
+                                />
+                            </div>
+                            <div className="profile-field">
+                                <label>Icône / Emoji</label>
+                                <input
+                                    type="text"
+                                    className="profile-input"
+                                    value={newModuleIcon}
+                                    onChange={(e) => setNewModuleIcon(e.target.value)}
+                                    placeholder="Copiez un emoji (📘, 🏗️, 🏥...)"
+                                />
+                            </div>
+                            <div className="profile-actions">
+                                <button type="button" className="profile-cancel-btn" onClick={() => setShowCreateModal(false)}>Annuler</button>
+                                <button type="submit" className="profile-save-btn" disabled={isCreating}>
+                                    {isCreating ? 'Création...' : '🚀 Créer la formation'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
