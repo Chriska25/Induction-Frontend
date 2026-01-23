@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
 import { CertificateData } from '../types';
+import { getImageUrl } from '../utils/imageUrl';
 import './Certificate.css';
 
 interface CertificateProps {
@@ -197,7 +198,7 @@ const Certificate: React.FC<CertificateProps> = ({ certificateData, userName, sc
           <div className="certificate-logo-side">
             {certificateData.leftLogoUrl && (
               <img
-                src={certificateData.leftLogoUrl}
+                src={getImageUrl(certificateData.leftLogoUrl)}
                 alt="Logo gauche"
                 className="certificate-logo-img"
               />
@@ -209,7 +210,7 @@ const Certificate: React.FC<CertificateProps> = ({ certificateData, userName, sc
           <div className="certificate-logo-side">
             {certificateData.rightLogoUrl && (
               <img
-                src={certificateData.rightLogoUrl}
+                src={getImageUrl(certificateData.rightLogoUrl)}
                 alt="Logo droit"
                 className="certificate-logo-img"
               />
@@ -226,7 +227,7 @@ const Certificate: React.FC<CertificateProps> = ({ certificateData, userName, sc
           {(certificateData.signatureName || certificateData.signatureTitle || certificateData.signatureImage) && (
             <div className="certificate-signature-block">
               {certificateData.signatureImage ? (
-                <img src={certificateData.signatureImage} alt="Signature" className="signature-img" />
+                <img src={getImageUrl(certificateData.signatureImage)} alt="Signature" className="signature-img" />
               ) : (
                 <div className="signature-line" />
               )}
@@ -242,7 +243,7 @@ const Certificate: React.FC<CertificateProps> = ({ certificateData, userName, sc
         {certificateData.partnerLogos && certificateData.partnerLogos.length > 0 && (
           <div className="certificate-partners">
             {certificateData.partnerLogos.map((logo, idx) => (
-              <img key={idx} src={logo} alt={`Partner ${idx}`} className="certificate-partner-logo" />
+              <img key={idx} src={getImageUrl(logo)} alt={`Partner ${idx}`} className="certificate-partner-logo" />
             ))}
           </div>
         )}
