@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exemple Visuel - Badge et Score</title>
+    <style>
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 2.5rem;
+        }
+
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            color: white;
+            text-align: center;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+
+        /* Styles copiés d'InductionList.css */
+        .induction-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 3rem 2.5rem;
+            border-radius: 32px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05), 0 5px 15px rgba(0, 0, 0, 0.03);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            position: relative;
+            backdrop-filter: blur(10px);
+        }
+
+        .induction-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 8px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            opacity: 0.8;
+        }
+
+        .induction-icon {
+            font-size: 4rem;
+            margin-bottom: 2.5rem;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            width: 120px;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 30px;
+            color: #667eea;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.04), inset 0 2px 4px rgba(255, 255, 255, 1);
+        }
+
+        .induction-card h2 {
+            color: #1a202c;
+            margin-bottom: 1.2rem;
+            font-size: 1.75rem;
+            font-weight: 850;
+            line-height: 1.2;
+            letter-spacing: -0.8px;
+        }
+
+        .induction-card p {
+            color: #4a5568;
+            margin-bottom: 2.5rem;
+            flex-grow: 1;
+            line-height: 1.7;
+            font-size: 1.05rem;
+            opacity: 0.9;
+        }
+
+        .module-status-badge {
+            position: absolute;
+            top: 25px;
+            left: 25px;
+            z-index: 5;
+        }
+
+        .badge {
+            padding: 10px 18px;
+            border-radius: 14px;
+            font-size: 0.8rem;
+            font-weight: 900;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            backdrop-filter: blur(5px);
+        }
+
+        .badge.completed {
+            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+            color: white;
+        }
+
+        .badge.new {
+            background: linear-gradient(135deg, #4f46e5 0%, #667eea 100%);
+            color: white;
+        }
+
+        /* NOUVEAU - Score Display */
+        .module-score-display {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            border: 2px solid #10b981;
+            border-radius: 16px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+            width: 100%;
+        }
+
+        .score-label {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #065f46;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .score-value {
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: #10b981;
+            letter-spacing: -1px;
+        }
+
+        .btn-start-module {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 18px 36px;
+            border-radius: 20px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            cursor: pointer;
+            width: 100%;
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+        }
+
+        .info-box {
+            background: white;
+            padding: 20px;
+            border-radius: 16px;
+            margin-top: 40px;
+        }
+
+        .info-box h3 {
+            color: #1a202c;
+            margin-top: 0;
+        }
+
+        .info-box code {
+            background: #f1f5f9;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+
+        @media (max-width: 1000px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🎨 Exemple Visuel - Badge "Terminé" et Score</h1>
+
+        <div class="comparison">
+            <div>
+                <div class="section-title">❌ AVANT (Module Non Terminé)</div>
+                <div class="induction-card">
+                    <div class="module-status-badge">
+                        <span class="badge new">Nouveau ✨</span>
+                    </div>
+
+                    <div class="induction-icon">📋</div>
+
+                    <h2>Formation PM13 - ADRA TUDIENZELE</h2>
+                    <p>Module complet sur la saisie des formulaires PM13 01 et 02 dans LogAlto.</p>
+
+                    <button class="btn-start-module">COMMENCER</button>
+                </div>
+            </div>
+
+            <div>
+                <div class="section-title">✅ APRÈS (Module Terminé avec Score)</div>
+                <div class="induction-card">
+                    <div class="module-status-badge">
+                        <span class="badge completed">Terminé ✅</span>
+                    </div>
+
+                    <div class="induction-icon">📋</div>
+
+                    <h2>Formation PM13 - ADRA TUDIENZELE</h2>
+                    <p>Module complet sur la saisie des formulaires PM13 01 et 02 dans LogAlto.</p>
+
+                    <!-- NOUVEAU : Affichage du Score -->
+                    <div class="module-score-display">
+                        <span class="score-label">Score obtenu :</span>
+                        <span class="score-value">95%</span>
+                    </div>
+
+                    <button class="btn-start-module">REVOIR</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <h3>📋 Ce Que Vous Devriez Voir sur http://localhost:5173</h3>
+            <p><strong>Si vous avez complété un quiz avec ≥ 80% :</strong></p>
+            <ul>
+                <li>✅ Badge <code>Terminé ✅</code> en haut à gauche de la carte</li>
+                <li>✅ Encadré vert avec <code>Score obtenu : XX%</code></li>
+                <li>✅ Bouton <code>REVOIR</code> au lieu de <code>COMMENCER</code></li>
+            </ul>
+
+            <p><strong>Si vous ne voyez rien :</strong></p>
+            <ol>
+                <li>Ouvrez la console du navigateur (F12)</li>
+                <li>Tapez : <code>localStorage.getItem('pm13_current_registration')</code></li>
+                <li>Vérifiez que vous êtes connecté</li>
+                <li>Vérifiez que vous avez des trainings :
+                    <code>fetch('http://localhost:3001/api/trainings/user/VOTRE_ID').then(r => r.json()).then(console.log)</code>
+                </li>
+            </ol>
+
+            <p><strong>Pour forcer l'affichage :</strong></p>
+            <p>J'ai déjà ajouté un training de test dans la base de données avec un score de 95%.</p>
+            <p>User ID : <code>031653af-e03f-4004-bb7d-ea0280a153d7</code></p>
+            <p>Module ID : <code>902877a3-671d-4663-baca-57235b843f37</code></p>
+        </div>
+    </div>
+</body>
+
+</html>

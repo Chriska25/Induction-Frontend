@@ -13,6 +13,7 @@ import UserProfile from './components/UserProfile';
 import UserDashboard from './components/UserDashboard';
 import { getImageUrl } from './utils/imageUrl';
 import './components/Footer.css';
+import './components/Auth.css';
 import './App.css';
 import contentData from './data/content.json';
 
@@ -53,6 +54,9 @@ const App: React.FC = () => {
 
   // Profile modal
   const [showProfileModal, setShowProfileModal] = useState(false);
+
+  // Auto-print certificate when opened from sidebar
+  const [autoPrintCertificate, setAutoPrintCertificate] = useState(false);
 
   const sections = data.sections;
 
@@ -119,7 +123,7 @@ const App: React.FC = () => {
       try {
         const settingsData = await api.getSettings();
 
-        // Nettoyage global : si un champ de texte contient une URL Supabase par erreur, on remet une valeur propre
+        // Nettoyage global
         const cleanSettings = { ...settingsData };
         const fieldsToClean = ['site_name', 'org_name', 'site_description'];
 
@@ -132,6 +136,22 @@ const App: React.FC = () => {
         });
 
         setSiteSettings((prev: any) => ({ ...prev, ...cleanSettings }));
+
+        // APPLIQUER LES COULEURS DYNAMIQUEMENT
+        const root = document.documentElement;
+        if (cleanSettings.primary_color) root.style.setProperty('--primary-color', cleanSettings.primary_color);
+
+        // Background App
+        if (cleanSettings.background_color_start) root.style.setProperty('--bg-start', cleanSettings.background_color_start);
+        if (cleanSettings.background_color_middle) root.style.setProperty('--bg-middle', cleanSettings.background_color_middle);
+        if (cleanSettings.background_color_end) root.style.setProperty('--bg-end', cleanSettings.background_color_end);
+
+        // Background Login
+        if (cleanSettings.login_bg_color_1) root.style.setProperty('--login-bg-1', cleanSettings.login_bg_color_1);
+        if (cleanSettings.login_bg_color_2) root.style.setProperty('--login-bg-2', cleanSettings.login_bg_color_2);
+        if (cleanSettings.login_bg_color_3) root.style.setProperty('--login-bg-3', cleanSettings.login_bg_color_3);
+        if (cleanSettings.login_bg_color_4) root.style.setProperty('--login-bg-4', cleanSettings.login_bg_color_4);
+
       } catch (e) {
         console.error("Failed to fetch settings", e);
       }
@@ -161,6 +181,17 @@ const App: React.FC = () => {
       loadDashboardData();
     }
   }, [currentView, registration]);
+
+  // Reset autoPrintCertificate after it's been used
+  useEffect(() => {
+    if (autoPrintCertificate && showCertificate) {
+      // Reset after a delay to ensure the print dialog has opened
+      const timer = setTimeout(() => {
+        setAutoPrintCertificate(false);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [autoPrintCertificate, showCertificate]);
 
   const handleNext = () => {
     if (currentSection < sections.length - 1) {
@@ -311,8 +342,12 @@ const App: React.FC = () => {
   // Auth Guard
   if (!registration) {
     return (
-      <div className="app">
-        <div className="app-header">
+      <div className="app auth-page" style={{
+        background: `linear-gradient(-45deg, var(--login-bg-1, #667eea), var(--login-bg-2, #764ba2), var(--login-bg-3, #f093fb), var(--login-bg-4, #4facfe))`,
+        backgroundSize: '400% 400%',
+        animation: 'gradientBG 15s ease infinite'
+      }}>
+        <div className="auth-header">
           {siteSettings.site_logo && (
             <div className="app-logo-container">
               <img src={siteSettings.site_logo} alt="Logo" className="site-logo-main" />
@@ -359,7 +394,7 @@ const App: React.FC = () => {
     return (
       <div className="app dashboard-theme" style={{
         minHeight: '100vh',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        background: 'linear-gradient(135deg, var(--bg-start, #667eea) 0%, var(--bg-middle, #764ba2) 50%, var(--bg-end, #fef3c7) 100%)',
         display: 'flex',
         flexDirection: 'column',
         fontFamily: "'Inter', sans-serif"
@@ -646,13 +681,19 @@ const App: React.FC = () => {
                       onClick={() => {
                         const moduleData = module.data ? (typeof module.data === 'string' ? JSON.parse(module.data) : module.data) : null;
                         if (moduleData) {
+                          // Récupérer le meilleur score pour ce module
+                          const moduleTrainings = userTrainings.filter(t => String(t.module_id) === String(module.id));
+                          const quizTrainings = moduleTrainings.filter(t => t.type === 'quiz' && t.score !== undefined);
+                          const bestScore = quizTrainings.length > 0 ? Math.max(...quizTrainings.map(t => t.score)) : 80;
+
                           setData(moduleData);
                           setModuleId(module.id);
+                          setQuizScore(bestScore); // Définir le score pour l'affichage du certificat
                           setCurrentView('course');
                           setShowCertificate(true);
                           setShowQuiz(false);
                           setCurrentSection(0);
-                          // Optionnel : on pourrait forcer handlePrint ici via un useEffect dans Certificate
+                          setAutoPrintCertificate(true); // Activer l'auto-impression
                         }
                       }}
                       style={{
@@ -800,22 +841,24 @@ const App: React.FC = () => {
         <button onClick={handleBackToDashboard} className="btn-back-dashboard">
           ✕ Quitter la formation
         </button>
-        {siteSettings.site_logo && (
-          <div className="app-logo-small">
-            <img src={siteSettings.site_logo} alt="Logo" />
-          </div>
-        )}
-        <h1>{data.appTitle}</h1>
-        <p className="app-subtitle">
-          Module d'induction - Durée estimée : 30-45 minutes
-        </p>
-        {registration && (
-          <div className="app-registrant">
-            <span>
-              Compte : <strong>{registration.fullName}</strong> – {registration.organization} ({registration.city})
-            </span>
-          </div>
-        )}
+        <div className="app-header-content">
+          {siteSettings.site_logo && (
+            <div className="app-logo-center">
+              <img src={siteSettings.site_logo} alt="Logo" />
+            </div>
+          )}
+          <h1>{data.appTitle}</h1>
+          <p className="app-subtitle">
+            Module d'induction - Durée estimée : 30-45 minutes
+          </p>
+          {registration && (
+            <div className="app-registrant">
+              <span>
+                Compte : <strong>{registration.fullName}</strong> – {registration.organization} ({registration.city})
+              </span>
+            </div>
+          )}
+        </div>
         <div className="admin-toggle">
           {askAdminCode ? (
             <div className="admin-login">
@@ -899,6 +942,7 @@ const App: React.FC = () => {
                 certificateData={data.certificate}
                 userName={userName}
                 score={quizScore}
+                autoPrint={autoPrintCertificate}
               />
               <div style={{ textAlign: 'center', marginTop: '2rem' }}>
                 <button className="btn-nav" onClick={handleCertificateComplete}>

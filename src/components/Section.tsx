@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { ContentItem, FAQItem } from '../types';
+import { api } from '../api/client';
 import './Section.css';
 
 interface SectionProps {
@@ -9,6 +10,23 @@ interface SectionProps {
 }
 
 const Section: React.FC<SectionProps> = ({ title, subtitle, content }) => {
+  const [bgGradient, setBgGradient] = useState('linear-gradient(135deg, #f8fafc 0%, #e0e7ff 50%, #fef3c7 100%)');
+
+  useEffect(() => {
+    const loadBackgroundColors = async () => {
+      try {
+        const settings = await api.getSettings();
+        const start = settings.background_color_start || '#f8fafc';
+        const middle = settings.background_color_middle || '#e0e7ff';
+        const end = settings.background_color_end || '#fef3c7';
+        setBgGradient(`linear-gradient(135deg, ${start} 0%, ${middle} 50%, ${end} 100%)`);
+      } catch (error) {
+        console.error('Error loading background colors:', error);
+      }
+    };
+    loadBackgroundColors();
+  }, []);
+
   const renderContent = (item: ContentItem, index: number) => {
     switch (item.type) {
       case 'heading':
@@ -79,7 +97,7 @@ const Section: React.FC<SectionProps> = ({ title, subtitle, content }) => {
   };
 
   return (
-    <div className="section">
+    <div className="section" style={{ background: bgGradient }}>
       <div className="section-header">
         <h1 className="section-title">{title}</h1>
         <h2 className="section-subtitle">{subtitle}</h2>

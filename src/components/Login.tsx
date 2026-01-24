@@ -19,6 +19,23 @@ const Login: React.FC<LoginProps> = ({ onSelect, onNew, logo, description }) => 
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState<RegistrationData[]>([]);
+  const [bgGradient, setBgGradient] = useState('linear-gradient(-45deg, #667eea, #764ba2, #f093fb, #4facfe)');
+
+  React.useEffect(() => {
+    const loadBackgroundColors = async () => {
+      try {
+        const settings = await api.getSettings();
+        const color1 = settings.login_bg_color_1 || '#667eea';
+        const color2 = settings.login_bg_color_2 || '#764ba2';
+        const color3 = settings.login_bg_color_3 || '#f093fb';
+        const color4 = settings.login_bg_color_4 || '#4facfe';
+        setBgGradient(`linear-gradient(-45deg, ${color1}, ${color2}, ${color3}, ${color4})`);
+      } catch (error) {
+        console.error('Error loading login background colors:', error);
+      }
+    };
+    loadBackgroundColors();
+  }, []);
 
   React.useEffect(() => {
     const fetchUsers = async () => {
@@ -102,7 +119,7 @@ const Login: React.FC<LoginProps> = ({ onSelect, onNew, logo, description }) => 
   };
 
   return (
-    <div className="login-page">
+    <div className="login-page" style={{ background: bgGradient, backgroundSize: '400% 400%', animation: 'gradientBG 15s ease infinite' }}>
       <div className="auth-form-card">
         {logo && (
           <div className="auth-logo">
@@ -111,7 +128,7 @@ const Login: React.FC<LoginProps> = ({ onSelect, onNew, logo, description }) => 
         )}
 
         <div className="login-header">
-          <h1 style={{ color: '#667eea', fontSize: '1.75rem', fontWeight: '700', marginBottom: '0.5rem' }}>
+          <h1>
             Connexion à la plateforme
           </h1>
           <p className="auth-description">

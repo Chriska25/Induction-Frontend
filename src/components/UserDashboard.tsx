@@ -107,7 +107,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({ user, trainings, modules,
                                                 }} />
                                             </div>
                                             <span style={{ fontSize: '0.85rem', fontWeight: 700, color: m.isCompleted ? '#10b981' : '#667eea' }}>
-                                                {m.isCompleted ? 'CHARGÉ' : (m.isStarted ? '50%' : 'PAS COMMENCÉ')}
+                                                {m.isCompleted ? 'TERMINÉ' : (m.isStarted ? '50%' : 'PAS COMMENCÉ')}
                                             </span>
                                         </div>
                                     </div>

@@ -77,15 +77,7 @@
 
 /* Inner decorative border */
 .certificate-container::after {
-  content: '';
-  position: absolute;
-  top: 25px;
-  left: 25px;
-  right: 25px;
-  bottom: 25px;
-  border: 2px solid rgba(102, 126, 234, 0.2);
-  pointer-events: none;
-  z-index: 1;
+  display: none;
 }
 
 /* Decorative corner elements */
@@ -95,7 +87,7 @@
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  padding: 20px 60px 10px;
+  padding: 15px 60px 5px;
   background: linear-gradient(180deg, rgba(102, 126, 234, 0.05) 0%, transparent 100%);
 }
 
@@ -132,19 +124,20 @@
 
 /* Certificate Content */
 .certificate-title {
-  font-size: 48px;
+  font-size: 42px;
   font-weight: 800;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  margin: 10px 0 10px;
+  margin: 10px 0 5px;
   text-transform: uppercase;
-  letter-spacing: 4px;
+  letter-spacing: 3px;
   text-align: center;
   position: relative;
   z-index: 2;
   padding: 0 60px;
+  width: 100%;
 }
 
 .certificate-subtitle {
@@ -156,6 +149,7 @@
   position: relative;
   z-index: 2;
   padding: 0 60px;
+  width: 100%;
 }
 
 .certificate-name {
@@ -205,13 +199,14 @@
 /* Footer */
 .certificate-footer-row {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  margin-top: auto;
-  padding: 30px 60px 40px;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 60px 40px;
   gap: 3rem;
   position: relative;
   z-index: 2;
+  margin-top: auto;
+  text-align: center;
 }
 
 .certificate-date {
@@ -227,9 +222,7 @@
 }
 
 .signature-line {
-  width: 250px;
-  border-bottom: 2px solid #cbd5e0;
-  margin: 0 auto 10px auto;
+  display: none;
 }
 
 .signature-name {
@@ -246,18 +239,15 @@
 }
 
 .signature-img {
-  height: 70px;
+  height: 120px;
   object-fit: contain;
   display: block;
-  margin: 0 auto 8px auto;
+  margin: 5px auto;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }
 
 /* Partner Logos */
 .certificate-partners {
-  margin-top: 25px;
-  padding-top: 25px;
-  border-top: 2px solid rgba(102, 126, 234, 0.1);
   display: flex;
   justify-content: center;
   gap: 25px;
@@ -265,8 +255,8 @@
   flex-wrap: wrap;
   position: relative;
   z-index: 2;
-  padding-left: 60px;
-  padding-right: 60px;
+  padding: 0;
+  flex: 1;
 }
 
 .certificate-partner-logo {
@@ -325,7 +315,6 @@
   .certificate-score {
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
-    color-adjust: exact;
   }
 }
 

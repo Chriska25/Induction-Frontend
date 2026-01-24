@@ -86,11 +86,39 @@ const InductionList: React.FC<InductionListProps> = ({ onSelect, userName, userI
 
     const getModuleStatus = (moduleId: string) => {
         const moduleTrainings = trainings.filter(t => String(t.module_id) === String(moduleId));
-        const completed = moduleTrainings.some(t => t.type === 'quiz' && t.score >= 80);
+
+        // Un cours est terminé si un record de type 'quiz' a un progrès >= 80
+        const completed = moduleTrainings.some(t => {
+            const currentStatus = (t as any).status || (t as any).type;
+            const currentProgress = (t as any).progress !== undefined ? (t as any).progress : (t as any).score;
+            return currentStatus === 'quiz' && (currentProgress || 0) >= 80;
+        });
+
         if (completed) return 'completed';
-        const started = moduleTrainings.some(t => t.type === 'module_start' || t.type === 'quiz');
+
+        const started = moduleTrainings.some(t => {
+            const currentStatus = (t as any).status || (t as any).type;
+            return currentStatus === 'module_start' || currentStatus === 'quiz';
+        });
+
         if (started) return 'in-progress';
         return 'new';
+    };
+
+    const getBestScore = (moduleId: string): number | null => {
+        const moduleTrainings = trainings.filter(t => String(t.module_id) === String(moduleId));
+        const quizTrainings = moduleTrainings.filter(t => {
+            const currentStatus = (t as any).status || (t as any).type;
+            const currentProgress = (t as any).progress !== undefined ? (t as any).progress : (t as any).score;
+            return currentStatus === 'quiz' && currentProgress !== undefined;
+        });
+
+        if (quizTrainings.length === 0) return null;
+
+        return Math.max(...quizTrainings.map(t => {
+            const val = (t as any).progress !== undefined ? (t as any).progress : (t as any).score;
+            return Number(val) || 0;
+        }));
     };
 
     const [showCreateModal, setShowCreateModal] = useState(false);
@@ -153,6 +181,7 @@ const InductionList: React.FC<InductionListProps> = ({ onSelect, userName, userI
             <div className="induction-grid">
                 {modules.map((module) => {
                     const status = getModuleStatus(module.id);
+                    const bestScore = getBestScore(module.id);
                     return (
                         <div key={module.id} className={`induction-card status-${status}`} onClick={() => handleSelect(module)}>
                             {isAdminMode && (
@@ -185,6 +214,13 @@ const InductionList: React.FC<InductionListProps> = ({ onSelect, userName, userI
                                     <span className="badge new">Nouveau ✨</span>
                                 )}
                             </div>
+
+                            {status === 'completed' && bestScore !== null && (
+                                <div className="module-score-display">
+                                    <span className="score-label">Score obtenu :</span>
+                                    <span className="score-value">{bestScore}%</span>
+                                </div>
+                            )}
 
                             <button className="btn-start-module">
                                 {status === 'completed' ? 'Revoir' : (status === 'in-progress' ? 'Continuer' : 'Commencer')}

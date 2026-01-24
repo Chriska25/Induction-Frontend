@@ -1,15 +1,18 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { CertificateData } from '../types';
 import { getImageUrl } from '../utils/imageUrl';
+// @ts-ignore
+import html2pdf from 'html2pdf.js';
 import './Certificate.css';
 
 interface CertificateProps {
   certificateData: CertificateData;
   userName: string;
   score: number;
+  autoPrint?: boolean;
 }
 
-const Certificate: React.FC<CertificateProps> = ({ certificateData, userName, score }) => {
+const Certificate: React.FC<CertificateProps> = ({ certificateData, userName, score, autoPrint = false }) => {
   const certificateRef = useRef<HTMLDivElement>(null);
 
   const handlePrint = () => {
@@ -43,6 +46,10 @@ const Certificate: React.FC<CertificateProps> = ({ certificateData, userName, sc
                   display: flex;
                   flex-direction: column;
                   justify-content: space-between;
+                  position: relative;
+                }
+                .certificate-container::after {
+                  display: none !important;
                 }
                 .certificate-header {
                   display: grid;
@@ -94,11 +101,9 @@ const Certificate: React.FC<CertificateProps> = ({ certificateData, userName, sc
                   font-size: 16px;
                   line-height: 1.8;
                   color: #333;
-                  margin: 30px 0;
-                  text-align: justify;
+                  margin: 30px auto;
+                  text-align: center;
                   max-width: 800px;
-                  margin-left: auto;
-                  margin-right: auto;
                 }
                 .certificate-score {
                   font-size: 18px;
@@ -108,10 +113,12 @@ const Certificate: React.FC<CertificateProps> = ({ certificateData, userName, sc
                 }
                 .certificate-footer-row {
                   display: flex;
-                  justify-content: space-between;
-                  align-items: flex-end;
-                  margin-top: 40px;
-                  gap: 2rem;
+                  justify-content: center;
+                  align-items: center;
+                  margin-top: auto;
+                  gap: 3rem;
+                  padding-top: 20px;
+                  text-align: center;
                 }
                 .certificate-date {
                   font-size: 14px;
@@ -122,9 +129,7 @@ const Certificate: React.FC<CertificateProps> = ({ certificateData, userName, sc
                   text-align: center;
                 }
                 .signature-line {
-                  width: 220px;
-                  border-bottom: 1px solid #333;
-                  margin: 0 auto 8px auto;
+                  display: none;
                 }
                 .signature-name {
                   font-size: 16px;
@@ -136,20 +141,19 @@ const Certificate: React.FC<CertificateProps> = ({ certificateData, userName, sc
                   color: #555;
                 }
                 .signature-img {
-                  height: 60px;
+                  height: 100px;
                   object-fit: contain;
                   display: block;
-                  margin: 0 auto 5px auto;
+                  margin: 10px auto 0 auto;
                 }
                 .certificate-partners {
-                  margin-top: 30px;
-                  padding-top: 20px;
-                  border-top: 1px solid #e0e0e0;
                   display: flex;
                   justify-content: center;
                   gap: 20px;
                   align-items: center;
                   flex-wrap: wrap;
+                  flex: 1;
+                  margin-bottom: 5px;
                 }
                 .certificate-partner-logo {
                   max-height: 30px;
@@ -172,8 +176,50 @@ const Certificate: React.FC<CertificateProps> = ({ certificateData, userName, sc
     }
   };
 
+  // Auto-print when component mounts if autoPrint is true
+  useEffect(() => {
+    if (autoPrint && certificateRef.current) {
+      // Wait a bit for the component to fully render
+      const timer = setTimeout(() => {
+        handlePrint();
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [autoPrint]);
+
   const handleDownload = () => {
-    handlePrint();
+    if (!certificateRef.current) return;
+
+    const element = certificateRef.current;
+
+    // Options pour le PDF
+    const opt = {
+      margin: 0,
+      filename: `Certificat_${userName.replace(/\s+/g, '_')}.pdf`,
+      image: { type: 'jpeg' as const, quality: 0.98 },
+      html2canvas: {
+        scale: 2,
+        useCORS: true,
+        letterRendering: true,
+        backgroundColor: '#ffffff'
+      },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' as const }
+    };
+
+    // Notification visuelle
+    const btn = document.querySelector('.btn-download') as HTMLButtonElement;
+    const originalText = btn ? btn.innerText : 'Télécharger en PDF';
+    if (btn) {
+      btn.innerText = 'Génération... ⏳';
+      btn.disabled = true;
+    }
+
+    html2pdf().from(element).set(opt).save().finally(() => {
+      if (btn) {
+        btn.innerText = originalText;
+        btn.disabled = false;
+      }
+    });
   };
 
   const currentDate = new Date().toLocaleDateString('fr-FR', {
@@ -226,29 +272,31 @@ const Certificate: React.FC<CertificateProps> = ({ certificateData, userName, sc
         <div className="certificate-score">Score obtenu : {score.toFixed(0)}%</div>
         <div className="certificate-footer-row">
           <div className="certificate-date">Délivré le {currentDate}</div>
+
+          {certificateData.partnerLogos && certificateData.partnerLogos.length > 0 && (
+            <div className="certificate-partners">
+              {certificateData.partnerLogos.map((logo, idx) => (
+                <img key={idx} src={getImageUrl(logo)} alt={`Partner ${idx}`} className="certificate-partner-logo" />
+              ))}
+            </div>
+          )}
+
           {(certificateData.signatureName || certificateData.signatureTitle || certificateData.signatureImage) && (
             <div className="certificate-signature-block">
-              {certificateData.signatureImage ? (
-                <img src={getImageUrl(certificateData.signatureImage)} alt="Signature" className="signature-img" />
-              ) : (
-                <div className="signature-line" />
-              )}
               {certificateData.signatureName && (
                 <div className="signature-name">{certificateData.signatureName}</div>
               )}
               {certificateData.signatureTitle && (
                 <div className="signature-title">{certificateData.signatureTitle}</div>
               )}
+              {certificateData.signatureImage ? (
+                <img src={getImageUrl(certificateData.signatureImage)} alt="Signature" className="signature-img" style={{ marginTop: '10px' }} />
+              ) : (
+                <div className="signature-line" style={{ marginTop: '15px' }} />
+              )}
             </div>
           )}
         </div>
-        {certificateData.partnerLogos && certificateData.partnerLogos.length > 0 && (
-          <div className="certificate-partners">
-            {certificateData.partnerLogos.map((logo, idx) => (
-              <img key={idx} src={getImageUrl(logo)} alt={`Partner ${idx}`} className="certificate-partner-logo" />
-            ))}
-          </div>
-        )}
       </div>
     </div>
   );
