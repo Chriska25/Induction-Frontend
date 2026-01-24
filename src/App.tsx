@@ -117,6 +117,12 @@ const App: React.FC = () => {
     const fetchSettings = async () => {
       try {
         const settingsData = await api.getSettings();
+
+        // Nettoyage : si site_name ressemble à l'URL Supabase par erreur, on le remet par défaut
+        if (settingsData && settingsData.site_name && settingsData.site_name.includes('supabase.co')) {
+          settingsData.site_name = 'Plateforme de Formation TUDIENZELE';
+        }
+
         setSiteSettings((prev: any) => ({ ...prev, ...settingsData }));
       } catch (e) {
         console.error("Failed to fetch settings", e);
