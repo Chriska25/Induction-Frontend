@@ -555,91 +555,59 @@ const App: React.FC = () => {
             </div>
 
             <div className="sidebar-section">
-              <h4 style={{ color: '#4a5568', margin: '0 0 1.2rem', fontSize: '1.1rem' }}>📊 Mon Dashboard</h4>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.8rem' }}>
-                {(() => {
-                  const modulesWithProgress = modules.map(m => {
-                    const moduleTrainings = userTrainings.filter(t => String(t.module_id) === String(m.id));
-                    const isCompleted = moduleTrainings.some(t => (t.status === 'quiz' || t.type === 'quiz') && (t.progress >= 80 || t.score >= 80));
-                    const isStarted = moduleTrainings.some(t => t.type === 'module_start' || t.progress > 0);
-                    return { ...m, isCompleted, isStarted };
-                  });
-
-                  const stats = {
-                    total: modules.length,
-                    followed: modulesWithProgress.filter(m => m.isStarted).length,
-                    completed: modulesWithProgress.filter(m => m.isCompleted).length,
-                    inProgress: modulesWithProgress.filter(m => m.isStarted && !m.isCompleted).length
-                  };
-
-                  return (
-                    <>
-                      <div style={{ background: '#f0f7ff', padding: '0.8rem', borderRadius: '12px', textAlign: 'center', border: '1px solid #e0efff' }}>
-                        <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#1a5490' }}>{stats.followed}</div>
-                        <div style={{ fontSize: '0.65rem', color: '#667eea', fontWeight: 700, textTransform: 'uppercase' }}>Suivies</div>
-                      </div>
-                      <div style={{ background: '#ecfdf5', padding: '0.8rem', borderRadius: '12px', textAlign: 'center', border: '1px solid #d1fae5' }}>
-                        <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#065f46' }}>{stats.completed}</div>
-                        <div style={{ fontSize: '0.65rem', color: '#10b981', fontWeight: 700, textTransform: 'uppercase' }}>Terminées</div>
-                      </div>
-                      <div style={{ background: '#fffbeb', padding: '0.8rem', borderRadius: '12px', textAlign: 'center', border: '1px solid #fef3c7', gridColumn: 'span 2' }}>
-                        <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#92400e' }}>{stats.inProgress} formation(s) en cours</div>
-                      </div>
-                    </>
-                  );
-                })()}
-              </div>
-            </div>
-
-            <div className="sidebar-section">
-              <h4 style={{ color: '#4a5568', margin: '0 0 1.2rem', fontSize: '1.1rem' }}>📚 Navigation</h4>
-              <button
-                onClick={() => setCurrentView('dashboard')}
-                style={{
-                  width: '100%', padding: '1rem', textAlign: 'left',
-                  background: (currentView as string) === 'dashboard' ? '#1a5490' : 'white',
-                  color: (currentView as string) === 'dashboard' ? 'white' : '#4a5568',
-                  border: (currentView as string) === 'dashboard' ? 'none' : '2px solid #e2e8f0',
-                  borderRadius: '16px', fontWeight: 800, cursor: 'pointer',
-                  marginBottom: '0.8rem', boxShadow: (currentView as string) === 'dashboard' ? '0 8px 20px rgba(26, 84, 144, 0.3)' : 'none',
-                  fontSize: '0.95rem', transition: 'all 0.3s ease',
-                  display: 'flex', alignItems: 'center', gap: '8px'
-                }}
-              >
-                🏠 Accueil
-              </button>
-              <button
-                onClick={() => setCurrentView('user_dashboard')}
-                style={{
-                  width: '100%', padding: '1rem', textAlign: 'left',
-                  background: (currentView as string) === 'user_dashboard' ? '#1a5490' : 'white',
-                  color: (currentView as string) === 'user_dashboard' ? 'white' : '#4a5568',
-                  border: (currentView as string) === 'user_dashboard' ? 'none' : '2px solid #e2e8f0',
-                  borderRadius: '16px', fontWeight: 800, cursor: 'pointer',
-                  marginBottom: '0.8rem', boxShadow: (currentView as string) === 'user_dashboard' ? '0 8px 20px rgba(26, 84, 144, 0.3)' : 'none',
-                  fontSize: '0.95rem', transition: 'all 0.3s ease',
-                  display: 'flex', alignItems: 'center', gap: '8px'
-                }}
-              >
-                📊 Statistiques Détaillées
-              </button>
-              {(registration.role === 'admin' || isAdmin) && (
+              <h4 style={{ color: '#4a5568', margin: '0 0 1.5rem', fontSize: '1.1rem', fontWeight: 700 }}>🚀 Espace Personnel</h4>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
                 <button
-                  onClick={() => setCurrentView('admin')}
+                  onClick={() => setCurrentView('dashboard')}
+                  className="sidebar-nav-btn"
                   style={{
-                    width: '100%', padding: '1rem', textAlign: 'left',
-                    background: (currentView as string) === 'admin' ? '#1a5490' : 'white',
-                    color: (currentView as string) === 'admin' ? 'white' : '#4a5568',
-                    border: (currentView as string) === 'admin' ? 'none' : '2px solid #e2e8f0',
-                    borderRadius: '16px', fontWeight: 800, cursor: 'pointer',
-                    fontSize: '0.95rem', transition: 'all 0.3s ease',
-                    boxShadow: (currentView as string) === 'admin' ? '0 8px 20px rgba(26, 84, 144, 0.3)' : 'none',
-                    display: 'flex', alignItems: 'center', gap: '8px'
+                    width: '100%', padding: '1.1rem 1.4rem', textAlign: 'left',
+                    background: (currentView as string) === 'dashboard' ? 'linear-gradient(135deg, #1a5490, #2c7bb6)' : '#f8fafc',
+                    color: (currentView as string) === 'dashboard' ? 'white' : '#4a5568',
+                    border: (currentView as string) === 'dashboard' ? 'none' : '1px solid #e2e8f0',
+                    borderRadius: '18px', fontWeight: 800, cursor: 'pointer',
+                    boxShadow: (currentView as string) === 'dashboard' ? '0 10px 20px rgba(26, 84, 144, 0.2)' : 'none',
+                    fontSize: '1rem', transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                    display: 'flex', alignItems: 'center', gap: '12px'
                   }}
                 >
-                  ⚙️ Admin Panel
+                  <span style={{ fontSize: '1.3rem' }}>🏠</span> ACCUEIL
                 </button>
-              )}
+                <button
+                  onClick={() => setCurrentView('user_dashboard')}
+                  className="sidebar-nav-btn"
+                  style={{
+                    width: '100%', padding: '1.1rem 1.4rem', textAlign: 'left',
+                    background: (currentView as string) === 'user_dashboard' ? 'linear-gradient(135deg, #1a5490, #2c7bb6)' : '#f8fafc',
+                    color: (currentView as string) === 'user_dashboard' ? 'white' : '#4a5568',
+                    border: (currentView as string) === 'user_dashboard' ? 'none' : '1px solid #e2e8f0',
+                    borderRadius: '18px', fontWeight: 800, cursor: 'pointer',
+                    boxShadow: (currentView as string) === 'user_dashboard' ? '0 10px 20px rgba(26, 84, 144, 0.2)' : 'none',
+                    fontSize: '1rem', transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                    display: 'flex', alignItems: 'center', gap: '12px'
+                  }}
+                >
+                  <span style={{ fontSize: '1.3rem' }}>📊</span> STATISTIQUES DÉTAILLÉES
+                </button>
+                {(registration.role === 'admin' || isAdmin) && (
+                  <button
+                    onClick={() => setCurrentView('admin')}
+                    className="sidebar-nav-btn admin"
+                    style={{
+                      width: '100%', padding: '1.1rem 1.4rem', textAlign: 'left',
+                      background: (currentView as string) === 'admin' ? 'linear-gradient(135deg, #be185d, #ec4899)' : '#fff5f7',
+                      color: (currentView as string) === 'admin' ? 'white' : '#be185d',
+                      border: (currentView as string) === 'admin' ? 'none' : '1px solid #fbcfe8',
+                      borderRadius: '18px', fontWeight: 800, cursor: 'pointer',
+                      fontSize: '1rem', transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                      boxShadow: (currentView as string) === 'admin' ? '0 10px 20px rgba(190, 24, 93, 0.2)' : 'none',
+                      display: 'flex', alignItems: 'center', gap: '12px'
+                    }}
+                  >
+                    <span style={{ fontSize: '1.3rem' }}>⚙️</span> ADMIN PANEL
+                  </button>
+                )}
+              </div>
             </div>
 
             <div className="sidebar-section">
@@ -772,7 +740,7 @@ const App: React.FC = () => {
           </div>
         </footer>
 
-        {showProfileModal && (
+        {showProfileModal && registration && (
           <UserProfile
             user={{
               id: registration.id,
@@ -791,7 +759,7 @@ const App: React.FC = () => {
             onClose={() => setShowProfileModal(false)}
           />
         )}
-      </div>
+      </div >
     );
   }
 
