@@ -213,8 +213,9 @@
     border-radius: 16px;
     border: 1px solid #e2e8f0;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-    overflow: hidden;
+    overflow-x: auto;
     margin-bottom: 2rem;
+    -webkit-overflow-scrolling: touch;
 }
 
 .admin-table {

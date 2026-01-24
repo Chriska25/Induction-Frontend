@@ -95,11 +95,11 @@
 .app-container {
     display: flex;
     flex: 1;
-    max-width: 1600px;
+    max-width: 100%;
     margin: 0 auto;
     width: 100%;
     padding: 2rem;
-    gap: 3rem;
+    gap: 2rem;
     box-sizing: border-box;
 }
 
@@ -330,5 +330,6 @@
     .app-container .sidebar {
         width: 100%;
         position: static;
+        margin-bottom: 2rem;
     }
 }
