@@ -10,6 +10,7 @@ import Login from './components/Login';
 import AdminDashboard from './components/AdminDashboard';
 import InductionList from './components/InductionList';
 import UserProfile from './components/UserProfile';
+import UserDashboard from './components/UserDashboard';
 import { getImageUrl } from './utils/imageUrl';
 import './components/Footer.css';
 import contentData from './data/content.json';
@@ -40,7 +41,7 @@ const App: React.FC = () => {
   });
 
   // Navigation State
-  const [currentView, setCurrentView] = useState<'dashboard' | 'course' | 'admin'>('dashboard');
+  const [currentView, setCurrentView] = useState<'dashboard' | 'course' | 'admin' | 'user_dashboard'>('dashboard');
 
   // Dashboard State - for certificates section
   const [userTrainings, setUserTrainings] = useState<any[]>([]);
@@ -340,7 +341,7 @@ const App: React.FC = () => {
   }
 
   // Logged In - Dashboard View
-  if (currentView === 'dashboard') {
+  if (currentView === 'dashboard' || currentView === 'user_dashboard') {
     return (
       <div className="app dashboard-theme" style={{
         minHeight: '100vh',
@@ -554,37 +555,96 @@ const App: React.FC = () => {
             </div>
 
             <div className="sidebar-section">
+              <h4 style={{ color: '#4a5568', margin: '0 0 1.2rem', fontSize: '1.1rem' }}>📊 Mon Dashboard</h4>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.8rem' }}>
+                {(() => {
+                  const modulesWithProgress = modules.map(m => {
+                    const moduleTrainings = userTrainings.filter(t => String(t.module_id) === String(m.id));
+                    const isCompleted = moduleTrainings.some(t => (t.status === 'quiz' || t.type === 'quiz') && (t.progress >= 80 || t.score >= 80));
+                    const isStarted = moduleTrainings.some(t => t.type === 'module_start' || t.progress > 0);
+                    return { ...m, isCompleted, isStarted };
+                  });
+
+                  const stats = {
+                    total: modules.length,
+                    followed: modulesWithProgress.filter(m => m.isStarted).length,
+                    completed: modulesWithProgress.filter(m => m.isCompleted).length,
+                    inProgress: modulesWithProgress.filter(m => m.isStarted && !m.isCompleted).length
+                  };
+
+                  return (
+                    <>
+                      <div style={{ background: '#f0f7ff', padding: '0.8rem', borderRadius: '12px', textAlign: 'center', border: '1px solid #e0efff' }}>
+                        <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#1a5490' }}>{stats.followed}</div>
+                        <div style={{ fontSize: '0.65rem', color: '#667eea', fontWeight: 700, textTransform: 'uppercase' }}>Suivies</div>
+                      </div>
+                      <div style={{ background: '#ecfdf5', padding: '0.8rem', borderRadius: '12px', textAlign: 'center', border: '1px solid #d1fae5' }}>
+                        <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#065f46' }}>{stats.completed}</div>
+                        <div style={{ fontSize: '0.65rem', color: '#10b981', fontWeight: 700, textTransform: 'uppercase' }}>Terminées</div>
+                      </div>
+                      <div style={{ background: '#fffbeb', padding: '0.8rem', borderRadius: '12px', textAlign: 'center', border: '1px solid #fef3c7', gridColumn: 'span 2' }}>
+                        <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#92400e' }}>{stats.inProgress} formation(s) en cours</div>
+                      </div>
+                    </>
+                  );
+                })()}
+              </div>
+            </div>
+
+            <div className="sidebar-section">
               <h4 style={{ color: '#4a5568', margin: '0 0 1.2rem', fontSize: '1.1rem' }}>📚 Navigation</h4>
               <button
                 onClick={() => setCurrentView('dashboard')}
                 style={{
-                  width: '100%', padding: '1.2rem', textAlign: 'left',
-                  background: '#1a5490', color: 'white', border: 'none',
+                  width: '100%', padding: '1rem', textAlign: 'left',
+                  background: (currentView as string) === 'dashboard' ? '#1a5490' : 'white',
+                  color: (currentView as string) === 'dashboard' ? 'white' : '#4a5568',
+                  border: (currentView as string) === 'dashboard' ? 'none' : '2px solid #e2e8f0',
                   borderRadius: '16px', fontWeight: 800, cursor: 'pointer',
-                  marginBottom: '0.8rem', boxShadow: '0 8px 20px rgba(26, 84, 144, 0.3)',
-                  fontSize: '1rem'
+                  marginBottom: '0.8rem', boxShadow: (currentView as string) === 'dashboard' ? '0 8px 20px rgba(26, 84, 144, 0.3)' : 'none',
+                  fontSize: '0.95rem', transition: 'all 0.3s ease',
+                  display: 'flex', alignItems: 'center', gap: '8px'
                 }}
               >
-                Mes Formations
+                🏠 Accueil
+              </button>
+              <button
+                onClick={() => setCurrentView('user_dashboard')}
+                style={{
+                  width: '100%', padding: '1rem', textAlign: 'left',
+                  background: (currentView as string) === 'user_dashboard' ? '#1a5490' : 'white',
+                  color: (currentView as string) === 'user_dashboard' ? 'white' : '#4a5568',
+                  border: (currentView as string) === 'user_dashboard' ? 'none' : '2px solid #e2e8f0',
+                  borderRadius: '16px', fontWeight: 800, cursor: 'pointer',
+                  marginBottom: '0.8rem', boxShadow: (currentView as string) === 'user_dashboard' ? '0 8px 20px rgba(26, 84, 144, 0.3)' : 'none',
+                  fontSize: '0.95rem', transition: 'all 0.3s ease',
+                  display: 'flex', alignItems: 'center', gap: '8px'
+                }}
+              >
+                📊 Statistiques Détaillées
               </button>
               {(registration.role === 'admin' || isAdmin) && (
                 <button
                   onClick={() => setCurrentView('admin')}
                   style={{
-                    width: '100%', padding: '1.2rem', textAlign: 'left',
-                    background: 'white', color: '#4a5568', border: '2px solid #e2e8f0',
-                    borderRadius: '16px', fontWeight: 700, cursor: 'pointer',
-                    fontSize: '1rem', transition: 'all 0.3s ease'
+                    width: '100%', padding: '1rem', textAlign: 'left',
+                    background: (currentView as string) === 'admin' ? '#1a5490' : 'white',
+                    color: (currentView as string) === 'admin' ? 'white' : '#4a5568',
+                    border: (currentView as string) === 'admin' ? 'none' : '2px solid #e2e8f0',
+                    borderRadius: '16px', fontWeight: 800, cursor: 'pointer',
+                    fontSize: '0.95rem', transition: 'all 0.3s ease',
+                    boxShadow: (currentView as string) === 'admin' ? '0 8px 20px rgba(26, 84, 144, 0.3)' : 'none',
+                    display: 'flex', alignItems: 'center', gap: '8px'
                   }}
                 >
-                  Admin Dashboard
+                  ⚙️ Admin Panel
                 </button>
               )}
             </div>
 
             <div className="sidebar-section">
-              <h4 style={{ color: '#4a5568', margin: '0 0 1.2rem', fontSize: '1.1rem' }}>📜 Certificats</h4>
-              <div className="certificate-list">
+              <h4 style={{ color: '#4a5568', margin: '0 0 1.2rem', fontSize: '1.1rem' }}>📜 Mes Certificats</h4>
+              <div className="certificate-list" style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
                 {(() => {
                   const earnedCertificates = modules.filter(module => {
                     const moduleTrainings = userTrainings.filter(t => String(t.module_id) === String(module.id));
@@ -595,18 +655,52 @@ const App: React.FC = () => {
                   });
 
                   if (earnedCertificates.length === 0) {
-                    return <p style={{ fontSize: '0.95rem', color: '#cbd5e0', fontStyle: 'italic' }}>Aucun certificat pour le moment</p>;
+                    return <p style={{ fontSize: '0.9rem', color: '#cbd5e0', fontStyle: 'italic', textAlign: 'center' }}>Aucun certificat obtenu</p>;
                   }
 
                   return earnedCertificates.map(module => (
-                    <div key={module.id} onClick={() => handleCourseSelect(module.data ? JSON.parse(module.data) : null, module.id)}
+                    <div
+                      key={module.id}
+                      onClick={() => {
+                        const moduleData = module.data ? (typeof module.data === 'string' ? JSON.parse(module.data) : module.data) : null;
+                        if (moduleData) {
+                          setData(moduleData);
+                          setModuleId(module.id);
+                          setCurrentView('course');
+                          setShowCertificate(true);
+                          setShowQuiz(false);
+                          setCurrentSection(0);
+                          // Optionnel : on pourrait forcer handlePrint ici via un useEffect dans Certificate
+                        }
+                      }}
                       style={{
-                        padding: '1rem', background: '#f8fafc', borderRadius: '16px',
-                        cursor: 'pointer', marginBottom: '0.8rem', border: '2px solid #edf2f7',
-                        transition: 'all 0.3s ease'
-                      }}>
-                      <div style={{ fontSize: '1rem', fontWeight: 800, color: '#1a5490', marginBottom: '0.2rem' }}>{module.title}</div>
-                      <div style={{ fontSize: '0.8rem', color: '#10b981', fontWeight: 700 }}>✅ Certificat Obtenu</div>
+                        padding: '0.8rem',
+                        background: 'linear-gradient(135deg, #f8fafc 0%, #ffffff 100%)',
+                        borderRadius: '12px',
+                        cursor: 'pointer',
+                        border: '1px solid #e2e8f0',
+                        transition: 'all 0.2s ease',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.8rem',
+                        boxShadow: '0 2px 5px rgba(0,0,0,0.02)'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = 'translateX(5px)';
+                        e.currentTarget.style.borderColor = '#667eea';
+                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(102, 126, 234, 0.1)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = 'translateX(0)';
+                        e.currentTarget.style.borderColor = '#e2e8f0';
+                        e.currentTarget.style.boxShadow = '0 2px 5px rgba(0,0,0,0.02)';
+                      }}
+                    >
+                      <div style={{ fontSize: '1.5rem', background: '#e0efff', width: '40px', height: '40px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>🎓</div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#1a5490', lineHeight: 1.2 }}>{module.title}</div>
+                        <div style={{ fontSize: '0.7rem', color: '#10b981', fontWeight: 700, marginTop: '2px' }}>Ouvrir & Télécharger</div>
+                      </div>
                     </div>
                   ));
                 })()}
@@ -628,23 +722,38 @@ const App: React.FC = () => {
 
           {/* MAIN CONTENT Area */}
           <div className="main-content" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-            <div style={{ textAlign: 'center', marginBottom: '4.5rem', color: 'white' }}>
-              <h2 style={{ fontSize: '4.2rem', fontWeight: 900, margin: '0 0 0.8rem', letterSpacing: '-2px', textShadow: '0 4px 20px rgba(0,0,0,0.2)' }}>
-                Bienvenue, {registration.fullName.split(' ')[0]}
-              </h2>
-              <p style={{ opacity: 0.95, fontSize: '1.5rem', fontWeight: 500, letterSpacing: '0.5px' }}>
-                Veuillez sélectionner votre module de formation
-              </p>
-            </div>
+            {currentView === 'user_dashboard' ? (
+              <UserDashboard
+                user={registration}
+                trainings={userTrainings}
+                modules={modules}
+                onBack={() => setCurrentView('dashboard')}
+                onSelectModule={(m) => {
+                  const moduleData = m.data ? (typeof m.data === 'string' ? JSON.parse(m.data) : m.data) : null;
+                  handleCourseSelect(moduleData, m.id);
+                }}
+              />
+            ) : (
+              <>
+                <div style={{ textAlign: 'center', marginBottom: '4.5rem', color: 'white' }}>
+                  <h2 style={{ fontSize: '4.2rem', fontWeight: 900, margin: '0 0 0.8rem', letterSpacing: '-2px', textShadow: '0 4px 20px rgba(0,0,0,0.2)' }}>
+                    Bienvenue, {registration.fullName.split(' ')[0]}
+                  </h2>
+                  <p style={{ opacity: 0.95, fontSize: '1.5rem', fontWeight: 500, letterSpacing: '0.5px' }}>
+                    Veuillez sélectionner votre module de formation
+                  </p>
+                </div>
 
-            <InductionList
-              userId={registration.id}
-              userName={registration.fullName}
-              userRole={isAdmin ? 'admin' : registration.role}
-              isAdminMode={isAdmin}
-              onAdminClick={() => setCurrentView('admin')}
-              onSelect={handleCourseSelect}
-            />
+                <InductionList
+                  userId={registration.id}
+                  userName={registration.fullName}
+                  userRole={isAdmin ? 'admin' : registration.role}
+                  isAdminMode={isAdmin}
+                  onAdminClick={() => setCurrentView('admin')}
+                  onSelect={handleCourseSelect}
+                />
+              </>
+            )}
           </div>
         </div>
         <footer style={{ padding: '3rem', textAlign: 'center' }}>
