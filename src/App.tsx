@@ -13,6 +13,7 @@ import UserProfile from './components/UserProfile';
 import UserDashboard from './components/UserDashboard';
 import { getImageUrl } from './utils/imageUrl';
 import './components/Footer.css';
+import './App.css';
 import contentData from './data/content.json';
 
 
@@ -118,12 +119,19 @@ const App: React.FC = () => {
       try {
         const settingsData = await api.getSettings();
 
-        // Nettoyage : si site_name ressemble à l'URL Supabase par erreur, on le remet par défaut
-        if (settingsData && settingsData.site_name && settingsData.site_name.includes('supabase.co')) {
-          settingsData.site_name = 'Plateforme de Formation TUDIENZELE';
-        }
+        // Nettoyage global : si un champ de texte contient une URL Supabase par erreur, on remet une valeur propre
+        const cleanSettings = { ...settingsData };
+        const fieldsToClean = ['site_name', 'org_name', 'site_description'];
 
-        setSiteSettings((prev: any) => ({ ...prev, ...settingsData }));
+        fieldsToClean.forEach(field => {
+          if (cleanSettings[field] && (cleanSettings[field].includes('supabase.co') || cleanSettings[field].includes('http'))) {
+            if (field === 'site_name') cleanSettings[field] = 'Plateforme de Formation TUDIENZELE';
+            if (field === 'org_name') cleanSettings[field] = 'ADRA';
+            if (field === 'site_description') cleanSettings[field] = 'Module d\'induction et de formation continue.';
+          }
+        });
+
+        setSiteSettings((prev: any) => ({ ...prev, ...cleanSettings }));
       } catch (e) {
         console.error("Failed to fetch settings", e);
       }

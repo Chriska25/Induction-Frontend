@@ -89,8 +89,12 @@ const UserDashboard: React.FC<UserDashboardProps> = ({ user, trainings, modules,
                                     gap: '1.5rem',
                                     boxShadow: '0 10px 25px rgba(0,0,0,0.1)'
                                 }}>
-                                    <div style={{ fontSize: '2.5rem', background: '#f8fafc', width: '70px', height: '70px', borderRadius: '15px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                        {m.icon || '📘'}
+                                    <div style={{ fontSize: '2.5rem', background: '#f8fafc', width: '70px', height: '70px', borderRadius: '15px', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                                        {m.icon && (m.icon.startsWith('http') || m.icon.startsWith('/')) ? (
+                                            <img src={m.icon} alt={m.title} style={{ width: '60%', height: '60%', objectFit: 'contain' }} />
+                                        ) : (
+                                            m.icon || '📘'
+                                        )}
                                     </div>
                                     <div style={{ flex: 1 }}>
                                         <h3 style={{ margin: '0 0 0.5rem', fontSize: '1.2rem', fontWeight: 800 }}>{m.title}</h3>
