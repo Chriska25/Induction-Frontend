@@ -505,8 +505,8 @@ const App: React.FC = () => {
                 </button>
               </div>
             ) : (
-              /* Only show the "Edit Mode" button if user is ACTUALLY an admin role */
-              registration.role === 'admin' ? (
+              /* Only show the "Edit Mode" button if user is ACTUALLY an admin or trainer role */
+              (registration.role === 'admin' || registration.role === 'trainer') ? (
                 !isAdmin && (
                   <button
                     onClick={handleAdminLoginClick}
