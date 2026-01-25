@@ -89,6 +89,23 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
         permissions: ['take_courses']
     });
 
+    // Permissions management
+    const [availablePermissions, setAvailablePermissions] = useState<string[]>([]);
+    const [showPermissionsModal, setShowPermissionsModal] = useState(false);
+    const [newPermission, setNewPermission] = useState('');
+
+    const defaultPermissions: string[] = [
+        'take_courses',
+        'manage_modules',
+        'manage_users',
+        'manage_settings',
+        'view_logs',
+        'manage_roles',
+        'view_stats',
+        'export_data',
+        'manage_certificates'
+    ];
+
     const defaultRoles: CustomRole[] = [
         { id: 'admin', name: 'Administrateur', description: 'Accès complet au système', color: '#ef4444', permissions: ['manage_users', 'manage_modules', 'manage_settings', 'view_logs', 'manage_roles'] },
         { id: 'trainer', name: 'Formateur', description: 'Gérer le contenu des formations', color: '#10b981', permissions: ['manage_modules', 'view_stats'] },
@@ -98,7 +115,18 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
 
     useEffect(() => {
         loadData();
-    }, [activeTab]);
+        // Load custom permissions from settings
+        if (settings.site_permissions) {
+            try {
+                const customPerms = JSON.parse(settings.site_permissions);
+                setAvailablePermissions([...defaultPermissions, ...customPerms]);
+            } catch (e) {
+                setAvailablePermissions(defaultPermissions);
+            }
+        } else {
+            setAvailablePermissions(defaultPermissions);
+        }
+    }, [activeTab, settings.site_permissions]);
 
     const loadData = async () => {
         setLoading(true);
@@ -257,6 +285,74 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
         }
     };
 
+    const handleAddPermission = async () => {
+        if (!newPermission.trim()) {
+            alert("Le nom de la permission est requis.");
+            return;
+        }
+
+        // Convert to snake_case
+        const permSlug = newPermission.toLowerCase().replace(/\s+/g, '_');
+
+        if (availablePermissions.includes(permSlug)) {
+            alert("Cette permission existe déjà.");
+            return;
+        }
+
+        try {
+            const customPerms = availablePermissions.filter(p => !defaultPermissions.includes(p));
+            customPerms.push(permSlug);
+
+            await api.updateSettings({
+                ...settings,
+                site_permissions: JSON.stringify(customPerms)
+            });
+
+            setAvailablePermissions([...availablePermissions, permSlug]);
+            setNewPermission('');
+            alert(`Permission "${permSlug}" ajoutée avec succès !`);
+        } catch (err) {
+            alert("Erreur lors de l'ajout de la permission.");
+        }
+    };
+
+    const handleDeletePermission = async (permission: string) => {
+        if (defaultPermissions.includes(permission)) {
+            alert("Les permissions système ne peuvent pas être supprimées.");
+            return;
+        }
+
+        if (!confirm(`Supprimer la permission "${permission}" ?`)) return;
+
+        try {
+            const customPerms = availablePermissions
+                .filter(p => !defaultPermissions.includes(p))
+                .filter(p => p !== permission);
+
+            await api.updateSettings({
+                ...settings,
+                site_permissions: JSON.stringify(customPerms)
+            });
+
+            setAvailablePermissions(availablePermissions.filter(p => p !== permission));
+
+            // Remove from all roles
+            const updatedRoles = siteRoles.map(role => ({
+                ...role,
+                permissions: role.permissions.filter(p => p !== permission)
+            }));
+            setSiteRoles(updatedRoles);
+            await api.updateSettings({
+                ...settings,
+                site_roles: JSON.stringify(updatedRoles)
+            });
+
+            alert("Permission supprimée.");
+        } catch (err) {
+            alert("Erreur lors de la suppression.");
+        }
+    };
+
     const exportUsersCSV = () => {
         const headers = "ID,Nom,Email,Poste,Organisation,Role,Sessions\n";
         const rows = users.map(u => `${u.id},"${u.full_name}",${u.email},"${u.job_title}","${u.organization}",${u.role},${u.training_count}`).join("\n");
@@ -305,6 +401,33 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
             alert("Erreur lors de la création.");
         }
     };
+
+    // Helper functions for API
+    async function getUserTrainings(id: string) {
+        try {
+            const data = await api.getUserTrainings(id);
+            setUserTrainings(data);
+        } catch (e) {
+            setUserTrainings([]);
+        }
+    }
+
+    async function handleAddUser(e: React.FormEvent) {
+        e.preventDefault();
+        try {
+            await api.createUser(newUser);
+            setShowAddUserModal(false);
+            loadData();
+            alert("Utilisateur créé !");
+        } catch (e) { alert("Erreur."); }
+    }
+
+    async function handleDeleteModule(id: string) {
+        if (window.confirm("Supprimer ce module ?")) {
+            await api.deleteModule(id);
+            loadData();
+        }
+    }
 
     return (
         <div className="admin-dashboard">
@@ -521,42 +644,92 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
                 )}
 
                 {activeTab === 'roles' && (
-                    <div className="table-container">
-                        <table className="admin-table">
-                            <thead>
-                                <tr>
-                                    <th>Nom du Rôle</th>
-                                    <th>Slug</th>
-                                    <th>Permissions</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {siteRoles.map(role => (
-                                    <tr key={role.id}>
-                                        <td>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                                <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: role.color }}></div>
-                                                <strong>{role.name}</strong>
-                                            </div>
-                                        </td>
-                                        <td><code>{role.id}</code></td>
-                                        <td>
-                                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
-                                                {role.permissions.map(p => (
-                                                    <span key={p} style={{ fontSize: '0.7rem', padding: '2px 6px', background: '#f1f5f9', borderRadius: '4px' }}>{p}</span>
-                                                ))}
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <button onClick={() => { setEditingRole(role); setNewRole(role); setShowAddRoleModal(true); }} className="action-icon">⚙️</button>
-                                            <button onClick={() => handleDeleteRole(role.id)} className="action-icon">🗑️</button>
-                                        </td>
+                    <>
+                        {/* Permissions Management Section */}
+                        <div className="table-container" style={{ marginBottom: '2rem' }}>
+                            <div style={{ padding: '1.5rem' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                                    <h2 style={{ margin: 0 }}>🔐 Gestion des Permissions</h2>
+                                    <button
+                                        className="btn-add-item"
+                                        onClick={() => setShowPermissionsModal(true)}
+                                    >
+                                        ➕ Nouvelle Permission
+                                    </button>
+                                </div>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '0.75rem' }}>
+                                    {availablePermissions.map(perm => (
+                                        <div
+                                            key={perm}
+                                            style={{
+                                                padding: '0.75rem 1rem',
+                                                background: defaultPermissions.includes(perm) ? '#f1f5f9' : '#eff6ff',
+                                                borderRadius: '8px',
+                                                border: `1px solid ${defaultPermissions.includes(perm) ? '#cbd5e1' : '#3b82f6'}`,
+                                                display: 'flex',
+                                                justifyContent: 'space-between',
+                                                alignItems: 'center'
+                                            }}
+                                        >
+                                            <span style={{ fontSize: '0.85rem', fontWeight: '600', color: '#1e293b' }}>
+                                                {perm}
+                                            </span>
+                                            {!defaultPermissions.includes(perm) && (
+                                                <button
+                                                    onClick={() => handleDeletePermission(perm)}
+                                                    className="action-icon"
+                                                    style={{ padding: '0.2rem', fontSize: '0.9rem' }}
+                                                >
+                                                    ✕
+                                                </button>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                                <p style={{ marginTop: '1rem', fontSize: '0.85rem', color: '#64748b' }}>
+                                    💡 Les permissions en gris sont système et ne peuvent être supprimées. Les bleues sont personnalisées.
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Roles Table */}
+                        <div className="table-container">
+                            <table className="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Nom du Rôle</th>
+                                        <th>Slug</th>
+                                        <th>Permissions</th>
+                                        <th>Actions</th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                                </thead>
+                                <tbody>
+                                    {siteRoles.map(role => (
+                                        <tr key={role.id}>
+                                            <td>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                    <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: role.color }}></div>
+                                                    <strong>{role.name}</strong>
+                                                </div>
+                                            </td>
+                                            <td><code>{role.id}</code></td>
+                                            <td>
+                                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                                                    {role.permissions.map(p => (
+                                                        <span key={p} style={{ fontSize: '0.7rem', padding: '2px 6px', background: '#f1f5f9', borderRadius: '4px' }}>{p}</span>
+                                                    ))}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <button onClick={() => { setEditingRole(role); setNewRole(role); setShowAddRoleModal(true); }} className="action-icon">⚙️</button>
+                                                <button onClick={() => handleDeleteRole(role.id)} className="action-icon">🗑️</button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </>
                 )}
 
                 {activeTab === 'settings' && (
@@ -916,35 +1089,37 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
                     </div>
                 </div>
             )}
+            {/* Add Permission Modal */}
+            {showPermissionsModal && (
+                <div className="modal-overlay">
+                    <div className="modal-content" style={{ maxWidth: '400px' }}>
+                        <div className="modal-header">
+                            <h2>➕ Nouvelle Permission</h2>
+                            <button onClick={() => setShowPermissionsModal(false)} className="action-icon">✕</button>
+                        </div>
+                        <div className="modal-body">
+                            <div className="form-group">
+                                <label>Nom de la permission</label>
+                                <input
+                                    type="text"
+                                    value={newPermission}
+                                    onChange={(e) => setNewPermission(e.target.value)}
+                                    placeholder="Ex: manage_content"
+                                />
+                                <p style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '0.5rem' }}>
+                                    Le nom sera automatiquement converti en format système (ex: Manage Content → manage_content)
+                                </p>
+                            </div>
+                        </div>
+                        <div className="modal-footer">
+                            <button onClick={() => setShowPermissionsModal(false)} className="btn-cancel">Annuler</button>
+                            <button onClick={() => { handleAddPermission(); setShowPermissionsModal(false); }} className="btn-save">Ajouter</button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
-
-    // Helper functions for API
-    async function getUserTrainings(id: string) {
-        try {
-            const data = await api.getUserTrainings(id);
-            setUserTrainings(data);
-        } catch (e) {
-            setUserTrainings([]);
-        }
-    }
-
-    async function handleAddUser(e: React.FormEvent) {
-        e.preventDefault();
-        try {
-            await api.createUser(newUser);
-            setShowAddUserModal(false);
-            loadData();
-            alert("Utilisateur créé !");
-        } catch (e) { alert("Erreur."); }
-    }
-
-    async function handleDeleteModule(id: string) {
-        if (window.confirm("Supprimer ce module ?")) {
-            await api.deleteModule(id);
-            loadData();
-        }
-    }
 };
 
 export default AdminDashboard;
