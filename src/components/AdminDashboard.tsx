@@ -845,6 +845,34 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
                                     </div>
                                 </div>
 
+                                {/* Section : Configuration Email (SMTP) */}
+                                <div className="table-container" style={{ padding: '2rem' }}>
+                                    <h2 style={{ marginTop: 0, marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '10px' }}>📧 Configuration Email</h2>
+                                    <div className="form-group">
+                                        <label>Hôte SMTP (ex: smtp.gmail.com)</label>
+                                        <input value={settings.smtp_host || ''} onChange={e => setSettings({ ...settings, smtp_host: e.target.value })} placeholder="smtp.gmail.com" />
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Port SMTP (ex: 587 ou 465)</label>
+                                        <input type="number" value={settings.smtp_port || ''} onChange={e => setSettings({ ...settings, smtp_port: e.target.value })} placeholder="587" />
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Utilisateur SMTP (Email)</label>
+                                        <input value={settings.smtp_user || ''} onChange={e => setSettings({ ...settings, smtp_user: e.target.value })} placeholder="votre-email@gmail.com" />
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Mot de passe SMTP (App Password)</label>
+                                        <input type="password" value={settings.smtp_pass || ''} onChange={e => setSettings({ ...settings, smtp_pass: e.target.value })} placeholder="••••••••••••" />
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Email Expéditeur (From)</label>
+                                        <input value={settings.smtp_from || ''} onChange={e => setSettings({ ...settings, smtp_from: e.target.value })} placeholder='"Formation" <ne-pas-repondre@exemple.com>' />
+                                    </div>
+                                    <div style={{ marginTop: '1rem', padding: '1rem', background: '#eff6ff', borderRadius: '8px', border: '1px solid #bfdbfe', fontSize: '0.9rem', color: '#1e40af' }}>
+                                        ℹ️ <strong>Note importante :</strong> Ces paramètres sont sauvegardés de manière sécurisée et permettent l'envoi des emails de vérification. Si vous utilisez Gmail, vous devez générer un "Mot de passe d'application".
+                                    </div>
+                                </div>
+
                                 {/* Section : Fond App (3 Couleurs) */}
                                 <div className="table-container" style={{ padding: '2rem' }}>
                                     <h2 style={{ marginTop: 0, marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '10px' }}>🌈 Fond des Formations</h2>
