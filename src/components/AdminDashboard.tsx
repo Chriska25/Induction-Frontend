@@ -213,6 +213,40 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
         }
     };
 
+    const handleCloneModule = async (module: Module) => {
+        if (!confirm(`Voulez-vous cloner le module "${module.title}" ?`)) return;
+
+        try {
+            // Parse module data
+            let moduleData = {};
+            try {
+                moduleData = module.data ? JSON.parse(module.data) : {};
+            } catch (e) {
+                console.error('Error parsing module data:', e);
+            }
+
+            // Generate new ID and title
+            const timestamp = Date.now();
+            const newId = `${module.id}-copie-${timestamp}`;
+            const newTitle = `Copie de ${module.title}`;
+
+            // Create cloned module
+            await api.createModule({
+                id: newId,
+                title: newTitle,
+                description: module.description,
+                icon: module.icon,
+                data: moduleData
+            });
+
+            alert(`Module "${newTitle}" créé avec succès !`);
+            loadData();
+        } catch (err) {
+            console.error('Clone error:', err);
+            alert("Erreur lors du clonage du module.");
+        }
+    };
+
     const handleUpdateSettings = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
@@ -473,8 +507,9 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
                                                 <td><code>{m.id}</code></td>
                                                 <td>{new Date(m.created_at).toLocaleDateString()}</td>
                                                 <td>
-                                                    <button onClick={() => onEditModule?.(m)} className="action-icon">📝</button>
-                                                    <button onClick={() => handleDeleteModule(m.id)} className="action-icon">🗑️</button>
+                                                    <button onClick={() => onEditModule?.(m)} className="action-icon" title="Éditer">📝</button>
+                                                    <button onClick={() => handleCloneModule(m)} className="action-icon" title="Cloner">📋</button>
+                                                    <button onClick={() => handleDeleteModule(m.id)} className="action-icon" title="Supprimer">🗑️</button>
                                                 </td>
                                             </tr>
                                         ))}
