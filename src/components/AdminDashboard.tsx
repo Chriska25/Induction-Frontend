@@ -694,6 +694,19 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
 
                         {/* Roles Table */}
                         <div className="table-container">
+                            <div style={{ padding: '1.5rem', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <h2 style={{ margin: 0 }}>🎭 Rôles et Accès</h2>
+                                <button
+                                    className="btn-add-item"
+                                    onClick={() => {
+                                        setEditingRole(null);
+                                        setNewRole({ id: '', name: '', description: '', color: '#3b82f6', permissions: ['take_courses'] });
+                                        setShowAddRoleModal(true);
+                                    }}
+                                >
+                                    ➕ Nouveau Rôle
+                                </button>
+                            </div>
                             <table className="admin-table">
                                 <thead>
                                     <tr>
@@ -1089,36 +1102,120 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
                     </div>
                 </div>
             )}
-            {/* Add Permission Modal */}
-            {showPermissionsModal && (
+
+            {/* Add Role Modal */}
+            {showAddRoleModal && (
                 <div className="modal-overlay">
-                    <div className="modal-content" style={{ maxWidth: '400px' }}>
+                    <div className="modal-content">
                         <div className="modal-header">
-                            <h2>➕ Nouvelle Permission</h2>
-                            <button onClick={() => setShowPermissionsModal(false)} className="action-icon">✕</button>
+                            <h2>{editingRole ? '✏️ Modifier le Rôle' : '➕ Nouveau Rôle'}</h2>
+                            <button onClick={() => { setShowAddRoleModal(false); setEditingRole(null); }} className="action-icon">✕</button>
                         </div>
                         <div className="modal-body">
                             <div className="form-group">
-                                <label>Nom de la permission</label>
+                                <label>Identifiant du Rôle (ID)</label>
                                 <input
                                     type="text"
-                                    value={newPermission}
-                                    onChange={(e) => setNewPermission(e.target.value)}
-                                    placeholder="Ex: manage_content"
+                                    value={newRole.id}
+                                    onChange={(e) => setNewRole({ ...newRole, id: e.target.value })}
+                                    disabled={!!editingRole}
+                                    placeholder="ex: viewer_plus"
                                 />
-                                <p style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '0.5rem' }}>
-                                    Le nom sera automatiquement converti en format système (ex: Manage Content → manage_content)
-                                </p>
+                                <p style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '0.2rem' }}>Identifiant unique (en minuscules, sans espace).</p>
+                            </div>
+                            <div className="form-group">
+                                <label>Nom d'affichage</label>
+                                <input
+                                    type="text"
+                                    value={newRole.name}
+                                    onChange={(e) => setNewRole({ ...newRole, name: e.target.value })}
+                                    placeholder="ex: Superviseur"
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Description</label>
+                                <input
+                                    type="text"
+                                    value={newRole.description}
+                                    onChange={(e) => setNewRole({ ...newRole, description: e.target.value })}
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Couleur du badge</label>
+                                <div style={{ display: 'flex', gap: '10px' }}>
+                                    <input
+                                        type="color"
+                                        value={newRole.color}
+                                        onChange={(e) => setNewRole({ ...newRole, color: e.target.value })}
+                                        style={{ width: '50px', padding: '0', height: '40px' }}
+                                    />
+                                    <div style={{ flex: 1, background: newRole.color, borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold' }}>
+                                        {newRole.name || 'Aperçu'}
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="form-group">
+                                <label>Permissions</label>
+                                <div style={{ maxHeight: '200px', overflowY: 'auto', border: '1px solid #e2e8f0', padding: '10px', borderRadius: '8px', background: '#f8fafc' }}>
+                                    {availablePermissions.map(perm => (
+                                        <label key={perm} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '4px 0', cursor: 'pointer' }}>
+                                            <input
+                                                type="checkbox"
+                                                checked={newRole.permissions.includes(perm)}
+                                                onChange={(e) => {
+                                                    const currentPerms = newRole.permissions;
+                                                    if (e.target.checked) {
+                                                        setNewRole({ ...newRole, permissions: [...currentPerms, perm] });
+                                                    } else {
+                                                        setNewRole({ ...newRole, permissions: currentPerms.filter(p => p !== perm) });
+                                                    }
+                                                }}
+                                            />
+                                            <span style={{ fontSize: '0.9rem' }}>{perm}</span>
+                                        </label>
+                                    ))}
+                                </div>
                             </div>
                         </div>
                         <div className="modal-footer">
-                            <button onClick={() => setShowPermissionsModal(false)} className="btn-cancel">Annuler</button>
-                            <button onClick={() => { handleAddPermission(); setShowPermissionsModal(false); }} className="btn-save">Ajouter</button>
+                            <button onClick={() => { setShowAddRoleModal(false); setEditingRole(null); }} className="btn-cancel">Annuler</button>
+                            <button onClick={handleSaveRole} className="btn-save">Enregistrer</button>
                         </div>
                     </div>
                 </div>
             )}
-        </div>
+            {/* Add Permission Modal */}
+            {
+                showPermissionsModal && (
+                    <div className="modal-overlay">
+                        <div className="modal-content" style={{ maxWidth: '400px' }}>
+                            <div className="modal-header">
+                                <h2>➕ Nouvelle Permission</h2>
+                                <button onClick={() => setShowPermissionsModal(false)} className="action-icon">✕</button>
+                            </div>
+                            <div className="modal-body">
+                                <div className="form-group">
+                                    <label>Nom de la permission</label>
+                                    <input
+                                        type="text"
+                                        value={newPermission}
+                                        onChange={(e) => setNewPermission(e.target.value)}
+                                        placeholder="Ex: manage_content"
+                                    />
+                                    <p style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '0.5rem' }}>
+                                        Le nom sera automatiquement converti en format système (ex: Manage Content → manage_content)
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="modal-footer">
+                                <button onClick={() => setShowPermissionsModal(false)} className="btn-cancel">Annuler</button>
+                                <button onClick={() => { handleAddPermission(); setShowPermissionsModal(false); }} className="btn-save">Ajouter</button>
+                            </div>
+                        </div>
+                    </div>
+                )
+            }
+        </div >
     );
 };
 
