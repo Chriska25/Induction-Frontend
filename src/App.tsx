@@ -499,28 +499,37 @@ const App: React.FC = () => {
                 </button>
                 <button
                   onClick={() => setAskAdminCode(false)}
-                  style={{ padding: '0.6rem 2rem', background: 'rgba(255,255,255,0.2)', color: 'white', border: 'none', borderRadius: '50px', cursor: 'pointer' }}
+                  style={{ padding: '0.6rem 2rem', background: '#9ca3af', color: 'white', border: 'none', borderRadius: '50px', cursor: 'pointer', fontWeight: '800' }}
                 >
                   Annuler
                 </button>
               </div>
             ) : (
-              <button
-                onClick={handleAdminLoginClick}
-                style={{
-                  background: isAdmin ? 'rgba(255,182,193,0.3)' : 'rgba(255,255,255,0.1)',
-                  color: 'white',
-                  border: '1px solid rgba(255,255,255,0.2)',
-                  padding: '0.5rem 1.8rem',
-                  borderRadius: '50px',
-                  fontSize: '0.9rem',
-                  cursor: 'pointer',
-                  backdropFilter: 'blur(10px)',
-                  boxShadow: '0 4px 15px rgba(0,0,0,0.1)'
-                }}
-              >
-                {isAdmin ? '🔒 Désactiver le mode édition' : '🛠️ Activer le mode édition'}
-              </button>
+              /* Only show the "Edit Mode" button if user is ACTUALLY an admin role */
+              registration.role === 'admin' ? (
+                !isAdmin && (
+                  <button
+                    onClick={handleAdminLoginClick}
+                    className="admin-login-btn"
+                    style={{
+                      background: 'transparent',
+                      border: 'none',
+                      color: 'rgba(255,255,255,0.7)',
+                      fontSize: '0.9rem',
+                      cursor: 'pointer',
+                      textDecoration: 'underline'
+                    }}
+                  >
+                    Activer le mode édition
+                  </button>
+                )
+              ) : null
+            )}
+
+            {isAdmin && (
+              <div style={{ marginTop: '0.5rem', color: '#10b981', fontWeight: 'bold' }}>
+                ✍️ Mode Édition Activé
+              </div>
             )}
           </div>
         </div>
