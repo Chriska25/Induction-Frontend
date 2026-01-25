@@ -1114,13 +1114,44 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
                         <div className="modal-body">
                             <div className="form-group">
                                 <label>Identifiant du Rôle (ID)</label>
-                                <input
-                                    type="text"
-                                    value={newRole.id}
-                                    onChange={(e) => setNewRole({ ...newRole, id: e.target.value })}
-                                    disabled={!!editingRole}
-                                    placeholder="ex: viewer_plus"
-                                />
+                                {editingRole ? (
+                                    <input
+                                        type="text"
+                                        value={newRole.id}
+                                        disabled={true}
+                                        style={{ background: '#f1f5f9' }}
+                                    />
+                                ) : (
+                                    <>
+                                        <select
+                                            value={['admin', 'trainer', 'user', 'observer'].includes(newRole.id) ? newRole.id : 'custom'}
+                                            onChange={(e) => {
+                                                const val = e.target.value;
+                                                if (val === 'custom') {
+                                                    setNewRole({ ...newRole, id: '' });
+                                                } else {
+                                                    setNewRole({ ...newRole, id: val });
+                                                }
+                                            }}
+                                            style={{ marginBottom: newRole.id && !['admin', 'trainer', 'user', 'observer'].includes(newRole.id) ? '0.5rem' : '0' }}
+                                        >
+                                            <option value="user">Utilisateur Standard (user)</option>
+                                            <option value="trainer">Formateur (trainer)</option>
+                                            <option value="observer">Observateur (observer)</option>
+                                            <option value="admin">Administrateur (admin)</option>
+                                            <option value="custom">-- Personnalisé --</option>
+                                        </select>
+                                        {(!['admin', 'trainer', 'user', 'observer'].includes(newRole.id) || newRole.id === '') && (
+                                            <input
+                                                type="text"
+                                                value={newRole.id}
+                                                onChange={(e) => setNewRole({ ...newRole, id: e.target.value })}
+                                                placeholder="ex: viewer_plus"
+                                                autoFocus
+                                            />
+                                        )}
+                                    </>
+                                )}
                                 <p style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '0.2rem' }}>Identifiant unique (en minuscules, sans espace).</p>
                             </div>
                             <div className="form-group">
