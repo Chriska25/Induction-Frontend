@@ -93,6 +93,18 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
     const [availablePermissions, setAvailablePermissions] = useState<string[]>([]);
     const [showPermissionsModal, setShowPermissionsModal] = useState(false);
     const [newPermission, setNewPermission] = useState('');
+    const [selectedAction, setSelectedAction] = useState('view');
+    const [selectedResource, setSelectedResource] = useState('');
+
+    const permissionActions = [
+        { id: 'view', label: 'Voir / Consulter' },
+        { id: 'manage', label: 'Gérer (Créer/Edit/Suppr)' },
+        { id: 'create', label: 'Créer' },
+        { id: 'edit', label: 'Modifier' },
+        { id: 'delete', label: 'Supprimer' },
+        { id: 'export', label: 'Exporter' },
+        { id: 'approve', label: 'Approuver' }
+    ];
 
     const defaultPermissions: string[] = [
         'take_courses',
@@ -1247,15 +1259,37 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
                             </div>
                             <div className="modal-body">
                                 <div className="form-group">
-                                    <label>Nom de la permission</label>
+                                    <label>Action</label>
+                                    <select
+                                        value={selectedAction}
+                                        onChange={(e) => {
+                                            setSelectedAction(e.target.value);
+                                            // Auto-update permission name if resource is set
+                                            if (selectedResource) {
+                                                setNewPermission(`${e.target.value}_${selectedResource}`);
+                                            }
+                                        }}
+                                        style={{ marginBottom: '1rem' }}
+                                    >
+                                        {permissionActions.map(action => (
+                                            <option key={action.id} value={action.id}>{action.label}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className="form-group">
+                                    <label>Ressource (ex: comptabilité, rapports...)</label>
                                     <input
                                         type="text"
-                                        value={newPermission}
-                                        onChange={(e) => setNewPermission(e.target.value)}
-                                        placeholder="Ex: manage_content"
+                                        value={selectedResource}
+                                        onChange={(e) => {
+                                            const val = e.target.value.toLowerCase().replace(/[^a-z0-9]/g, '');
+                                            setSelectedResource(val);
+                                            setNewPermission(`${selectedAction}_${val}`);
+                                        }}
+                                        placeholder="ex: reports"
                                     />
                                     <p style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '0.5rem' }}>
-                                        Le nom sera automatiquement converti en format système (ex: Manage Content → manage_content)
+                                        Permission générée : <strong>{newPermission || '...'}</strong>
                                     </p>
                                 </div>
                             </div>
