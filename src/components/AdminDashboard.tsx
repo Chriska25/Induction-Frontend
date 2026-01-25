@@ -106,6 +106,24 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
         'manage_certificates'
     ];
 
+    const permissionLabels: Record<string, string> = {
+        'take_courses': 'Suivre les formations',
+        'manage_modules': 'Gérer les parcours',
+        'manage_users': 'Gérer les utilisateurs',
+        'manage_settings': 'Modifier les paramètres',
+        'view_logs': 'Voir les journaux (Logs)',
+        'manage_roles': 'Gérer les rôles et permissions',
+        'view_stats': 'Voir les statistiques',
+        'export_data': 'Exporter les données',
+        'manage_certificates': 'Gérer les certificats'
+    };
+
+    const getPermissionLabel = (perm: string) => {
+        if (permissionLabels[perm]) return permissionLabels[perm];
+        // Format custom permissions: "custom_perm" -> "Custom Perm"
+        return perm.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+    };
+
     const defaultRoles: CustomRole[] = [
         { id: 'admin', name: 'Administrateur', description: 'Accès complet au système', color: '#ef4444', permissions: ['manage_users', 'manage_modules', 'manage_settings', 'view_logs', 'manage_roles'] },
         { id: 'trainer', name: 'Formateur', description: 'Gérer le contenu des formations', color: '#10b981', permissions: ['manage_modules', 'view_stats'] },
@@ -1189,7 +1207,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
                                 <label>Permissions</label>
                                 <div style={{ maxHeight: '200px', overflowY: 'auto', border: '1px solid #e2e8f0', padding: '10px', borderRadius: '8px', background: '#f8fafc' }}>
                                     {availablePermissions.map(perm => (
-                                        <label key={perm} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '4px 0', cursor: 'pointer' }}>
+                                        <label key={perm} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 0', cursor: 'pointer', borderBottom: '1px solid #f1f5f9' }}>
                                             <input
                                                 type="checkbox"
                                                 checked={newRole.permissions.includes(perm)}
@@ -1202,7 +1220,10 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
                                                     }
                                                 }}
                                             />
-                                            <span style={{ fontSize: '0.9rem' }}>{perm}</span>
+                                            <span style={{ fontSize: '0.9rem' }}>
+                                                {getPermissionLabel(perm)}
+                                                <span style={{ color: '#94a3b8', fontSize: '0.75rem', marginLeft: '6px' }}>({perm})</span>
+                                            </span>
                                         </label>
                                     ))}
                                 </div>
