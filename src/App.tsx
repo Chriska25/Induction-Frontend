@@ -369,12 +369,14 @@ const App: React.FC = () => {
             >
               Connexion
             </button>
-            <button
-              className={`auth-tab ${authMode === 'register' ? 'active' : ''}`}
-              onClick={() => setAuthMode('register')}
-            >
-              Créer un compte
-            </button>
+            {siteSettings.allow_registration === 'true' && (
+              <button
+                className={`auth-tab ${authMode === 'register' ? 'active' : ''}`}
+                onClick={() => setAuthMode('register')}
+              >
+                Créer un compte
+              </button>
+            )}
           </div>
           {authMode === 'login' ? (
             <Login
@@ -382,6 +384,7 @@ const App: React.FC = () => {
               onNew={() => setAuthMode('register')}
               logo={siteSettings.site_logo}
               description={siteSettings.site_description}
+              allowRegistration={siteSettings.allow_registration === 'true'}
             />
           ) : (
             <Registration onComplete={handleRegistrationComplete} />

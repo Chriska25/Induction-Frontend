@@ -11,9 +11,10 @@ interface LoginProps {
   onNew: () => void;
   logo?: string;
   description?: string;
+  allowRegistration?: boolean;
 }
 
-const Login: React.FC<LoginProps> = ({ onSelect, onNew, logo, description }) => {
+const Login: React.FC<LoginProps> = ({ onSelect, onNew, logo, description, allowRegistration = true }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -189,14 +190,16 @@ const Login: React.FC<LoginProps> = ({ onSelect, onNew, logo, description }) => 
           </button>
         </form>
 
-        <div className="login-footer">
-          <p style={{ textAlign: 'center', color: '#666', marginBottom: '0.75rem' }}>
-            Vous n'avez pas encore de compte&nbsp;?
-          </p>
-          <button type="button" className="btn-new-account" onClick={onNew}>
-            Créer un nouveau compte
-          </button>
-        </div>
+        {allowRegistration && (
+          <div className="login-footer">
+            <p style={{ textAlign: 'center', color: '#666', marginBottom: '0.75rem' }}>
+              Vous n'avez pas encore de compte&nbsp;?
+            </p>
+            <button type="button" className="btn-new-account" onClick={onNew}>
+              Créer un nouveau compte
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
