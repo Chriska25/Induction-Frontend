@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import './AdminDashboard.css';
 import { api } from '../api/client';
+import HelpGuide from './HelpGuide';
 
 interface AdminUser {
     id: number;
@@ -52,7 +53,7 @@ interface AdminDashboardProps {
     onEditModule?: (module: Module) => void;
 }
 
-type AdminTab = 'overview' | 'users' | 'modules' | 'roles' | 'settings' | 'logs';
+type AdminTab = 'overview' | 'users' | 'modules' | 'roles' | 'settings' | 'logs' | 'help';
 
 const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }) => {
     const [activeTab, setActiveTab] = useState<AdminTab>('overview');
@@ -294,6 +295,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
                 <button className={`tab-btn ${activeTab === 'roles' ? 'active' : ''}`} onClick={() => setActiveTab('roles')}>🎭 Permissions</button>
                 <button className={`tab-btn ${activeTab === 'settings' ? 'active' : ''}`} onClick={() => setActiveTab('settings')}>⚙️ Système</button>
                 <button className={`tab-btn ${activeTab === 'logs' ? 'active' : ''}`} onClick={() => setActiveTab('logs')}>📜 Historique</button>
+                <button className={`tab-btn ${activeTab === 'help' ? 'active' : ''}`} onClick={() => setActiveTab('help')}>📚 Aide</button>
             </div>
 
             <div className="admin-tab-content">
@@ -702,6 +704,10 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
                             ))}
                         </div>
                     </div>
+                )}
+
+                {activeTab === 'help' && (
+                    <HelpGuide />
                 )}
             </div>
 
