@@ -3,6 +3,7 @@ import { CertificateData } from '../types';
 import { getImageUrl } from '../utils/imageUrl';
 // @ts-ignore
 import html2pdf from 'html2pdf.js';
+import { QRCodeSVG } from 'qrcode.react';
 import './Certificate.css';
 
 interface CertificateProps {
@@ -10,9 +11,11 @@ interface CertificateProps {
   userName: string;
   score: number;
   autoPrint?: boolean;
+  moduleId?: string;
+  userId?: string;
 }
 
-const Certificate: React.FC<CertificateProps> = ({ certificateData, userName, score, autoPrint = false }) => {
+const Certificate: React.FC<CertificateProps> = ({ certificateData, userName, score, autoPrint = false, moduleId, userId }) => {
   const certificateRef = useRef<HTMLDivElement>(null);
 
   const handlePrint = () => {
@@ -160,6 +163,13 @@ const Certificate: React.FC<CertificateProps> = ({ certificateData, userName, sc
                   max-width: 80px;
                   object-fit: contain;
                 }
+                .certificate-qrcode {
+                  position: absolute;
+                  bottom: 20px; 
+                  left: 20px;
+                  width: 80px;
+                  height: 80px;
+                }
               </style>
             </head>
             <body>
@@ -227,6 +237,12 @@ const Certificate: React.FC<CertificateProps> = ({ certificateData, userName, sc
     month: 'long',
     day: 'numeric',
   });
+
+  // Generate verification URL
+  // Ideally this would be a public verification page
+  // For now we can encode the certificate details or a link to the app
+  const appUrl = window.location.origin;
+  const qrValue = `${appUrl}/verify-certificate?user=${encodeURIComponent(userName)}&score=${score}&module=${moduleId || 'induction'}`;
 
   return (
     <div className="certificate-wrapper">
@@ -296,6 +312,11 @@ const Certificate: React.FC<CertificateProps> = ({ certificateData, userName, sc
               )}
             </div>
           )}
+        </div>
+        {/* QR Code */}
+        <div className="certificate-qrcode">
+          <QRCodeSVG value={qrValue} size={80} />
+          <div style={{ fontSize: '8px', marginTop: '2px', color: '#666' }}>Vérifier</div>
         </div>
       </div>
     </div>
