@@ -607,7 +607,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
                                     <tbody>
                                         {filteredUsers.map(user => (
                                             <tr key={user.id}>
-                                                <td>
+                                                <td onClick={() => { setViewingUser(user); getUserTrainings(user.id.toString()); }} style={{ cursor: 'pointer' }}>
                                                     <div style={{ fontWeight: '700', color: '#1e293b' }}>{user.full_name}</div>
                                                     <div style={{ fontSize: '0.8rem', color: '#64748b' }}>Inscrit le {user.registered_at ? new Date(user.registered_at).toLocaleDateString() : '-'}</div>
                                                 </td>
@@ -1054,22 +1054,74 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
                 </div>
             )}
 
-            {/* User History Modal */}
+            {/* User Details & History Modal */}
             {viewingUser && (
                 <div className="modal-overlay">
                     <div className="modal-content" style={{ maxWidth: '800px' }}>
                         <div className="modal-header">
-                            <h2>🎓 Historique : {viewingUser.full_name}</h2>
+                            <h2>👤 Détails Utilisateur</h2>
                             <button onClick={() => setViewingUser(null)} className="action-icon">✕</button>
                         </div>
                         <div className="modal-body">
-                            <div className="user-details-header">
-                                <div className="user-avatar-large">{viewingUser.full_name.charAt(0)}</div>
-                                <div>
-                                    <h3 style={{ margin: 0 }}>{viewingUser.full_name}</h3>
-                                    <p style={{ margin: 0, color: '#64748b' }}>{viewingUser.email} • {viewingUser.job_title}</p>
+                            <div className="user-details-card" style={{ display: 'flex', gap: '2rem', padding: '1.5rem', background: '#f8fafc', borderRadius: '12px', marginBottom: '2rem' }}>
+                                <div style={{ flexShrink: 0 }}>
+                                    {(viewingUser as any).profile_photo ? (
+                                        <img
+                                            src={(viewingUser as any).profile_photo}
+                                            alt={viewingUser.full_name}
+                                            style={{ width: '100px', height: '100px', borderRadius: '50%', objectFit: 'cover', border: '4px solid white', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
+                                        />
+                                    ) : (
+                                        <div style={{ width: '100px', height: '100px', borderRadius: '50%', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2.5rem', fontWeight: 'bold' }}>
+                                            {viewingUser.full_name.charAt(0)}
+                                        </div>
+                                    )}
+                                </div>
+                                <div style={{ flex: 1 }}>
+                                    <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1.5rem' }}>{viewingUser.full_name}</h3>
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
+                                        <div>
+                                            <div style={{ fontSize: '0.8rem', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Email Pofessionnel</div>
+                                            <div style={{ fontWeight: '500' }}>{viewingUser.email}</div>
+                                        </div>
+                                        <div>
+                                            <div style={{ fontSize: '0.8rem', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Rôle</div>
+                                            <div style={{ fontWeight: '500' }}>
+                                                <span style={{
+                                                    display: 'inline-block', padding: '2px 8px', borderRadius: '4px', fontSize: '0.85rem',
+                                                    background: `${siteRoles.find(r => r.id === viewingUser.role)?.color || '#94a3b8'}20`,
+                                                    color: siteRoles.find(r => r.id === viewingUser.role)?.color || '#64748b'
+                                                }}>
+                                                    {siteRoles.find(r => r.id === viewingUser.role)?.name || viewingUser.role}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div style={{ fontSize: '0.8rem', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Poste</div>
+                                            <div style={{ fontWeight: '500' }}>{viewingUser.job_title || '-'}</div>
+                                        </div>
+                                        <div>
+                                            <div style={{ fontSize: '0.8rem', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Organisation</div>
+                                            <div style={{ fontWeight: '500' }}>{viewingUser.organization || '-'}</div>
+                                        </div>
+                                        {viewingUser.registered_at && (
+                                            <div>
+                                                <div style={{ fontSize: '0.8rem', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Date d'inscription</div>
+                                                <div style={{ fontWeight: '500' }}>{new Date(viewingUser.registered_at).toLocaleDateString()}</div>
+                                            </div>
+                                        )}
+                                        {/* Status Verified */}
+                                        <div>
+                                            <div style={{ fontSize: '0.8rem', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Statut Email</div>
+                                            <div style={{ fontWeight: '500' }}>
+                                                {(viewingUser as any).email_verified ? '✅ Vérifié' : '⏳ En attente'}
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
+
+                            <h4 style={{ margin: '0 0 1rem 0', paddingBottom: '0.5rem', borderBottom: '1px solid #e2e8f0' }}>📚 Historique des Formations</h4>
                             <table className="admin-table">
                                 <thead>
                                     <tr>
