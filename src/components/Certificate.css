@@ -273,6 +273,17 @@
   filter: grayscale(0%);
 }
 
+/* QR Code */
+.certificate-qrcode {
+  position: absolute;
+  bottom: 25px;
+  left: 25px;
+  z-index: 3;
+  padding: 5px;
+  background: white;
+  border-radius: 4px;
+}
+
 /* Print Styles - A4 Landscape */
 @media print {
   @page {
@@ -424,5 +435,12 @@
   .certificate-partner-logo {
     max-height: 25px;
     max-width: 60px;
+  }
+
+  .certificate-qrcode {
+    position: relative;
+    bottom: auto;
+    left: auto;
+    margin-top: 1rem;
   }
 }
