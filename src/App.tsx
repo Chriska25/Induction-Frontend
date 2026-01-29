@@ -12,6 +12,7 @@ import InductionList from './components/InductionList';
 import UserProfile from './components/UserProfile';
 import UserDashboard from './components/UserDashboard';
 import VerifyEmail from './components/VerifyEmail';
+import VerifyCertificate from './components/VerifyCertificate';
 import { getImageUrl } from './utils/imageUrl';
 import './components/Footer.css';
 import './components/Auth.css';
@@ -23,6 +24,9 @@ const App: React.FC = () => {
   // Simple routing for email verification
   if (window.location.pathname === '/verify-email') {
     return <VerifyEmail />;
+  }
+  if (window.location.pathname.startsWith('/verify-certificate')) {
+    return <VerifyCertificate />;
   }
   const [currentSection, setCurrentSection] = useState(0);
   const [showQuiz, setShowQuiz] = useState(false);

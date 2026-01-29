@@ -14,6 +14,23 @@ export const api = {
         }
     },
 
+    // Verify email
+    verifyEmail: async (token: string) => {
+        const response = await fetch(`${API_URL}/verify-email`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ token }),
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.error || 'Verification failed');
+        }
+        return data;
+    },
+
     // Get all users (publicly visible info for login selection)
     getAllUsers: async () => {
         const response = await fetch(`${API_URL}/users`);

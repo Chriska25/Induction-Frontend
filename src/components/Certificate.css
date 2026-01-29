@@ -198,15 +198,16 @@
 
 /* Footer */
 .certificate-footer-row {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  align-items: end;
   padding: 10px 60px 40px;
-  gap: 3rem;
+  gap: 1rem;
   position: relative;
   z-index: 2;
   margin-top: auto;
   text-align: center;
+  width: 100%;
 }
 
 .certificate-date {
@@ -410,6 +411,7 @@
   }
 
   .certificate-footer-row {
+    display: flex;
     flex-direction: column;
     gap: 1.5rem;
     padding: 20px 30px 30px;

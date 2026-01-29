@@ -18,181 +18,54 @@ interface CertificateProps {
 const Certificate: React.FC<CertificateProps> = ({ certificateData, userName, score, autoPrint = false, moduleId, userId }) => {
   const certificateRef = useRef<HTMLDivElement>(null);
 
-  const handlePrint = () => {
-    if (certificateRef.current) {
-      const printWindow = window.open('', '_blank');
-      if (printWindow) {
-        printWindow.document.write(`
-          <!DOCTYPE html>
-          <html lang="fr">
-            <head>
-              <title>Certificat - ${userName}</title>
-              <style>
-                @media print {
-                  @page {
-                    size: A4 landscape;
-                    margin: 2cm;
-                  }
-                }
-                body {
-                  font-family: 'Times New Roman', serif;
-                  margin: 0;
-                  padding: 40px;
-                  background: white;
-                }
-                .certificate-container {
-                  border: 8px solid #1a5490;
-                  padding: 60px;
-                  text-align: center;
-                  background: white;
-                  min-height: 600px;
-                  display: flex;
-                  flex-direction: column;
-                  justify-content: space-between;
-                  position: relative;
-                }
-                .certificate-container::after {
-                  display: none !important;
-                }
-                .certificate-header {
-                  display: grid;
-                  grid-template-columns: 1fr auto 1fr;
-                  align-items: center;
-                  margin-bottom: 20px;
-                }
-                .certificate-logo-side {
-                  display: flex;
-                  justify-content: flex-start;
-                }
-                .certificate-logo-side:last-child {
-                  justify-content: flex-end;
-                }
-                .certificate-logo-img {
-                  max-height: 60px;
-                  max-width: 160px;
-                  object-fit: contain;
-                }
-                .certificate-logo-center {
-                  text-align: center;
-                }
-                .certificate-logo-text {
-                  font-size: 20px;
-                  font-weight: bold;
-                  color: #1a5490;
-                  letter-spacing: 2px;
-                }
-                .certificate-title {
-                  font-size: 32px;
-                  font-weight: bold;
-                  color: #1a5490;
-                  margin: 30px 0;
-                  text-transform: uppercase;
-                }
-                .certificate-subtitle {
-                  font-size: 20px;
-                  color: #333;
-                  margin-bottom: 40px;
-                }
-                .certificate-name {
-                  font-size: 28px;
-                  font-weight: bold;
-                  color: #1a5490;
-                  margin: 30px 0;
-                  text-decoration: underline;
-                }
-                .certificate-message {
-                  font-size: 16px;
-                  line-height: 1.8;
-                  color: #333;
-                  margin: 30px auto;
-                  text-align: center;
-                  max-width: 800px;
-                }
-                .certificate-score {
-                  font-size: 18px;
-                  font-weight: bold;
-                  color: #1a5490;
-                  margin-top: 20px;
-                }
-                .certificate-footer-row {
-                  display: flex;
-                  justify-content: center;
-                  align-items: center;
-                  margin-top: auto;
-                  gap: 3rem;
-                  padding-top: 20px;
-                  text-align: center;
-                }
-                .certificate-date {
-                  font-size: 14px;
-                  color: #666;
-                  font-style: italic;
-                }
-                .certificate-signature-block {
-                  text-align: center;
-                }
-                .signature-line {
-                  display: none;
-                }
-                .signature-name {
-                  font-size: 16px;
-                  font-weight: 600;
-                  color: #333;
-                }
-                .signature-title {
-                  font-size: 14px;
-                  color: #555;
-                }
-                .signature-img {
-                  height: 100px;
-                  object-fit: contain;
-                  display: block;
-                  margin: 10px auto 0 auto;
-                }
-                .certificate-partners {
-                  display: flex;
-                  justify-content: center;
-                  gap: 20px;
-                  align-items: center;
-                  flex-wrap: wrap;
-                  flex: 1;
-                  margin-bottom: 5px;
-                }
-                .certificate-partner-logo {
-                  max-height: 30px;
-                  max-width: 80px;
-                  object-fit: contain;
-                }
-                .certificate-qrcode {
-                  position: absolute;
-                  bottom: 20px; 
-                  left: 20px;
-                  width: 80px;
-                  height: 80px;
-                }
-              </style>
-            </head>
-            <body>
-              ${certificateRef.current.innerHTML}
-            </body>
-          </html>
-        `);
-        printWindow.document.close();
-        printWindow.focus();
-        setTimeout(() => {
-          printWindow.print();
-        }, 250);
-      }
+  // Common options for PDF generation
+  const getPdfOptions = () => ({
+    margin: 0,
+    filename: `Certificat_${userName.replace(/\s+/g, '_')}.pdf`,
+    image: { type: 'jpeg' as const, quality: 0.98 },
+    html2canvas: {
+      scale: 2,
+      useCORS: true,
+      letterRendering: true,
+      backgroundColor: '#ffffff'
+    },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' as const }
+  });
+
+  const handleOpenPdf = () => {
+    if (!certificateRef.current) return;
+
+    // Visual feedback
+    const btn = document.querySelector('.btn-print') as HTMLButtonElement;
+    const originalText = btn ? btn.innerText : 'Ouvrir en PDF';
+    if (btn) {
+      btn.innerText = 'Génération... ⏳';
+      btn.disabled = true;
     }
+
+    html2pdf()
+      .from(certificateRef.current)
+      .set(getPdfOptions())
+      .output('bloburl')
+      .then((pdfUrl: string) => {
+        window.open(pdfUrl, '_blank');
+      })
+      .finally(() => {
+        if (btn) {
+          btn.innerText = originalText;
+          btn.disabled = false;
+        }
+      });
   };
 
-  // Auto-print when component mounts if autoPrint is true
+  // Auto-action when component mounts if autoPrint is true
+  // We prefer downloading or opening PDF directly as requested
   useEffect(() => {
     if (autoPrint && certificateRef.current) {
       // Wait a bit for the component to fully render
       const timer = setTimeout(() => {
-        handlePrint();
-      }, 500);
+        handleOpenPdf();
+      }, 800);
       return () => clearTimeout(timer);
     }
   }, [autoPrint]);
@@ -200,23 +73,6 @@ const Certificate: React.FC<CertificateProps> = ({ certificateData, userName, sc
   const handleDownload = () => {
     if (!certificateRef.current) return;
 
-    const element = certificateRef.current;
-
-    // Options pour le PDF
-    const opt = {
-      margin: 0,
-      filename: `Certificat_${userName.replace(/\s+/g, '_')}.pdf`,
-      image: { type: 'jpeg' as const, quality: 0.98 },
-      html2canvas: {
-        scale: 2,
-        useCORS: true,
-        letterRendering: true,
-        backgroundColor: '#ffffff'
-      },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' as const }
-    };
-
-    // Notification visuelle
     const btn = document.querySelector('.btn-download') as HTMLButtonElement;
     const originalText = btn ? btn.innerText : 'Télécharger en PDF';
     if (btn) {
@@ -224,12 +80,16 @@ const Certificate: React.FC<CertificateProps> = ({ certificateData, userName, sc
       btn.disabled = true;
     }
 
-    html2pdf().from(element).set(opt).save().finally(() => {
-      if (btn) {
-        btn.innerText = originalText;
-        btn.disabled = false;
-      }
-    });
+    html2pdf()
+      .from(certificateRef.current)
+      .set(getPdfOptions())
+      .save()
+      .finally(() => {
+        if (btn) {
+          btn.innerText = originalText;
+          btn.disabled = false;
+        }
+      });
   };
 
   const currentDate = new Date().toLocaleDateString('fr-FR', {
@@ -240,22 +100,23 @@ const Certificate: React.FC<CertificateProps> = ({ certificateData, userName, sc
 
   // Generate verification URL
   // Ideally this would be a public verification page
-  // For now we can encode the certificate details or a link to the app
-  const appUrl = window.location.origin;
+  // We prefer VITE_PUBLIC_URL if set (production), otherwise origin
+  const appUrl = import.meta.env.VITE_PUBLIC_URL || window.location.origin;
   const qrValue = `${appUrl}/verify-certificate?user=${encodeURIComponent(userName)}&score=${score}&module=${moduleId || 'induction'}`;
+
+  // Debug log to check what is being generated
+  // console.log('Generated QR Value:', qrValue);
 
   return (
     <div className="certificate-wrapper">
       <div className="certificate-actions">
-        <button onClick={handlePrint} className="btn-print">
-          Imprimer le certificat
+        <button onClick={handleOpenPdf} className="btn-print">
+          Ouvrir en PDF
         </button>
         <button onClick={handleDownload} className="btn-download">
           Télécharger en PDF
         </button>
-        <div className="download-hint">
-          Astuce : utilisez l'impression du navigateur pour enregistrer en PDF.
-        </div>
+
       </div>
       <div ref={certificateRef} className="certificate-container">
         <div className="certificate-header">
@@ -287,28 +148,32 @@ const Certificate: React.FC<CertificateProps> = ({ certificateData, userName, sc
         <p className="certificate-message">{certificateData.successMessage}</p>
         <div className="certificate-score">Score obtenu : {score.toFixed(0)}%</div>
         <div className="certificate-footer-row">
-          <div className="certificate-date">Délivré le {currentDate}</div>
+          <div style={{ textAlign: 'center', marginBottom: '5px' }}>
+            <div className="certificate-date">Délivré le {currentDate}</div>
+          </div>
 
-          {certificateData.partnerLogos && certificateData.partnerLogos.length > 0 && (
-            <div className="certificate-partners">
-              {certificateData.partnerLogos.map((logo, idx) => (
-                <img key={idx} src={getImageUrl(logo)} alt={`Partner ${idx}`} className="certificate-partner-logo" />
-              ))}
-            </div>
-          )}
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '5px' }}>
+            {certificateData.partnerLogos && certificateData.partnerLogos.length > 0 && (
+              <div className="certificate-partners" style={{ flex: 'unset', width: '100%' }}>
+                {certificateData.partnerLogos.map((logo, idx) => (
+                  <img key={idx} src={getImageUrl(logo)} alt={`Partner ${idx}`} className="certificate-partner-logo" />
+                ))}
+              </div>
+            )}
+          </div>
 
           {(certificateData.signatureName || certificateData.signatureTitle || certificateData.signatureImage) && (
             <div className="certificate-signature-block">
+              {certificateData.signatureImage ? (
+                <img src={getImageUrl(certificateData.signatureImage)} alt="Signature" className="signature-img" style={{ marginBottom: '10px' }} />
+              ) : (
+                <div className="signature-line" style={{ marginBottom: '15px' }} />
+              )}
               {certificateData.signatureName && (
                 <div className="signature-name">{certificateData.signatureName}</div>
               )}
               {certificateData.signatureTitle && (
                 <div className="signature-title">{certificateData.signatureTitle}</div>
-              )}
-              {certificateData.signatureImage ? (
-                <img src={getImageUrl(certificateData.signatureImage)} alt="Signature" className="signature-img" style={{ marginTop: '10px' }} />
-              ) : (
-                <div className="signature-line" style={{ marginTop: '15px' }} />
               )}
             </div>
           )}
