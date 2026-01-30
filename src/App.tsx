@@ -14,6 +14,8 @@ import UserDashboard from './components/UserDashboard';
 import VerifyEmail from './components/VerifyEmail';
 import VerifyCertificate from './components/VerifyCertificate';
 import { getImageUrl } from './utils/imageUrl';
+import { Toaster } from 'react-hot-toast';
+import { motion } from 'framer-motion';
 import './components/Footer.css';
 import './components/Auth.css';
 import './App.css';
@@ -33,8 +35,7 @@ const App: React.FC = () => {
   const [showCertificate, setShowCertificate] = useState(false);
   const [quizScore, setQuizScore] = useState(0);
   const [userName, setUserName] = useState('');
-  const [userNameInput, setUserNameInput] = useState('');
-  const [showNameInput, setShowNameInput] = useState(false);
+
   const [isAdmin, setIsAdmin] = useState(false);
   const [askAdminCode, setAskAdminCode] = useState(false);
   const [adminCodeInput, setAdminCodeInput] = useState('');
@@ -66,6 +67,11 @@ const App: React.FC = () => {
 
   // Auto-print certificate when opened from sidebar
   const [autoPrintCertificate, setAutoPrintCertificate] = useState(false);
+
+  // Dark Mode State
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    return localStorage.getItem('pm13_dark_mode') === 'true';
+  });
 
   const sections = data.sections;
 
@@ -247,11 +253,7 @@ const App: React.FC = () => {
     localStorage.setItem('pm13_activity_log', JSON.stringify(list));
 
     if (score >= 80) {
-      if (!userName) {
-        setShowNameInput(true);
-      } else {
-        setShowCertificate(true);
-      }
+      setShowCertificate(true);
     }
   };
 
@@ -404,9 +406,11 @@ const App: React.FC = () => {
   // Logged In - Dashboard View
   if (currentView === 'dashboard' || currentView === 'user_dashboard') {
     return (
-      <div className="app dashboard-theme" style={{
+      <div className={`app dashboard-theme ${isDarkMode ? 'dark-mode' : ''}`} style={{
         minHeight: '100vh',
-        background: 'linear-gradient(135deg, var(--bg-start, #667eea) 0%, var(--bg-middle, #764ba2) 50%, var(--bg-end, #fef3c7) 100%)',
+        background: isDarkMode
+          ? '#1a202c'
+          : 'linear-gradient(135deg, var(--bg-start, #667eea) 0%, var(--bg-middle, #764ba2) 50%, var(--bg-end, #fef3c7) 100%)',
         display: 'flex',
         flexDirection: 'column',
         fontFamily: "'Inter', sans-serif"
@@ -466,6 +470,29 @@ const App: React.FC = () => {
                 ⚙️ Administration
               </button>
             )}
+
+            <button
+              onClick={() => {
+                const newMode = !isDarkMode;
+                setIsDarkMode(newMode);
+                localStorage.setItem('pm13_dark_mode', String(newMode));
+              }}
+              style={{
+                padding: '0.6rem 1.8rem',
+                background: 'rgba(255,255,255,0.2)',
+                border: '1px solid rgba(255,255,255,0.4)',
+                color: 'white',
+                borderRadius: '50px',
+                cursor: 'pointer',
+                fontSize: '0.95rem',
+                fontWeight: '600',
+                backdropFilter: 'blur(15px)',
+                transition: 'all 0.3s ease',
+                boxShadow: '0 4px 15px rgba(0,0,0,0.1)'
+              }}
+            >
+              {isDarkMode ? '☀️ Mode Jour' : '🌙 Mode Nuit'}
+            </button>
 
             <button
               onClick={handleLogout}
@@ -740,7 +767,13 @@ const App: React.FC = () => {
                         e.currentTarget.style.boxShadow = '0 2px 5px rgba(0,0,0,0.02)';
                       }}
                     >
-                      <div style={{ fontSize: '1.5rem', background: '#e0efff', width: '40px', height: '40px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>🎓</div>
+                      <div style={{ fontSize: '1.5rem', background: '#e0efff', width: '40px', height: '40px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                        {(module.icon && (module.icon.startsWith('http') || module.icon.includes('/storage/'))) ? (
+                          <img src={module.icon} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        ) : (
+                          module.icon || '🎓'
+                        )}
+                      </div>
                       <div style={{ flex: 1 }}>
                         <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#1a5490', lineHeight: 1.2 }}>{module.title}</div>
                         <div style={{ fontSize: '0.7rem', color: '#10b981', fontWeight: 700, marginTop: '2px' }}>Ouvrir & Télécharger</div>
@@ -779,7 +812,7 @@ const App: React.FC = () => {
               />
             ) : (
               <>
-                <div style={{ textAlign: 'center', marginBottom: '4.5rem', color: 'white' }}>
+                <div style={{ textAlign: 'center', marginBottom: '4.5rem' }}>
                   <h2 style={{ fontSize: '4.2rem', fontWeight: 900, margin: '0 0 0.8rem', letterSpacing: '-2px', textShadow: '0 4px 20px rgba(0,0,0,0.2)' }}>
                     Bienvenue, {registration.fullName.split(' ')[0]}
                   </h2>
@@ -841,7 +874,15 @@ const App: React.FC = () => {
 
   if (currentView === 'admin') {
     return (
-      <div className="app">
+      <div className={`app ${isDarkMode ? 'dark-mode' : ''}`}>
+        <Toaster position="top-center" toastOptions={{
+          style: {
+            background: isDarkMode ? '#1a202c' : '#333',
+            color: '#fff',
+            borderRadius: '10px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+          },
+        }} />
         <AdminDashboard
           onClose={() => setCurrentView('dashboard')}
           onEditModule={(m) => {
@@ -857,7 +898,15 @@ const App: React.FC = () => {
 
   // Logged In - Course View
   return (
-    <div className="app">
+    <div className={`app ${isDarkMode ? 'dark-mode' : ''}`}>
+      <Toaster position="top-center" toastOptions={{
+        style: {
+          background: '#333',
+          color: '#fff',
+          borderRadius: '10px',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+        },
+      }} />
       <div className="app-header">
         <button onClick={handleBackToDashboard} className="btn-back-dashboard">
           ✕ Quitter la formation
@@ -909,7 +958,13 @@ const App: React.FC = () => {
         </div>
       </div>
 
-      <div className="app-container">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -20 }}
+        transition={{ duration: 0.3 }}
+        className="app-container"
+      >
         <div className="sidebar">
           <h3>Navigation</h3>
           <ul className="section-nav">
@@ -964,6 +1019,7 @@ const App: React.FC = () => {
                 userName={userName}
                 score={quizScore}
                 autoPrint={autoPrintCertificate}
+                moduleId={data.appTitle}
               />
               <div style={{ textAlign: 'center', marginTop: '2rem' }}>
                 <button className="btn-nav" onClick={handleCertificateComplete}>
@@ -1026,7 +1082,7 @@ const App: React.FC = () => {
             />
           )}
         </div>
-      </div>
+      </motion.div>
 
       <footer className="site-footer" style={{ textAlign: 'center', padding: '1rem', background: '#f8f9fa', borderTop: '1px solid #eee', color: '#888', fontSize: '0.8rem' }}>
         {siteSettings.copyright}

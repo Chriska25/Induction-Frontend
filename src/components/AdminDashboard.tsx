@@ -1,4 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
+import { motion } from 'framer-motion';
+import toast from 'react-hot-toast';
 import './AdminDashboard.css';
 import { api } from '../api/client';
 import HelpGuide from './HelpGuide';
@@ -61,7 +63,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
     const [modules, setModules] = useState<Module[]>([]);
     const [logs, setLogs] = useState<ServerLog[]>([]);
     const [settings, setSettings] = useState<any>({});
-    const [loading, setLoading] = useState(true);
+
     const [searchTerm, setSearchTerm] = useState('');
 
     // Modals state
@@ -159,7 +161,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
     }, [activeTab, settings.site_permissions]);
 
     const loadData = async () => {
-        setLoading(true);
+
         try {
             // Load Settings & Roles first as they are needed for others
             const settingsData = await api.getSettings();
@@ -191,8 +193,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
             }
         } catch (error) {
             console.error('Failed to load dashboard data:', error);
-        } finally {
-            setLoading(false);
+
         }
     };
 
@@ -228,7 +229,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
 
     const handleSaveRole = async () => {
         if (!newRole.id || !newRole.name) {
-            alert("L'ID et le nom du rôle sont obligatoires.");
+            toast.error("L'ID et le nom du rôle sont obligatoires.");
             return;
         }
 
@@ -237,7 +238,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
             updatedRoles = siteRoles.map(r => r.id === editingRole.id ? newRole : r);
         } else {
             if (siteRoles.find(r => r.id === newRole.id)) {
-                alert("Cet ID de rôle existe déjà.");
+                toast.error("Cet ID de rôle existe déjà.");
                 return;
             }
             updatedRoles = [...siteRoles, newRole];
@@ -248,15 +249,15 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
             setSiteRoles(updatedRoles);
             setShowAddRoleModal(false);
             setEditingRole(null);
-            alert("Rôle enregistré !");
+            toast.success("Rôle enregistré !");
         } catch (err) {
-            alert("Erreur lors de l'enregistrement.");
+            toast.error("Erreur lors de l'enregistrement.");
         }
     };
 
     const handleDeleteRole = async (roleId: string) => {
         if (roleId === 'admin' || roleId === 'user') {
-            alert("Ce rôle système ne peut pas être supprimé.");
+            toast.error("Ce rôle système ne peut pas être supprimé.");
             return;
         }
 
@@ -265,8 +266,9 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
             try {
                 await api.updateSettings({ ...settings, site_roles: JSON.stringify(updatedRoles) });
                 setSiteRoles(updatedRoles);
+                toast.success("Rôle supprimé.");
             } catch (err) {
-                alert("Erreur suppression.");
+                toast.error("Erreur suppression.");
             }
         }
     };
@@ -297,11 +299,11 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
                 data: moduleData
             });
 
-            alert(`Module "${newTitle}" créé avec succès !`);
+            toast.success(`Module "${newTitle}" créé avec succès !`);
             loadData();
         } catch (err) {
             console.error('Clone error:', err);
-            alert("Erreur lors du clonage du module.");
+            toast.error("Erreur lors du clonage du module.");
         }
     };
 
@@ -309,15 +311,15 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
         e.preventDefault();
         try {
             await api.updateSettings(settings);
-            alert("Paramètres enregistrés !");
+            toast.success("Paramètres enregistrés !");
         } catch (err) {
-            alert("Erreur enregistrement.");
+            toast.error("Erreur enregistrement.");
         }
     };
 
     const handleAddPermission = async () => {
         if (!newPermission.trim()) {
-            alert("Le nom de la permission est requis.");
+            toast.error("Le nom de la permission est requis.");
             return;
         }
 
@@ -325,7 +327,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
         const permSlug = newPermission.toLowerCase().replace(/\s+/g, '_');
 
         if (availablePermissions.includes(permSlug)) {
-            alert("Cette permission existe déjà.");
+            toast.error("Cette permission existe déjà.");
             return;
         }
 
@@ -340,15 +342,15 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
 
             setAvailablePermissions([...availablePermissions, permSlug]);
             setNewPermission('');
-            alert(`Permission "${permSlug}" ajoutée avec succès !`);
+            toast.success(`Permission "${permSlug}" ajoutée avec succès !`);
         } catch (err) {
-            alert("Erreur lors de l'ajout de la permission.");
+            toast.error("Erreur lors de l'ajout de la permission.");
         }
     };
 
     const handleDeletePermission = async (permission: string) => {
         if (defaultPermissions.includes(permission)) {
-            alert("Les permissions système ne peuvent pas être supprimées.");
+            toast.error("Les permissions système ne peuvent pas être supprimées.");
             return;
         }
 
@@ -377,9 +379,9 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
                 site_roles: JSON.stringify(updatedRoles)
             });
 
-            alert("Permission supprimée.");
+            toast.success("Permission supprimée.");
         } catch (err) {
-            alert("Erreur lors de la suppression.");
+            toast.error("Erreur lors de la suppression.");
         }
     };
 
@@ -401,8 +403,9 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
             setShowRoleModal(false);
             setEditingUser(null);
             loadData();
+            toast.success("Rôle mis à jour.");
         } catch (err) {
-            alert("Erreur changement rôle.");
+            toast.error("Erreur changement rôle.");
         }
     };
 
@@ -413,9 +416,9 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
             await api.resetUserPassword(editingUser.id.toString(), auditPassword);
             setEditingUser(null);
             setAuditPassword('');
-            alert("Mot de passe réinitialisé avec succès !");
+            toast.success("Mot de passe réinitialisé avec succès !");
         } catch (err) {
-            alert("Erreur lors de la réinitialisation.");
+            toast.error("Erreur lors de la réinitialisation.");
         }
     };
 
@@ -426,9 +429,9 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
             setShowAddModuleModal(false);
             setNewModule({ id: '', title: '', description: '', icon: '' });
             loadData();
-            alert("Formation créée !");
+            toast.success("Formation créée !");
         } catch (err) {
-            alert("Erreur lors de la création.");
+            toast.error("Erreur lors de la création.");
         }
     };
 
@@ -448,8 +451,10 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
             await api.createUser(newUser);
             setShowAddUserModal(false);
             loadData();
-            alert("Utilisateur créé !");
-        } catch (e) { alert("Erreur."); }
+            setShowAddUserModal(false);
+            loadData();
+            toast.success("Utilisateur créé !");
+        } catch (e) { toast.error("Erreur."); }
     }
 
     async function handleDeleteModule(id: string) {
@@ -460,7 +465,13 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
     }
 
     return (
-        <div className="admin-dashboard">
+        <motion.div
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.98 }}
+            transition={{ duration: 0.2 }}
+            className="admin-dashboard"
+        >
             <div className="admin-header">
                 <div className="admin-title">
                     <div className="admin-logo">🚀</div>
@@ -655,7 +666,13 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
                                     <tbody>
                                         {filteredModules.map(m => (
                                             <tr key={m.id}>
-                                                <td style={{ fontSize: '1.5rem' }}>{m.icon}</td>
+                                                <td style={{ fontSize: '1.5rem', textAlign: 'center' }}>
+                                                    {(m.icon && (m.icon.startsWith('http') || m.icon.includes('/storage/'))) ? (
+                                                        <img src={m.icon} alt="icon" style={{ width: '40px', height: '40px', objectFit: 'contain', borderRadius: '8px' }} />
+                                                    ) : (
+                                                        <span style={{ fontSize: '2rem' }}>{m.icon || '📦'}</span>
+                                                    )}
+                                                </td>
                                                 <td><strong>{m.title}</strong></td>
                                                 <td><code>{m.id}</code></td>
                                                 <td>{new Date(m.created_at).toLocaleDateString()}</td>
@@ -1201,8 +1218,50 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
                                 <textarea value={newModule.description} onChange={e => setNewModule({ ...newModule, description: e.target.value })} placeholder="Courte description de l'objectif..." style={{ minHeight: '80px' }} />
                             </div>
                             <div className="form-group">
-                                <label>Icône (Emoji ou URL)</label>
-                                <input value={newModule.icon} onChange={e => setNewModule({ ...newModule, icon: e.target.value })} placeholder="ex: 🏥" />
+                                <label>Image ou Icône</label>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', background: '#f8fafc', padding: '1rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                        {newModule.icon && (newModule.icon.startsWith('http') || newModule.icon.includes('/storage/')) ? (
+                                            <div style={{ width: '60px', height: '60px', borderRadius: '10px', overflow: 'hidden', border: '1px solid #cbd5e1', background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                <img src={newModule.icon} alt="Aperçu" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                            </div>
+                                        ) : (
+                                            <div style={{ width: '60px', height: '60px', borderRadius: '10px', border: '1px dashed #cbd5e1', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem', background: 'white' }}>
+                                                {newModule.icon || '📦'}
+                                            </div>
+                                        )}
+                                        <div style={{ flex: 1 }}>
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                style={{ fontSize: '0.9rem', marginBottom: '0.5rem', width: '100%' }}
+                                                onChange={async (e) => {
+                                                    const file = e.target.files?.[0];
+                                                    if (file) {
+                                                        const toastId = toast.loading("Upload de l'image...");
+                                                        try {
+                                                            const result = await api.uploadImage(file);
+                                                            setNewModule({ ...newModule, icon: result.path });
+                                                            toast.success("Image uploadée !", { id: toastId });
+                                                        } catch (err) {
+                                                            console.error(err);
+                                                            toast.error("Erreur d'upload", { id: toastId });
+                                                        }
+                                                    }
+                                                }}
+                                            />
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                <span style={{ fontSize: '0.8rem', color: '#64748b' }}>Ou emoji/lien :</span>
+                                                <input
+                                                    value={newModule.icon}
+                                                    onChange={e => setNewModule({ ...newModule, icon: e.target.value })}
+                                                    placeholder="ex: 🏥 ou https://..."
+                                                    style={{ flex: 1, padding: '0.4rem', fontSize: '0.85rem' }}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <div className="modal-footer">
                                 <button type="submit" className="btn-save">Créer la formation</button>
@@ -1381,8 +1440,10 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
                     </div>
                 )
             }
-        </div >
+        </motion.div>
     );
 };
+
+
 
 export default AdminDashboard;

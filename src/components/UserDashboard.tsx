@@ -1,6 +1,5 @@
 import React from 'react';
 import { RegistrationData } from '../types';
-import { getImageUrl } from '../utils/imageUrl';
 
 interface UserDashboardProps {
     user: RegistrationData;
@@ -34,24 +33,24 @@ const UserDashboard: React.FC<UserDashboardProps> = ({ user, trainings, modules,
     const completionRate = stats.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0;
 
     return (
-        <div style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto', color: 'white' }}>
+        <div style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto' }}>
             {/* Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3rem' }}>
                 <div>
-                    <h1 style={{ fontSize: '2.5rem', fontWeight: 900, margin: 0, letterSpacing: '-1px' }}>Mon Tableau de Bord</h1>
+                    <h1 style={{ fontSize: '2.5rem', fontWeight: 900, margin: 0, letterSpacing: '-1px' }}>Tableau de Bord de {user.fullName.split(' ')[0]}</h1>
                     <p style={{ opacity: 0.8, fontSize: '1.1rem', marginTop: '0.5rem' }}>Suivez votre progression et accédez à vos réussites.</p>
                 </div>
                 <button
                     onClick={onBack}
                     style={{
                         padding: '0.8rem 1.5rem',
-                        background: 'rgba(255,255,255,0.2)',
-                        border: '1px solid rgba(255,255,255,0.3)',
-                        color: 'white',
+                        background: 'white',
+                        border: '1px solid #e2e8f0',
+                        color: '#4a5568',
                         borderRadius: '12px',
                         cursor: 'pointer',
                         fontWeight: '700',
-                        backdropFilter: 'blur(10px)'
+                        boxShadow: '0 4px 10px rgba(0,0,0,0.05)'
                     }}
                 >
                     ⬅️ Retour à l'accueil
@@ -74,7 +73,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({ user, trainings, modules,
                     </h2>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                         {modulesWithProgress.length === 0 ? (
-                            <p style={{ background: 'rgba(255,255,255,0.1)', padding: '2rem', borderRadius: '20px', textAlign: 'center' }}>
+                            <p style={{ background: '#f8fafc', color: '#718096', padding: '2rem', borderRadius: '20px', textAlign: 'center', border: '1px dashed #cbd5e0' }}>
                                 Aucune formation disponible pour le moment.
                             </p>
                         ) : (
@@ -146,11 +145,10 @@ const UserDashboard: React.FC<UserDashboardProps> = ({ user, trainings, modules,
                         🎓 Mes Certificats
                     </h2>
                     <div style={{
-                        background: 'rgba(255,255,255,0.1)',
+                        background: '#f8fafc',
                         borderRadius: '24px',
                         padding: '1.5rem',
-                        backdropFilter: 'blur(10px)',
-                        border: '1px solid rgba(255,255,255,0.2)'
+                        border: '1px solid #edf2f7'
                     }}>
                         {modulesWithProgress.filter(m => m.isCompleted).length === 0 ? (
                             <div style={{ textAlign: 'center', padding: '2rem' }}>

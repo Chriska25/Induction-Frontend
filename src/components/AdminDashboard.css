@@ -539,3 +539,152 @@
         padding: 1rem;
     }
 }
+/* Dark Mode Overrides for Admin Dashboard */
+.app.dark-mode .admin-dashboard {
+  background: #0f172a;
+  color: #f1f5f9;
+}
+
+.app.dark-mode .admin-header {
+  background: #1e293b;
+  border-bottom-color: #334155;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+}
+
+.app.dark-mode .admin-title h1 {
+  color: #f1f5f9;
+}
+
+.app.dark-mode .admin-title p {
+  color: #94a3b8;
+}
+
+.app.dark-mode .btn-close-admin {
+    background: #334155;
+    color: #e2e8f0;
+    border-color: #475569;
+}
+
+.app.dark-mode .btn-close-admin:hover {
+    background: #475569;
+}
+
+/* Tabs */
+.app.dark-mode .admin-tabs {
+  background: #1e293b;
+  border-bottom-color: #334155;
+}
+
+.app.dark-mode .tab-btn {
+  color: #94a3b8;
+}
+
+.app.dark-mode .tab-btn:hover {
+  background: #334155;
+  color: white;
+}
+
+.app.dark-mode .tab-btn.active {
+  background: #1d4ed8; /* Darker blue bg */
+  color: white;
+  border-color: #1e40af;
+}
+
+/* Stats */
+.app.dark-mode .stat-card {
+  background: #1e293b;
+  border-color: #334155;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+}
+
+.app.dark-mode .stat-info h3 {
+  color: #94a3b8;
+}
+
+.app.dark-mode .stat-info p {
+  color: white;
+}
+
+.app.dark-mode .stat-icon {
+    /* Keep bg colors but make them slightly transparent or darker if possible?
+       The inline styles in JSX might override this.
+       We might need !important if we really want to change them via CSS,
+       but usually light pastel bg on dark card looks okay-ish or we can try to invert.
+       Let's leave them for now as they are inline styles in the component. 
+    */
+}
+
+/* Tables */
+.app.dark-mode .table-container {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+.app.dark-mode .admin-table th {
+  background: #0f172a;
+  color: #cbd5e1;
+  border-bottom-color: #334155;
+}
+
+.app.dark-mode .admin-table td {
+  border-bottom-color: #334155;
+  color: #e2e8f0;
+}
+
+.app.dark-mode .admin-table tr:hover {
+  background: #334155;
+}
+
+.app.dark-mode .admin-table td div[style*="color: #1e293b"] {
+  color: #f1f5f9 !important; /* Force override inline styles for text names */
+}
+
+/* Inputs & Search */
+.app.dark-mode .search-input,
+.app.dark-mode .form-group input,
+.app.dark-mode .form-group textarea,
+.app.dark-mode .form-group select {
+  background: #0f172a;
+  border-color: #334155;
+  color: white;
+}
+
+.app.dark-mode .search-input:focus,
+.app.dark-mode .form-group input:focus {
+  border-color: #3b82f6;
+  background: #0f172a;
+}
+
+.app.dark-mode .search-icon {
+    color: #64748b;
+}
+
+/* Modals */
+.app.dark-mode .modal-content {
+  background: #1e293b;
+  color: #f1f5f9;
+}
+
+.app.dark-mode .modal-header,
+.app.dark-mode .modal-footer {
+  background: #0f172a;
+  border-color: #334155;
+}
+
+.app.dark-mode .btn-cancel {
+  background: #334155;
+  color: #e2e8f0;
+}
+
+.app.dark-mode .user-details-header {
+    background: #1e3a8a; /* Dark blue */
+}
+
+.app.dark-mode .action-icon:hover {
+    background: #334155;
+}
+
+/* Maintenance Mode Box (inline style override attempt) */
+.app.dark-mode .table-container div[style*="background: #f8fafc"] {
+    background: #0f172a !important;
+}

@@ -1,3 +1,4 @@
+import { motion, Variants } from 'framer-motion';
 import React, { useEffect, useState } from 'react';
 import { ContentData } from '../types';
 import { api } from '../api/client';
@@ -33,6 +34,13 @@ const InductionList: React.FC<InductionListProps> = ({ onSelect, userName, userI
     const [trainings, setTrainings] = useState<TrainingRecord[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+
+    // Create Modal State
+    const [showCreateModal, setShowCreateModal] = useState(false);
+    const [newModuleTitle, setNewModuleTitle] = useState('');
+    const [newModuleDesc, setNewModuleDesc] = useState('');
+    const [newModuleIcon, setNewModuleIcon] = useState('📘');
+    const [isCreating, setIsCreating] = useState(false);
 
     useEffect(() => {
         loadData();
@@ -121,12 +129,6 @@ const InductionList: React.FC<InductionListProps> = ({ onSelect, userName, userI
         }));
     };
 
-    const [showCreateModal, setShowCreateModal] = useState(false);
-    const [newModuleTitle, setNewModuleTitle] = useState('');
-    const [newModuleDesc, setNewModuleDesc] = useState('');
-    const [newModuleIcon, setNewModuleIcon] = useState('📘');
-    const [isCreating, setIsCreating] = useState(false);
-
     const handleCreateModule = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!newModuleTitle) return;
@@ -168,6 +170,30 @@ const InductionList: React.FC<InductionListProps> = ({ onSelect, userName, userI
         }
     };
 
+    // Animation variants
+    const container: Variants = {
+        hidden: { opacity: 0 },
+        show: {
+            opacity: 1,
+            transition: {
+                staggerChildren: 0.1
+            }
+        }
+    };
+
+    const item: Variants = {
+        hidden: { opacity: 0, y: 30 },
+        show: {
+            opacity: 1,
+            y: 0,
+            transition: {
+                type: "spring",
+                stiffness: 50,
+                damping: 20
+            }
+        }
+    };
+
     if (loading) return <div className="induction-list-page"><p>Chargement...</p></div>;
     if (error) return <div className="induction-list-page"><p className="error">{error}</p></div>;
 
@@ -178,12 +204,42 @@ const InductionList: React.FC<InductionListProps> = ({ onSelect, userName, userI
                 <p>Veuillez sélectionner votre module de formation</p>
             </div>
 
-            <div className="induction-grid">
+            <motion.div
+                className="induction-grid"
+                variants={container}
+                initial="hidden"
+                animate="show"
+            >
                 {modules.map((module) => {
+                    const calculateProgress = (moduleId: string): number => {
+                        const status = getModuleStatus(moduleId);
+                        if (status === 'completed') return 100;
+
+                        const moduleTrainings = trainings.filter(t => String(t.module_id) === String(moduleId));
+                        const quizWithScore = moduleTrainings.find(t => (t as any).status === 'quiz' || (t as any).type === 'quiz');
+
+                        // If they took the quiz but failed, they are far along (e.g. 90%)
+                        if (quizWithScore) return 90;
+
+                        // If they just started
+                        if (status === 'in-progress') return 30;
+
+                        return 0;
+                    };
+
                     const status = getModuleStatus(module.id);
                     const bestScore = getBestScore(module.id);
+                    const progress = calculateProgress(module.id);
+
                     return (
-                        <div key={module.id} className={`induction-card status-${status}`} onClick={() => handleSelect(module)}>
+                        <motion.div
+                            key={module.id}
+                            className={`induction-card status-${status}`}
+                            onClick={() => handleSelect(module)}
+                            variants={item}
+                            whileHover={{ y: -12, scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                        >
                             {isAdminMode && (
                                 <button
                                     className="btn-delete-module"
@@ -215,6 +271,17 @@ const InductionList: React.FC<InductionListProps> = ({ onSelect, userName, userI
                                 )}
                             </div>
 
+                            {/* Progress Bar Container */}
+                            <div className="progress-container">
+                                <div
+                                    className="progress-bar"
+                                    style={{
+                                        width: `${progress}%`,
+                                        background: status === 'completed' ? '#10b981' : (progress > 0 ? 'linear-gradient(90deg, #667eea, #764ba2)' : 'transparent'),
+                                    }}
+                                />
+                            </div>
+
                             {status === 'completed' && bestScore !== null && (
                                 <div className="module-score-display">
                                     <span className="score-label">Score obtenu :</span>
@@ -225,7 +292,7 @@ const InductionList: React.FC<InductionListProps> = ({ onSelect, userName, userI
                             <button className="btn-start-module">
                                 {status === 'completed' ? 'Revoir' : (status === 'in-progress' ? 'Continuer' : 'Commencer')}
                             </button>
-                        </div>
+                        </motion.div>
                     );
                 })}
 
@@ -238,14 +305,20 @@ const InductionList: React.FC<InductionListProps> = ({ onSelect, userName, userI
                 )}
 
                 {userRole === 'admin' && onAdminClick && (
-                    <div className="induction-card admin-card" onClick={onAdminClick}>
+                    <motion.div
+                        className="induction-card admin-card"
+                        onClick={onAdminClick}
+                        variants={item}
+                        whileHover={{ y: -12, scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                    >
                         <div className="induction-icon">🛡️</div>
                         <h2>Administration</h2>
                         <p>Gérer les utilisateurs et voir la progression</p>
                         <button className="btn-start-module">Ouvrir le tableau de bord</button>
-                    </div>
+                    </motion.div>
                 )}
-            </div>
+            </motion.div>
 
             {showCreateModal && (
                 <div className="profile-modal-overlay">

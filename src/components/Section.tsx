@@ -9,6 +9,10 @@ interface SectionProps {
   content: ContentItem[];
 }
 
+import { motion, Variants } from 'framer-motion';
+
+// ... imports remain the same ...
+
 const Section: React.FC<SectionProps> = ({ title, subtitle, content }) => {
   const [bgGradient, setBgGradient] = useState('linear-gradient(135deg, #f8fafc 0%, #e0e7ff 50%, #fef3c7 100%)');
 
@@ -27,49 +31,73 @@ const Section: React.FC<SectionProps> = ({ title, subtitle, content }) => {
     loadBackgroundColors();
   }, []);
 
+  const containerVariants: Variants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.15,
+        delayChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants: Variants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        type: "spring",
+        stiffness: 50,
+        damping: 20
+      }
+    }
+  };
+
   const renderContent = (item: ContentItem, index: number) => {
     switch (item.type) {
       case 'heading':
         return (
-          <h3 key={index} className="content-heading">
+          <motion.h3 key={index} variants={itemVariants} className="content-heading">
             {item.text}
-          </h3>
+          </motion.h3>
         );
       case 'paragraph':
         return (
-          <p key={index} className="content-paragraph">
+          <motion.p key={index} variants={itemVariants} className="content-paragraph">
             {item.text}
-          </p>
+          </motion.p>
         );
       case 'list':
         return (
-          <ul key={index} className="content-list">
+          <motion.ul key={index} variants={itemVariants} className="content-list">
             {item.items?.map((listItem, idx) => (
-              <li key={idx}>{listItem}</li>
+              <li key={idx}>{listItem as string}</li>
             ))}
-          </ul>
+          </motion.ul>
         );
       case 'steps':
         return (
-          <ol key={index} className="content-steps">
+          <motion.ol key={index} variants={itemVariants} className="content-steps">
             {item.items?.map((step, idx) => (
-              <li key={idx}>{step}</li>
+              <li key={idx}><span>{step as string}</span></li>
             ))}
-          </ol>
+          </motion.ol>
         );
       case 'checklist':
         return (
-          <ul key={index} className="content-checklist">
+          <motion.ul key={index} variants={itemVariants} className="content-checklist">
             {item.items?.map((checkItem, idx) => (
               <li key={idx}>
-                <span className="check-icon">✓</span> {checkItem}
+                <span className="check-icon">✓</span> {checkItem as string}
               </li>
             ))}
-          </ul>
+          </motion.ul>
         );
       case 'faq':
         return (
-          <div key={index} className="content-faq">
+          <motion.div key={index} variants={itemVariants} className="content-faq">
             {(item.items as FAQItem[])?.map((faqItem, idx) => (
               <div key={idx} className="faq-item">
                 <div className="faq-question">
@@ -80,16 +108,16 @@ const Section: React.FC<SectionProps> = ({ title, subtitle, content }) => {
                 </div>
               </div>
             ))}
-          </div>
+          </motion.div>
         );
       case 'image':
         return (
-          <figure key={index} className="content-image">
+          <motion.figure key={index} variants={itemVariants} className="content-image">
             {item.src && (
               <img src={item.src} alt={item.alt || 'Illustration'} loading="lazy" />
             )}
             {item.caption && <figcaption>{item.caption}</figcaption>}
-          </figure>
+          </motion.figure>
         );
       default:
         return null;
@@ -98,13 +126,23 @@ const Section: React.FC<SectionProps> = ({ title, subtitle, content }) => {
 
   return (
     <div className="section" style={{ background: bgGradient }}>
-      <div className="section-header">
+      <motion.div
+        className="section-header"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+      >
         <h1 className="section-title">{title}</h1>
         <h2 className="section-subtitle">{subtitle}</h2>
-      </div>
-      <div className="section-content">
+      </motion.div>
+      <motion.div
+        className="section-content"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
         {content.map((item, index) => renderContent(item, index))}
-      </div>
+      </motion.div>
     </div>
   );
 };

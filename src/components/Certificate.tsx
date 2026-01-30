@@ -12,10 +12,9 @@ interface CertificateProps {
   score: number;
   autoPrint?: boolean;
   moduleId?: string;
-  userId?: string;
 }
 
-const Certificate: React.FC<CertificateProps> = ({ certificateData, userName, score, autoPrint = false, moduleId, userId }) => {
+const Certificate: React.FC<CertificateProps> = ({ certificateData, userName, score, autoPrint = false, moduleId }) => {
   const certificateRef = useRef<HTMLDivElement>(null);
 
   // Common options for PDF generation
@@ -102,7 +101,8 @@ const Certificate: React.FC<CertificateProps> = ({ certificateData, userName, sc
   // Ideally this would be a public verification page
   // We prefer VITE_PUBLIC_URL if set (production), otherwise origin
   const appUrl = import.meta.env.VITE_PUBLIC_URL || window.location.origin;
-  const qrValue = `${appUrl}/verify-certificate?user=${encodeURIComponent(userName)}&score=${score}&module=${moduleId || 'induction'}`;
+  const moduleName = moduleId || certificateData.title || 'Formation TUDIENZELE';
+  const qrValue = `${appUrl}/verify-certificate?user=${encodeURIComponent(userName)}&score=${score}&module=${encodeURIComponent(moduleName)}`;
 
   // Debug log to check what is being generated
   // console.log('Generated QR Value:', qrValue);

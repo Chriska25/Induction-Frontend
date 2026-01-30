@@ -1,17 +1,17 @@
+/* Modern Induction List Styling */
 .induction-list-page {
   max-width: 1400px;
   margin: 0 auto;
   padding: 40px 20px;
 }
 
-/* On cache l'ancien header car il est maintenant géré dans App.tsx */
 .induction-header {
   display: none;
 }
 
 .induction-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
   gap: 2.5rem;
   padding-bottom: 80px;
   max-width: 100%;
@@ -19,140 +19,127 @@
 }
 
 .induction-card {
-  background: rgba(255, 255, 255, 0.95);
-  padding: 3rem 2.5rem;
-  border-radius: 32px;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05), 0 5px 15px rgba(0, 0, 0, 0.03);
-  transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+  background: white;
+  padding: 2.5rem;
+  border-radius: 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+  transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  border: 1px solid rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(0, 0, 0, 0.03);
   position: relative;
   overflow: hidden;
   cursor: pointer;
-  backdrop-filter: blur(10px);
-}
-
-.induction-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 8px;
-  background: linear-gradient(90deg, #667eea, #764ba2);
-  opacity: 0.8;
-  transition: height 0.3s ease;
 }
 
 .induction-card:hover {
-  transform: translateY(-12px);
-  box-shadow: 0 40px 80px rgba(0, 0, 0, 0.15);
+  transform: translateY(-8px);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.08);
   border-color: rgba(102, 126, 234, 0.3);
 }
 
-.induction-card:hover::before {
-  height: 12px;
-}
-
 .induction-icon {
-  font-size: 4rem;
-  margin-bottom: 2.5rem;
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-  width: 120px;
-  height: 120px;
+  font-size: 3.5rem;
+  margin-bottom: 1.8rem;
+  background: #f8fafc;
+  width: 100px;
+  height: 100px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 30px;
+  border-radius: 24px;
   color: #667eea;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.04), inset 0 2px 4px rgba(255, 255, 255, 1);
-  transition: all 0.5s ease;
+  transition: all 0.4s ease;
 }
 
 .induction-card:hover .induction-icon {
   transform: scale(1.1) rotate(5deg);
-  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-  box-shadow: 0 20px 40px rgba(102, 126, 234, 0.15);
+  background: #edf2f7;
+  color: #5a67d8;
 }
 
 .induction-card h2 {
   color: #1a202c;
-  margin-bottom: 1.2rem;
-  font-size: 1.75rem;
-  font-weight: 850;
-  line-height: 1.2;
-  letter-spacing: -0.8px;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1.3;
+  letter-spacing: -0.5px;
 }
 
 .induction-card p {
-  color: #4a5568;
-  margin-bottom: 2.5rem;
+  color: #718096;
+  margin-bottom: 2rem;
   flex-grow: 1;
-  line-height: 1.7;
-  font-size: 1.05rem;
-  opacity: 0.9;
+  line-height: 1.6;
+  font-size: 1rem;
 }
 
 .btn-start-module {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #1a202c;
   color: white;
   border: none;
-  padding: 18px 36px;
-  border-radius: 20px;
-  font-size: 1.1rem;
-  font-weight: 800;
+  padding: 16px 32px;
+  border-radius: 14px;
+  font-size: 1rem;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s ease;
   width: 100%;
-  box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
-  letter-spacing: 0.8px;
-  text-transform: uppercase;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
+  letter-spacing: 0.5px;
+  margin-top: auto;
 }
 
 .btn-start-module:hover {
-  filter: brightness(1.1);
-  transform: scale(1.02);
-  box-shadow: 0 15px 35px rgba(102, 126, 234, 0.45);
+  background: #2d3748;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
-.btn-start-module:active {
-  transform: scale(0.98);
+/* Progress Bar */
+.progress-container {
+  width: 100%;
+  height: 6px;
+  background: #edf2f7;
+  border-radius: 10px;
+  margin: 1rem 0 1.5rem;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  border-radius: 10px;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Module Score Display */
 .module-score-display {
-  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
-  border: 2px solid #10b981;
-  border-radius: 16px;
-  padding: 1rem 1.5rem;
-  margin-bottom: 1rem;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 12px;
+  padding: 0.8rem 1.2rem;
+  margin-bottom: 1.2rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .score-label {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 700;
-  color: #065f46;
+  color: #166534;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
 .score-value {
-  font-size: 1.8rem;
+  font-size: 1.2rem;
   font-weight: 900;
-  color: #10b981;
-  letter-spacing: -1px;
+  color: #15803d;
 }
 
 /* Floating Labels (Status) - Ultra Premium Design */

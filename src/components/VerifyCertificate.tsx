@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { getImageUrl } from '../utils/imageUrl';
 
 const VerifyCertificate: React.FC = () => {
     const [data, setData] = useState<{ user: string; score: string; module: string } | null>(null);
@@ -15,7 +14,11 @@ const VerifyCertificate: React.FC = () => {
             console.log('VerifyCertificate Params:', { user, score, module });
 
             if (user && score && module) {
-                setData({ user, score, module });
+                setData({
+                    user: decodeURIComponent(user),
+                    score: decodeURIComponent(score),
+                    module: decodeURIComponent(module)
+                });
                 setIsValid(true);
             } else {
                 console.warn('Missing parameters for certificate verification');
@@ -99,7 +102,7 @@ const VerifyCertificate: React.FC = () => {
                         }}>
                             <div style={{ marginBottom: '1rem' }}>
                                 <span style={{ display: 'block', fontSize: '0.75rem', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>Apprenant</span>
-                                <span style={{ fontSize: '1.2rem', color: '#1f2937', fontWeight: 700 }}>{decodeURIComponent(data.user)}</span>
+                                <span style={{ fontSize: '1.2rem', color: '#1f2937', fontWeight: 700 }}>{data.user}</span>
                             </div>
 
                             <div style={{ marginBottom: '1rem' }}>
