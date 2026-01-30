@@ -271,6 +271,43 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ initialData, moduleId, moduleMe
     </div>
   );
 
+  /* New Visual Content Editor Logic */
+  const addContentItem = (sectionIndex: number, type: any) => {
+    const section = data.sections[sectionIndex];
+    const newContent = [...(section.content || [])];
+
+    let newItem: any = { type, text: '' };
+    if (type === 'list' || type === 'steps' || type === 'checklist') newItem.items = ['Nouvel élément'];
+    if (type === 'faq') newItem.items = [{ question: 'Question ?', answer: 'Réponse' }];
+    if (type === 'image') {
+      // Use a base64 gray placeholder to avoid network errors
+      newItem = {
+        type: 'image',
+        src: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MDAiIGhlaWdodD0iNDAwIiB2aWV3Qm94PSIwIDAgNjAwIDQwMCI+PHJlY3Qgd2lkdGg9IjYwMCIgaGVpZ2h0PSI0MDAiIGZpbGw9IiNlMmU4ZjAiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjQiIGZpbGw9IiM5NDVhNzQiPkltYWdlPC90ZXh0Pjwvc3ZnPg==',
+        alt: 'Image',
+        caption: ''
+      };
+    }
+
+    newContent.push(newItem);
+    updateSection(sectionIndex, { ...section, content: newContent });
+  };
+
+  const updateContentItem = (sectionIndex: number, contentIndex: number, field: string, value: any) => {
+    const section = data.sections[sectionIndex];
+    const newContent = [...(section.content || [])];
+    newContent[contentIndex] = { ...newContent[contentIndex], [field]: value };
+    updateSection(sectionIndex, { ...section, content: newContent });
+  };
+
+  const removeContentItem = (sectionIndex: number, contentIndex: number) => {
+    if (!window.confirm("Supprimer cet élément ?")) return;
+    const section = data.sections[sectionIndex];
+    const newContent = [...(section.content || [])];
+    newContent.splice(contentIndex, 1);
+    updateSection(sectionIndex, { ...section, content: newContent });
+  };
+
   const renderSectionsTab = () => (
     <div className="admin-tab-content">
       <div className="admin-tab-header">
@@ -284,15 +321,6 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ initialData, moduleId, moduleMe
           <div key={section.id} className="section-editor-card">
             {editingSectionIndex === index ? (
               <div className="section-editor-form">
-                <div className="admin-form-group">
-                  <label>ID de la section</label>
-                  <input
-                    type="text"
-                    value={section.id}
-                    onChange={(e) => updateSection(index, { ...section, id: e.target.value })}
-                    className="admin-input"
-                  />
-                </div>
                 <div className="admin-form-group">
                   <label>Titre</label>
                   <input
@@ -311,152 +339,97 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ initialData, moduleId, moduleMe
                     className="admin-input"
                   />
                 </div>
+
+                {/* Visual Content Editor */}
                 <div className="admin-form-group">
-                  <label>Contenu (JSON)</label>
-                  <textarea
-                    value={JSON.stringify(section.content, null, 2)}
-                    onChange={(e) => {
-                      try {
-                        const content = JSON.parse(e.target.value);
-                        updateSection(index, { ...section, content });
-                      } catch {
-                        // on laisse l'utilisateur corriger le JSON
-                      }
-                    }}
-                    className="admin-textarea-small"
-                    rows={8}
-                  />
-                  <small>
-                    Format JSON pour le contenu (paragraphes, listes, étapes, FAQ, images).
-                    Pour une image&nbsp;: {'{ \"type\": \"image\", \"src\": \"URL\", \"alt\": \"Texte\", \"caption\": \"Légende\" }'}
-                  </small>
-                  <button
-                    type="button"
-                    className="btn-admin-add"
-                    style={{ marginTop: '0.5rem' }}
-                    onClick={() => {
-                      const newContent = [
-                        ...(section.content || []),
-                        {
-                          type: 'image' as const,
-                          src: 'https://via.placeholder.com/900x420?text=Illustration+PM13',
-                          alt: 'Illustration PM13',
-                          caption: 'Image d’illustration à personnaliser',
-                        },
-                      ];
-                      updateSection(index, { ...section, content: newContent });
-                    }}
-                  >
-                    + Ajouter une image d’illustration
-                  </button>
-                </div>
-                <div className="admin-images-tools">
-                  <h4>Images de la section</h4>
-                  {section.content?.filter((c: any) => c.type === 'image').length === 0 && (
-                    <p className="admin-images-empty">Aucune image pour l’instant.</p>
-                  )}
-                  <div className="admin-images-list">
-                    {section.content
-                      ?.map((c: any, contentIndex: number) => ({ c, contentIndex }))
-                      .filter((item) => item.c.type === 'image')
-                      .map(({ c, contentIndex }) => (
-                        <div key={contentIndex} className="admin-image-item">
-                          {c.src && (
-                            <img
-                              src={c.src}
-                              alt={c.alt || 'Illustration'}
-                              className="admin-image-preview"
-                            />
-                          )}
-                          <div className="admin-image-meta">
-                            <div className="admin-image-caption">
-                              {c.caption || '(sans légende)'}
-                            </div>
-                            <div className="admin-image-actions">
-                              <button
-                                type="button"
-                                className="btn-admin-secondary"
-                                onClick={() => {
-                                  const newContent = [...(section.content || [])];
-                                  newContent.splice(contentIndex, 1);
-                                  updateSection(index, { ...section, content: newContent });
-                                }}
-                              >
-                                Supprimer l’image
-                              </button>
-                              <label className="btn-admin-edit admin-image-upload">
-                                Changer (fichier local)
-                                <input
-                                  type="file"
-                                  accept="image/*"
-                                  onChange={(e) => {
-                                    const file = e.target.files?.[0];
-                                    if (!file) return;
-                                    const reader = new FileReader();
-                                    reader.onload = () => {
-                                      const src = reader.result as string;
-                                      const newContent = [...(section.content || [])];
-                                      newContent[contentIndex] = {
-                                        ...(newContent[contentIndex] || {}),
-                                        type: 'image' as const,
-                                        src,
-                                        alt: file.name,
-                                        caption: c.caption || file.name,
-                                      };
-                                      updateSection(index, { ...section, content: newContent });
-                                    };
-                                    reader.readAsDataURL(file);
-                                    e.target.value = '';
-                                  }}
-                                />
-                              </label>
-                            </div>
-                          </div>
+                  <label>Contenu de la section</label>
+                  <div className="visual-editor-container" style={{ background: '#f8fafc', padding: '1rem', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                    {(section.content || []).map((item, cIdx) => (
+                      <div key={cIdx} className="content-block-item" style={{ background: 'white', padding: '1rem', marginBottom: '10px', borderRadius: '6px', border: '1px solid #eee' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
+                          <span style={{ fontSize: '0.8rem', fontWeight: 'bold', textTransform: 'uppercase', color: '#64748b' }}>{item.type}</span>
+                          <button onClick={() => removeContentItem(index, cIdx)} style={{ color: '#ef4444', fontSize: '0.8rem', background: 'none', border: 'none', cursor: 'pointer' }}>Supprimer</button>
                         </div>
-                      ))}
-                  </div>
-                  <div className="admin-image-upload-new">
-                    <label className="btn-admin-secondary admin-image-upload">
-                      + Ajouter une image depuis votre ordinateur
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (!file) return;
-                          const reader = new FileReader();
-                          reader.onload = () => {
-                            const src = reader.result as string;
-                            const newContent = [
-                              ...(section.content || []),
-                              {
-                                type: 'image' as const,
-                                src,
-                                alt: file.name,
-                                caption: file.name,
-                              },
-                            ];
-                            updateSection(index, { ...section, content: newContent });
-                          };
-                          reader.readAsDataURL(file);
-                          e.target.value = '';
-                        }}
-                      />
-                    </label>
+
+                        {/* Text based inputs */}
+                        {(item.type === 'paragraph' || item.type === 'heading') && (
+                          <textarea
+                            className="admin-input"
+                            value={item.text}
+                            onChange={e => updateContentItem(index, cIdx, 'text', e.target.value)}
+                            rows={item.type === 'heading' ? 1 : 3}
+                            placeholder={item.type === 'heading' ? 'Votre titre...' : 'Votre paragraphe...'}
+                          />
+                        )}
+
+                        {/* List inputs */}
+                        {(item.type === 'list' || item.type === 'steps' || item.type === 'checklist') && (
+                          <div>
+                            <textarea
+                              className="admin-input"
+                              value={(item.items as string[])?.join('\n')}
+                              onChange={e => updateContentItem(index, cIdx, 'items', e.target.value.split('\n'))}
+                              rows={4}
+                              placeholder="Un élément par ligne"
+                            />
+                            <small style={{ color: '#64748b' }}>Un élément par ligne</small>
+                          </div>
+                        )}
+
+                        {/* Image inputs */}
+                        {item.type === 'image' && (
+                          <div>
+                            <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '10px' }}>
+                              {item.src && <img src={item.src} className="preview-thumb" style={{ height: '60px', borderRadius: '4px' }} />}
+                              <input
+                                type="file"
+                                accept="image/*"
+                                onChange={async (e) => {
+                                  if (e.target.files?.[0]) {
+                                    const file = e.target.files[0];
+                                    const toastId = "upload_" + Date.now(); // fake toast id or implement toast
+                                    try {
+                                      const res = await api.uploadImage(file);
+                                      updateContentItem(index, cIdx, 'src', res.path);
+                                    } catch (err) { alert("Erreur upload"); }
+                                  }
+                                }}
+                              />
+                            </div>
+                            <input
+                              className="admin-input"
+                              value={item.caption || ''}
+                              onChange={e => updateContentItem(index, cIdx, 'caption', e.target.value)}
+                              placeholder="Légende de l'image"
+                            />
+                          </div>
+                        )}
+                      </div>
+                    ))}
+
+                    {/* Add Buttons */}
+                    <div className="add-content-buttons" style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '1rem' }}>
+                      <button type="button" className="btn-admin-secondary" onClick={() => addContentItem(index, 'heading')}>+ Titre</button>
+                      <button type="button" className="btn-admin-secondary" onClick={() => addContentItem(index, 'paragraph')}>+ Texte</button>
+                      <button type="button" className="btn-admin-secondary" onClick={() => addContentItem(index, 'list')}>+ Liste</button>
+                      <button type="button" className="btn-admin-secondary" onClick={() => addContentItem(index, 'image')}>+ Image</button>
+                      <button type="button" className="btn-admin-secondary" onClick={() => addContentItem(index, 'steps')}>+ Étapes</button>
+                    </div>
                   </div>
                 </div>
+
                 <div className="section-editor-actions">
                   <button
                     className="btn-admin-secondary"
                     onClick={() => setEditingSectionIndex(null)}
                   >
-                    Fermer
+                    Fermer (Sauvegarde auto)
                   </button>
                   <button
                     className="btn-admin-danger"
                     onClick={() => deleteSection(index)}
                   >
-                    Supprimer
+                    Supprimer la section
                   </button>
                 </div>
               </div>
@@ -464,6 +437,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ initialData, moduleId, moduleMe
               <div className="section-editor-preview">
                 <h4>{section.title}</h4>
                 <p className="section-subtitle-preview">{section.subtitle}</p>
+                <div style={{ fontSize: '0.8rem', color: '#64748b' }}>{section.content?.length || 0} éléments de contenu</div>
                 <button
                   className="btn-admin-edit"
                   onClick={() => setEditingSectionIndex(index)}

@@ -169,7 +169,8 @@ export const api = {
             body: JSON.stringify(moduleData),
         });
         if (!response.ok) {
-            throw new Error('Failed to create module');
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.details || errorData.error || 'Failed to create module');
         }
         return await response.json();
     },

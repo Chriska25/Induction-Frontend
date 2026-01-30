@@ -4,6 +4,7 @@ import toast from 'react-hot-toast';
 import './AdminDashboard.css';
 import { api } from '../api/client';
 import HelpGuide from './HelpGuide';
+import CourseBuilder from './CourseBuilder';
 
 interface AdminUser {
     id: number;
@@ -63,6 +64,10 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
     const [modules, setModules] = useState<Module[]>([]);
     const [logs, setLogs] = useState<ServerLog[]>([]);
     const [settings, setSettings] = useState<any>({});
+
+    // Builder State
+    const [builderModule, setBuilderModule] = useState<Module | null>(null);
+    const openCourseBuilder = (m: Module) => setBuilderModule(m);
 
     const [searchTerm, setSearchTerm] = useState('');
 
@@ -430,8 +435,9 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
             setNewModule({ id: '', title: '', description: '', icon: '' });
             loadData();
             toast.success("Formation créée !");
-        } catch (err) {
-            toast.error("Erreur lors de la création.");
+        } catch (err: any) {
+            console.error("Error creating module:", err);
+            toast.error(err.message || "Erreur lors de la création.");
         }
     };
 
@@ -463,6 +469,70 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
             loadData();
         }
     }
+
+    const handleExportModule = (module: Module) => {
+        const dataStr = JSON.stringify(module, null, 2);
+        const blob = new Blob([dataStr], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${module.id}_export.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        toast.success("Module téléchargé !");
+    };
+
+    const handleImportModule = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            try {
+                const content = e.target?.result as string;
+                const moduleData = JSON.parse(content);
+
+                // Validate minimal structure
+                if (!moduleData.id || !moduleData.title) {
+                    toast.error("Format JSON invalide (manque id ou title)");
+                    return;
+                }
+
+                // Check if exists
+                const exists = modules.find(m => m.id === moduleData.id);
+                if (exists) {
+                    if (!window.confirm(`Le module ${moduleData.id} existe déjà. Créer une copie avec un nouvel ID ?`)) {
+                        return;
+                    }
+                    moduleData.id = `${moduleData.id}_import_${Date.now()}`;
+                    moduleData.title = `${moduleData.title} (Importé)`;
+                }
+
+                // Prepare clean payload for backend
+                // Remove timestamp fields that backend auto-generates
+                const payload = {
+                    id: moduleData.id,
+                    title: moduleData.title,
+                    description: moduleData.description || '',
+                    icon: moduleData.icon || '📦',
+                    // Ensure data is a string (backend expects stringified JSON)
+                    data: typeof moduleData.data === 'object'
+                        ? JSON.stringify(moduleData.data)
+                        : (moduleData.data || '{}')
+                };
+
+                await api.createModule(payload);
+                toast.success("Module importé avec succès !");
+                loadData();
+            } catch (err) {
+                console.error(err);
+                toast.error("Erreur lors de l'import du fichier JSON");
+            }
+        };
+        reader.readAsText(file);
+    };
 
     return (
         <motion.div
@@ -599,9 +669,21 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
                                     onChange={e => setSearchTerm(e.target.value)}
                                 />
                             </div>
-                            <button className="btn-add-item" onClick={() => activeTab === 'users' ? setShowAddUserModal(true) : setShowAddModuleModal(true)}>
-                                {activeTab === 'users' ? '➕ Ajouter Utilisateur' : '➕ Créer Formation'}
-                            </button>
+                            <div style={{ display: 'flex', gap: '10px' }}>
+                                <input
+                                    type="file"
+                                    id="import-json"
+                                    style={{ display: 'none' }}
+                                    accept=".json"
+                                    onChange={handleImportModule}
+                                />
+                                <button className="btn-add-item" style={{ background: '#10b981' }} onClick={() => document.getElementById('import-json')?.click()}>
+                                    📤 Importer JSON
+                                </button>
+                                <button className="btn-add-item" onClick={() => activeTab === 'users' ? setShowAddUserModal(true) : setShowAddModuleModal(true)}>
+                                    {activeTab === 'users' ? '➕ Ajouter Utilisateur' : '➕ Créer Formation'}
+                                </button>
+                            </div>
                         </div>
 
                         {activeTab === 'users' && (
@@ -677,8 +759,9 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
                                                 <td><code>{m.id}</code></td>
                                                 <td>{new Date(m.created_at).toLocaleDateString()}</td>
                                                 <td>
-                                                    <button onClick={() => onEditModule?.(m)} className="action-icon" title="Éditer">📝</button>
+                                                    <button onClick={() => openCourseBuilder(m)} className="action-icon" title="Éditer le contenu (Builder)">📝</button>
                                                     <button onClick={() => handleCloneModule(m)} className="action-icon" title="Cloner">📋</button>
+                                                    <button onClick={() => handleExportModule(m)} className="action-icon" title="Télécharger JSON">⬇️</button>
                                                     <button onClick={() => handleDeleteModule(m.id)} className="action-icon" title="Supprimer">🗑️</button>
                                                 </td>
                                             </tr>
@@ -688,6 +771,31 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
                             </div>
                         )}
                     </>
+                )}
+
+                {/* Course Builder Modal */}
+                {builderModule && (
+                    <div className="modal-overlay" style={{ alignItems: 'flex-start', paddingTop: '2rem' }}>
+                        <div className="modal-content" style={{ maxWidth: '1200px', height: '90vh', width: '95%' }}>
+                            <CourseBuilder
+                                initialData={builderModule.data ? JSON.parse(builderModule.data) : {
+                                    appTitle: builderModule.title,
+                                    sections: [],
+                                    quiz: { title: 'Quiz', instructions: '', questions: [] },
+                                    certificate: { title: 'Certificat', subtitle: '', successMessage: '', logoText: 'PM13' }
+                                }}
+                                onSave={async (data) => {
+                                    await api.updateModule(builderModule.id, {
+                                        data,
+                                        title: data.appTitle // Sync title too
+                                    });
+                                    setBuilderModule(null);
+                                    loadData();
+                                }}
+                                onCancel={() => setBuilderModule(null)}
+                            />
+                        </div>
+                    </div>
                 )}
 
                 {activeTab === 'roles' && (
@@ -1205,10 +1313,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
                             <button onClick={() => setShowAddModuleModal(false)} className="action-icon">✕</button>
                         </div>
                         <form onSubmit={handleAddModule} className="modal-body">
-                            <div className="form-group">
-                                <label>ID Unique (sans espace)</label>
-                                <input required value={newModule.id} onChange={e => setNewModule({ ...newModule, id: e.target.value })} placeholder="ex: hygiene-base" />
-                            </div>
+
                             <div className="form-group">
                                 <label>Titre de la Formation</label>
                                 <input required value={newModule.title} onChange={e => setNewModule({ ...newModule, title: e.target.value })} placeholder="ex: Hygiène en milieu hospitalier" />
