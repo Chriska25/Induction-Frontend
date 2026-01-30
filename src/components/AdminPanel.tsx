@@ -288,6 +288,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ initialData, moduleId, moduleMe
         caption: ''
       };
     }
+    if (type === 'video') newItem = { type: 'video', src: '', caption: '' };
+    if (type === 'document') newItem = { type: 'document', src: '', text: 'Nouveau document', caption: '' };
 
     newContent.push(newItem);
     updateSection(sectionIndex, { ...section, content: newContent });
@@ -404,6 +406,61 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ initialData, moduleId, moduleMe
                             />
                           </div>
                         )}
+
+                        {/* Video inputs */}
+                        {item.type === 'video' && (
+                          <div>
+                            <input
+                              className="admin-input"
+                              value={item.src || ''}
+                              onChange={e => updateContentItem(index, cIdx, 'src', e.target.value)}
+                              placeholder="Lien YouTube (ex: https://youtube.com/watch?v=...)"
+                              style={{ marginBottom: '0.5rem' }}
+                            />
+                            <input
+                              className="admin-input"
+                              value={item.caption || ''}
+                              onChange={e => updateContentItem(index, cIdx, 'caption', e.target.value)}
+                              placeholder="Titre/Légende de la vidéo"
+                            />
+                          </div>
+                        )}
+
+                        {/* Document inputs */}
+                        {item.type === 'document' && (
+                          <div>
+                            <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '10px' }}>
+                              <div style={{ fontSize: '1.5rem' }}>📄</div>
+                              <input
+                                type="file"
+                                accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
+                                onChange={async (e) => {
+                                  if (e.target.files?.[0]) {
+                                    const file = e.target.files[0];
+                                    try {
+                                      const res = await api.uploadImage(file); // reusing uploadImage
+                                      updateContentItem(index, cIdx, 'src', res.path);
+                                      updateContentItem(index, cIdx, 'text', file.name);
+                                    } catch (err) { alert("Erreur upload"); }
+                                  }
+                                }}
+                              />
+                            </div>
+                            <input
+                              className="admin-input"
+                              value={item.text || ''}
+                              onChange={e => updateContentItem(index, cIdx, 'text', e.target.value)}
+                              placeholder="Nom du fichier affiché"
+                              style={{ marginBottom: '0.5rem' }}
+                            />
+                            <input
+                              className="admin-input"
+                              value={item.caption || ''}
+                              onChange={e => updateContentItem(index, cIdx, 'caption', e.target.value)}
+                              placeholder="Description (ex: Guide PDF)"
+                            />
+                          </div>
+                        )}
                       </div>
                     ))}
 
@@ -413,6 +470,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ initialData, moduleId, moduleMe
                       <button type="button" className="btn-admin-secondary" onClick={() => addContentItem(index, 'paragraph')}>+ Texte</button>
                       <button type="button" className="btn-admin-secondary" onClick={() => addContentItem(index, 'list')}>+ Liste</button>
                       <button type="button" className="btn-admin-secondary" onClick={() => addContentItem(index, 'image')}>+ Image</button>
+                      <button type="button" className="btn-admin-secondary" onClick={() => addContentItem(index, 'video')}>+ Vidéo</button>
+                      <button type="button" className="btn-admin-secondary" onClick={() => addContentItem(index, 'document')}>+ Fichier</button>
                       <button type="button" className="btn-admin-secondary" onClick={() => addContentItem(index, 'steps')}>+ Étapes</button>
                     </div>
                   </div>

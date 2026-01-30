@@ -6,7 +6,7 @@ export interface Section {
 }
 
 export interface ContentItem {
-  type: 'paragraph' | 'heading' | 'list' | 'steps' | 'checklist' | 'faq' | 'image';
+  type: 'paragraph' | 'heading' | 'list' | 'steps' | 'checklist' | 'faq' | 'image' | 'video' | 'document';
   text?: string;
   items?: string[] | FAQItem[];
   src?: string;

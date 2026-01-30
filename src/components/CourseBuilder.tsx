@@ -56,6 +56,8 @@ const CourseBuilder: React.FC<CourseBuilderProps> = ({ initialData, onSave, onCa
         const newItem: ContentItem = { type, text: '' };
         if (type === 'list' || type === 'steps' || type === 'checklist') newItem.items = ['Nouvel élément'];
         if (type === 'faq') newItem.items = [{ question: 'Question ?', answer: 'Réponse' }];
+        if (type === 'video') { newItem.src = ''; newItem.caption = ''; }
+        if (type === 'document') { newItem.src = ''; newItem.text = 'Nouveau document'; newItem.caption = ''; }
 
         const newSections = [...data.sections];
         newSections[sectionIndex].content.push(newItem);
@@ -221,6 +223,51 @@ const CourseBuilder: React.FC<CourseBuilderProps> = ({ initialData, onSave, onCa
                                                             />
                                                         </div>
                                                     )}
+
+                                                    {item.type === 'video' && (
+                                                        <div>
+                                                            <input
+                                                                value={item.src || ''}
+                                                                onChange={e => updateContentItem(sIdx, cIdx, 'src', e.target.value)}
+                                                                placeholder="Lien YouTube ou URL Vidéo"
+                                                                className="w-full p-2 border rounded mb-2"
+                                                            />
+                                                            <input
+                                                                value={item.caption || ''}
+                                                                onChange={e => updateContentItem(sIdx, cIdx, 'caption', e.target.value)}
+                                                                placeholder="Titre de la vidéo"
+                                                                className="w-full p-2 border rounded"
+                                                            />
+                                                        </div>
+                                                    )}
+
+                                                    {item.type === 'document' && (
+                                                        <div>
+                                                            <div className="flex gap-2 mb-2 items-center">
+                                                                <span style={{ fontSize: '1.5rem' }}>📄</span>
+                                                                <input
+                                                                    type="file"
+                                                                    accept=".pdf,.doc,.docx"
+                                                                    onChange={e => e.target.files?.[0] && handleImageUpload(e.target.files[0], (url) => {
+                                                                        updateContentItem(sIdx, cIdx, 'src', url);
+                                                                        updateContentItem(sIdx, cIdx, 'text', e.target.files![0].name);
+                                                                    })}
+                                                                />
+                                                            </div>
+                                                            <input
+                                                                value={item.text || ''}
+                                                                onChange={e => updateContentItem(sIdx, cIdx, 'text', e.target.value)}
+                                                                placeholder="Nom du fichier"
+                                                                className="w-full p-2 border rounded mb-2"
+                                                            />
+                                                            <input
+                                                                value={item.caption || ''}
+                                                                onChange={e => updateContentItem(sIdx, cIdx, 'caption', e.target.value)}
+                                                                placeholder="Description du document"
+                                                                className="w-full p-2 border rounded"
+                                                            />
+                                                        </div>
+                                                    )}
                                                 </div>
                                             ))}
 
@@ -232,6 +279,8 @@ const CourseBuilder: React.FC<CourseBuilderProps> = ({ initialData, onSave, onCa
                                                 <button onClick={() => addContentItem(sIdx, 'checklist')}>Checklist</button>
                                                 <button onClick={() => addContentItem(sIdx, 'steps')}>Étapes</button>
                                                 <button onClick={() => addContentItem(sIdx, 'image')}>Image</button>
+                                                <button onClick={() => addContentItem(sIdx, 'video')}>Vidéo</button>
+                                                <button onClick={() => addContentItem(sIdx, 'document')}>Fichier</button>
                                             </div>
                                         </div>
                                     </div>

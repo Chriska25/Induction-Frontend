@@ -34,6 +34,7 @@ const InductionList: React.FC<InductionListProps> = ({ onSelect, userName, userI
     const [trainings, setTrainings] = useState<TrainingRecord[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [searchTerm, setSearchTerm] = useState('');
 
     // Create Modal State
     const [showCreateModal, setShowCreateModal] = useState(false);
@@ -202,6 +203,25 @@ const InductionList: React.FC<InductionListProps> = ({ onSelect, userName, userI
             <div className="induction-header">
                 <h1>Bienvenue, {userName}</h1>
                 <p>Veuillez sélectionner votre module de formation</p>
+                <div style={{ marginTop: '1.5rem', position: 'relative', maxWidth: '500px', margin: '1.5rem auto 0' }}>
+                    <input
+                        type="text"
+                        placeholder="🔍 Rechercher une formation..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        style={{
+                            width: '100%',
+                            padding: '1rem 1.5rem',
+                            borderRadius: '50px',
+                            border: '1px solid #e2e8f0',
+                            fontSize: '1rem',
+                            outline: 'none',
+                            boxShadow: '0 4px 6px rgba(0,0,0,0.02)',
+                            paddingLeft: '3rem'
+                        }}
+                    />
+                    <span style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', fontSize: '1.2rem', opacity: 0.5 }}>🔍</span>
+                </div>
             </div>
 
             <motion.div
@@ -210,7 +230,10 @@ const InductionList: React.FC<InductionListProps> = ({ onSelect, userName, userI
                 initial="hidden"
                 animate="show"
             >
-                {modules.map((module) => {
+                {modules.filter(m =>
+                    m.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    m.description?.toLowerCase().includes(searchTerm.toLowerCase())
+                ).map((module) => {
                     const calculateProgress = (moduleId: string): number => {
                         const status = getModuleStatus(moduleId);
                         if (status === 'completed') return 100;
@@ -304,7 +327,7 @@ const InductionList: React.FC<InductionListProps> = ({ onSelect, userName, userI
                     </div>
                 )}
 
-                {userRole === 'admin' && onAdminClick && (
+                {isAdminMode && onAdminClick && (
                     <motion.div
                         className="induction-card admin-card"
                         onClick={onAdminClick}

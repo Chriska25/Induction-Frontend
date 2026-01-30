@@ -594,6 +594,8 @@ const App: React.FC = () => {
               Menu Principal
             </h3>
 
+
+
             <div className="sidebar-section">
               <h4 style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', color: '#4a5568', margin: '0 0 1.2rem', fontSize: '1.1rem' }}>
                 👤 Profil
