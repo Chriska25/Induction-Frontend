@@ -92,7 +92,8 @@ export const api = {
             body: JSON.stringify(credentials),
         });
         if (!response.ok) {
-            throw new Error('Login failed');
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.error || 'Login failed');
         }
         return await response.json();
     },

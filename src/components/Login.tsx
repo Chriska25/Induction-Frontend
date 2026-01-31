@@ -96,8 +96,12 @@ const Login: React.FC<LoginProps> = ({ onSelect, onNew, logo, description, allow
           profilePhoto: user.profile_photo
         });
       }
-    } catch (err) {
-      setError("Email ou mot de passe incorrect.");
+    } catch (err: any) {
+      if (err.message && (err.message.includes('password') || err.message.includes('pass') || err.message.includes('Email') || err.message.includes('compte') || err.message.includes('confirmer'))) {
+        setError(err.message);
+      } else {
+        setError("Email ou mot de passe incorrect.");
+      }
     } finally {
       setLoading(false);
     }
