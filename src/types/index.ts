@@ -6,12 +6,14 @@ export interface Section {
 }
 
 export interface ContentItem {
-  type: 'paragraph' | 'heading' | 'list' | 'steps' | 'checklist' | 'faq' | 'image' | 'video' | 'document';
+  type: 'paragraph' | 'heading' | 'list' | 'steps' | 'checklist' | 'faq' | 'image' | 'video' | 'document' | 'table';
   text?: string;
   items?: string[] | FAQItem[];
   src?: string;
   alt?: string;
   caption?: string;
+  rows?: string[][];
+  headers?: string[];
 }
 
 export interface FAQItem {
@@ -64,6 +66,7 @@ export interface RegistrationData {
   id: string;
   role?: string;
   profilePhoto?: string;
+  active?: boolean;
 }
 
 export interface ActivityData {

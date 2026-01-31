@@ -290,6 +290,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ initialData, moduleId, moduleMe
     }
     if (type === 'video') newItem = { type: 'video', src: '', caption: '' };
     if (type === 'document') newItem = { type: 'document', src: '', text: 'Nouveau document', caption: '' };
+    if (type === 'table') { newItem.headers = ['Col 1', 'Col 2']; newItem.rows = [['A1', 'B1'], ['A2', 'B2']]; newItem.caption = ''; }
 
     newContent.push(newItem);
     updateSection(sectionIndex, { ...section, content: newContent });
@@ -385,7 +386,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ initialData, moduleId, moduleMe
                               {item.src && <img src={item.src} className="preview-thumb" style={{ height: '60px', borderRadius: '4px' }} />}
                               <input
                                 type="file"
-                                accept="image/*"
+                                accept="image/*,.heic,.heif"
                                 onChange={async (e) => {
                                   if (e.target.files?.[0]) {
                                     const file = e.target.files[0];
@@ -461,6 +462,35 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ initialData, moduleId, moduleMe
                             />
                           </div>
                         )}
+
+                        {/* Table inputs */}
+                        {item.type === 'table' && (
+                          <div>
+                            <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.85rem' }}><strong>Entêtes (séparés par virgule)</strong></label>
+                            <input
+                              className="admin-input"
+                              value={item.headers?.join(',') || ''}
+                              onChange={e => updateContentItem(index, cIdx, 'headers', e.target.value.split(','))}
+                              placeholder="Col 1, Col 2..."
+                              style={{ marginBottom: '0.5rem' }}
+                            />
+                            <label style={{ display: 'block', marginBottom: '4px', fontSize: '0.85rem' }}><strong>Lignes (une par ligne, cellules séparées par virgule)</strong></label>
+                            <textarea
+                              className="admin-input"
+                              value={item.rows?.map(row => row.join(',')).join('\n') || ''}
+                              onChange={e => updateContentItem(index, cIdx, 'rows', e.target.value.split('\n').map(row => row.split(',')))}
+                              placeholder="Val 1, Val 2..."
+                              rows={4}
+                              style={{ marginBottom: '0.5rem' }}
+                            />
+                            <input
+                              className="admin-input"
+                              value={item.caption || ''}
+                              onChange={e => updateContentItem(index, cIdx, 'caption', e.target.value)}
+                              placeholder="Titre du tableau"
+                            />
+                          </div>
+                        )}
                       </div>
                     ))}
 
@@ -472,6 +502,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ initialData, moduleId, moduleMe
                       <button type="button" className="btn-admin-secondary" onClick={() => addContentItem(index, 'image')}>+ Image</button>
                       <button type="button" className="btn-admin-secondary" onClick={() => addContentItem(index, 'video')}>+ Vidéo</button>
                       <button type="button" className="btn-admin-secondary" onClick={() => addContentItem(index, 'document')}>+ Fichier</button>
+                      <button type="button" className="btn-admin-secondary" onClick={() => addContentItem(index, 'table')}>+ Tableau</button>
                       <button type="button" className="btn-admin-secondary" onClick={() => addContentItem(index, 'steps')}>+ Étapes</button>
                     </div>
                   </div>

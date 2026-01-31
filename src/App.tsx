@@ -262,11 +262,32 @@ const App: React.FC = () => {
     setCurrentView('dashboard');
   };
 
+  const saveUserToHistory = (user: RegistrationData) => {
+    try {
+      const stored = localStorage.getItem('pm13_saved_users');
+      let users: RegistrationData[] = stored ? JSON.parse(stored) : [];
+
+      // Remove existing entry for this user if exists (to update it)
+      users = users.filter(u => u.email !== user.email);
+
+      // Add to front
+      users.unshift(user);
+
+      // Limit to 5 users
+      if (users.length > 5) users = users.slice(0, 5);
+
+      localStorage.setItem('pm13_saved_users', JSON.stringify(users));
+    } catch (e) {
+      console.error("Failed to save user history", e);
+    }
+  };
+
   const handleRegistrationComplete = (reg: RegistrationData) => {
     setRegistration(reg);
     setUserName(reg.fullName);
     localStorage.setItem('pm13_userName', reg.fullName);
     localStorage.setItem('pm13_current_registration', JSON.stringify(reg));
+    saveUserToHistory(reg);
     setCurrentView('dashboard');
   };
 
@@ -275,6 +296,7 @@ const App: React.FC = () => {
     setUserName(reg.fullName);
     localStorage.setItem('pm13_userName', reg.fullName);
     localStorage.setItem('pm13_current_registration', JSON.stringify(reg));
+    saveUserToHistory(reg);
     setCurrentView('dashboard');
   };
 

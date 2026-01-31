@@ -327,7 +327,7 @@ const InductionList: React.FC<InductionListProps> = ({ onSelect, userName, userI
                     </div>
                 )}
 
-                {isAdminMode && onAdminClick && (
+                {(userRole === 'admin' && isAdminMode && onAdminClick) && (
                     <motion.div
                         className="induction-card admin-card"
                         onClick={onAdminClick}

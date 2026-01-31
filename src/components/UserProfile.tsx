@@ -122,7 +122,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ user, onUpdate, onClose }) =>
                             type="file"
                             ref={fileInputRef}
                             onChange={handlePhotoUpload}
-                            accept="image/*"
+                            accept="image/*,.heic,.heif"
                             style={{ display: 'none' }}
                         />
                         <button

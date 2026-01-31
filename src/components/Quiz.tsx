@@ -15,6 +15,25 @@ const Quiz: React.FC<QuizProps> = ({ quizData, onComplete }) => {
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const [questionTimeLeft, setQuestionTimeLeft] = useState<number | null>(null);
 
+  const [shuffledQuestions, setShuffledQuestions] = useState<QuizQuestion[]>([]);
+
+  // Shuffle helper
+  const shuffleArray = (array: QuizQuestion[]) => {
+    const newArray = [...array];
+    for (let i = newArray.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+    }
+    return newArray;
+  };
+
+  // Initialize shuffled questions
+  React.useEffect(() => {
+    if (quizData.questions) {
+      setShuffledQuestions(shuffleArray(quizData.questions));
+    }
+  }, [quizData]);
+
   // Global Quiz Timer
   React.useEffect(() => {
     if (quizData.timeLimit && quizData.timeLimit > 0 && !showResults) {
@@ -42,20 +61,21 @@ const Quiz: React.FC<QuizProps> = ({ quizData, onComplete }) => {
 
   // Question Timer
   React.useEffect(() => {
-    const q = quizData.questions[currentQuestion];
+    if (shuffledQuestions.length === 0) return;
+    const q = shuffledQuestions[currentQuestion];
     if (q && q.timeLimit && q.timeLimit > 0 && !showResults) {
       setQuestionTimeLeft(q.timeLimit);
     } else {
       setQuestionTimeLeft(null);
     }
-  }, [currentQuestion, quizData.questions, showResults]);
+  }, [currentQuestion, shuffledQuestions, showResults]);
 
   React.useEffect(() => {
     if (questionTimeLeft === null || showResults) return;
 
     if (questionTimeLeft <= 0) {
       // Timeout for this question
-      const q = quizData.questions[currentQuestion];
+      const q = shuffledQuestions[currentQuestion];
       if (q && q.timeLimit && q.timeLimit > 0) {
         handleAnswer(-1);
       }
@@ -67,7 +87,7 @@ const Quiz: React.FC<QuizProps> = ({ quizData, onComplete }) => {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [questionTimeLeft, showResults, currentQuestion, quizData.questions]);
+  }, [questionTimeLeft, showResults, currentQuestion, shuffledQuestions]);
 
 
   const formatTime = (seconds: number) => {
@@ -85,7 +105,7 @@ const Quiz: React.FC<QuizProps> = ({ quizData, onComplete }) => {
     const newAnswers = [...answers, answerIndex];
     setAnswers(newAnswers);
 
-    if (currentQuestion < quizData.questions.length - 1) {
+    if (currentQuestion < shuffledQuestions.length - 1) {
       setCurrentQuestion(currentQuestion + 1);
     } else {
       calculateScore(newAnswers);
@@ -95,24 +115,26 @@ const Quiz: React.FC<QuizProps> = ({ quizData, onComplete }) => {
 
   const calculateScore = (userAnswers: number[]) => {
     let correct = 0;
-    quizData.questions.forEach((question, index) => {
+    shuffledQuestions.forEach((question, index) => {
       if (userAnswers[index] === question.correct) {
         correct++;
       }
     });
-    const percentage = (correct / quizData.questions.length) * 100;
+    const percentage = (correct / shuffledQuestions.length) * 100;
     setScore(percentage);
     onComplete(percentage);
   };
 
   const resetQuiz = () => {
+    // Reshuffle on reset
+    setShuffledQuestions(shuffleArray(quizData.questions));
     setCurrentQuestion(0);
     setAnswers([]);
     setShowResults(false);
     setScore(0);
     if (quizData.timeLimit) setTimeLeft(quizData.timeLimit * 60);
-    const q = quizData.questions[0];
-    if (q && q.timeLimit) setQuestionTimeLeft(q.timeLimit);
+    // Question timer will be reset by the effect when shuffledQuestions updates or currentQuestion changes
+    // We don't need to manually set it here as the effect depends on shuffledQuestions and currentQuestion
   };
 
   if (showResults) {
@@ -130,8 +152,8 @@ const Quiz: React.FC<QuizProps> = ({ quizData, onComplete }) => {
         <div className="results-details">
           <p>
             Vous avez répondu correctement à{' '}
-            {answers.filter((ans, idx) => ans === quizData.questions[idx].correct).length} sur{' '}
-            {quizData.questions.length} questions.
+            {answers.filter((ans, idx) => ans === shuffledQuestions[idx]?.correct).length} sur{' '}
+            {shuffledQuestions.length} questions.
           </p>
         </div>
         {score < 80 && (
@@ -143,8 +165,10 @@ const Quiz: React.FC<QuizProps> = ({ quizData, onComplete }) => {
     );
   }
 
-  const question = quizData.questions[currentQuestion];
-  const progress = ((currentQuestion + 1) / quizData.questions.length) * 100;
+  if (shuffledQuestions.length === 0) return <div>Chargement du quiz...</div>;
+
+  const question = shuffledQuestions[currentQuestion];
+  const progress = ((currentQuestion + 1) / shuffledQuestions.length) * 100;
 
   return (
     <div className="quiz">
@@ -167,7 +191,7 @@ const Quiz: React.FC<QuizProps> = ({ quizData, onComplete }) => {
             <div className="progress-fill" style={{ width: `${progress}%` }}></div>
           </div>
           <span className="progress-text">
-            Question {currentQuestion + 1} sur {quizData.questions.length}
+            Question {currentQuestion + 1} sur {shuffledQuestions.length}
           </span>
         </div>
       </div>

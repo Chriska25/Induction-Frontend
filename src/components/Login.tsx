@@ -39,37 +39,21 @@ const Login: React.FC<LoginProps> = ({ onSelect, onNew, logo, description, allow
   }, []);
 
   React.useEffect(() => {
-    const fetchUsers = async () => {
+    // Load recently used accounts from local storage
+    const loadSavedUsers = () => {
       try {
-        // Use the centralized API client logic or construct URL properly
-        // Mais api.getUsers n'existe pas dans client.ts, je vais devoir l'ajouter d'abord ou l'importer.
-        // Attendez, l'api client a `checkHealth`, `createUser`, `loginUser`. Il n'a PAS `getUsers`.
-        // Je vais devoir modifier Login.tsx pour utiliser l'URL correcte.
-
-        // Option rapide: importer API_URL ou utiliser le client api
-        // Je vais utiliser api.getUsers que je vais ajouter dans client.ts juste après.
-        // Pour l'instant, je corrige Login.tsx pour utiliser api.getAllUsers() que je vais créer.
-
-        const response = await api.getAllUsers();
-        // response est déjà le json
-        const data = response;
-        // Map backend users to RegistrationData format
-        const mappedUsers = data.map((user: any) => ({
-          id: user.id.toString(),
-          fullName: user.full_name,
-          email: user.email,
-          jobTitle: user.job_title,
-          organization: user.organization,
-          city: user.city,
-          registeredAt: user.registered_at,
-          role: user.role
-        }));
-        setUsers(mappedUsers);
+        const saved = localStorage.getItem('pm13_saved_users');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed)) {
+            setUsers(parsed);
+          }
+        }
       } catch (err) {
-        console.error("Failed to fetch users", err);
+        console.error("Failed to load saved users", err);
       }
     };
-    fetchUsers();
+    loadSavedUsers();
   }, []);
 
   const handleSelectUser = (user: RegistrationData) => {

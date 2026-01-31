@@ -61,7 +61,8 @@ export const api = {
             body: JSON.stringify(user),
         });
         if (!response.ok) {
-            throw new Error('Failed to create user');
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.error || 'Failed to create user');
         }
         return await response.json();
     },
@@ -263,6 +264,30 @@ export const api = {
         });
         if (!response.ok) {
             throw new Error('Failed to reset password');
+        }
+        return await response.json();
+    },
+
+    updateUserStatus: async (userId: string, active: boolean) => {
+        const response = await fetch(`${API_URL}/admin/users/${userId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ active }),
+        });
+        if (!response.ok) {
+            throw new Error('Failed to update status');
+        }
+        return await response.json();
+    },
+
+    deleteUser: async (userId: string) => {
+        const response = await fetch(`${API_URL}/admin/users/${userId}`, {
+            method: 'DELETE',
+        });
+        if (!response.ok) {
+            throw new Error('Failed to delete user');
         }
         return await response.json();
     }

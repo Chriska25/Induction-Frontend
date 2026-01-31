@@ -198,6 +198,32 @@ const Section: React.FC<SectionProps> = ({ title, subtitle, content }) => {
             </a>
           </motion.div>
         );
+      case 'table':
+        return (
+          <motion.div key={index} variants={itemVariants} className="content-table-wrapper" style={{ overflowX: 'auto', margin: '2rem 0' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', background: 'white', borderRadius: '8px', overflow: 'hidden', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
+              {item.headers && (
+                <thead>
+                  <tr style={{ background: '#f1f5f9' }}>
+                    {item.headers.map((h, i) => (
+                      <th key={i} style={{ padding: '12px 16px', textAlign: 'left', fontWeight: 'bold', color: '#4a5568', borderBottom: '2px solid #e2e8f0' }}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+              )}
+              <tbody>
+                {item.rows?.map((row, rIdx) => (
+                  <tr key={rIdx} style={{ borderBottom: '1px solid #e2e8f0' }}>
+                    {row.map((cell, cIdx) => (
+                      <td key={cIdx} style={{ padding: '12px 16px', color: '#2d3748' }}>{cell}</td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {item.caption && <div style={{ marginTop: '0.5rem', textAlign: 'center', color: '#718096', fontSize: '0.9rem', fontStyle: 'italic' }}>{item.caption}</div>}
+          </motion.div>
+        );
       default:
         return null;
     }

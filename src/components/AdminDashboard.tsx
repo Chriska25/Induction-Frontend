@@ -16,6 +16,7 @@ interface AdminUser {
     training_count: number;
     last_training_at: string | null;
     registered_at?: string;
+    active?: boolean;
 }
 
 interface TrainingRecord {
@@ -275,6 +276,30 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
             } catch (err) {
                 toast.error("Erreur suppression.");
             }
+        }
+    };
+
+    const handleDeleteUser = async (userId: string, userName: string) => {
+        if (!window.confirm(`Êtes-vous sûr de vouloir supprimer l'utilisateur ${userName} ? Cette action est irréversible.`)) {
+            return;
+        }
+        try {
+            await api.deleteUser(userId);
+            toast.success("Utilisateur supprimé");
+            loadData();
+        } catch (error) {
+            toast.error("Erreur lors de la suppression");
+        }
+    };
+
+    const handleToggleUserStatus = async (user: any) => {
+        try {
+            const newStatus = user.active === false ? true : false;
+            await api.updateUserStatus(user.id, newStatus);
+            toast.success(`Utilisateur ${newStatus ? 'activé' : 'désactivé'}`);
+            loadData();
+        } catch (error) {
+            toast.error("Erreur lors de la modification du statut");
         }
     };
 
@@ -699,9 +724,11 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
                                     </thead>
                                     <tbody>
                                         {filteredUsers.map(user => (
-                                            <tr key={user.id}>
+                                            <tr key={user.id} style={{ opacity: user.active === false ? 0.6 : 1, background: user.active === false ? '#f1f5f9' : 'transparent' }}>
                                                 <td onClick={() => { setViewingUser(user); getUserTrainings(user.id.toString()); }} style={{ cursor: 'pointer' }}>
-                                                    <div style={{ fontWeight: '700', color: '#1e293b' }}>{user.full_name}</div>
+                                                    <div style={{ fontWeight: '700', color: '#1e293b' }}>
+                                                        {user.active === false && '🚫 '}{user.full_name}
+                                                    </div>
                                                     <div style={{ fontSize: '0.8rem', color: '#64748b' }}>Inscrit le {user.registered_at ? new Date(user.registered_at).toLocaleDateString() : '-'}</div>
                                                 </td>
                                                 <td>
@@ -724,6 +751,10 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onClose, onEditModule }
                                                         <button onClick={() => { setViewingUser(user); getUserTrainings(user.id.toString()); }} className="action-icon" title="Historique">📑</button>
                                                         <button onClick={() => { setEditingUser(user); setShowRoleModal(true); }} className="action-icon" title="Changer Rôle">👑</button>
                                                         <button onClick={() => { setEditingUser(user); setAuditPassword(''); }} className="action-icon" title="Réinitialiser MDP">🔑</button>
+                                                        <button onClick={() => handleToggleUserStatus(user)} className="action-icon" title={user.active === false ? "Activer" : "Désactiver"}>
+                                                            {user.active === false ? '🟢' : '🚫'}
+                                                        </button>
+                                                        <button onClick={() => handleDeleteUser(user.id.toString(), user.full_name)} className="action-icon" title="Supprimer" style={{ color: '#ef4444' }}>🗑️</button>
                                                     </div>
                                                 </td>
                                             </tr>

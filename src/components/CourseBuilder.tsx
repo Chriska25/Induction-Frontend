@@ -57,12 +57,44 @@ const CourseBuilder: React.FC<CourseBuilderProps> = ({ initialData, onSave, onCa
         if (type === 'list' || type === 'steps' || type === 'checklist') newItem.items = ['Nouvel élément'];
         if (type === 'faq') newItem.items = [{ question: 'Question ?', answer: 'Réponse' }];
         if (type === 'video') { newItem.src = ''; newItem.caption = ''; }
+        if (type === 'video') { newItem.src = ''; newItem.caption = ''; }
+
         if (type === 'document') { newItem.src = ''; newItem.text = 'Nouveau document'; newItem.caption = ''; }
+        if (type === 'table') { newItem.headers = ['Col 1', 'Col 2']; newItem.rows = [['A1', 'B1'], ['A2', 'B2']]; newItem.caption = ''; }
 
         const newSections = [...data.sections];
         newSections[sectionIndex].content.push(newItem);
         setData({ ...data, sections: newSections });
     };
+
+    const moveSection = (index: number, direction: -1 | 1) => {
+        const newSections = [...data.sections];
+        if (index + direction < 0 || index + direction >= newSections.length) return;
+
+        const temp = newSections[index];
+        newSections[index] = newSections[index + direction];
+        newSections[index + direction] = temp;
+
+        setData({ ...data, sections: newSections });
+        // Update expanded section if needed
+        if (expandedSection === index) setExpandedSection(index + direction);
+        else if (expandedSection === index + direction) setExpandedSection(index);
+    };
+
+    const moveContentItem = (sectionIndex: number, itemIndex: number, direction: -1 | 1) => {
+        const newSections = [...data.sections];
+        const content = newSections[sectionIndex].content;
+
+        if (itemIndex + direction < 0 || itemIndex + direction >= content.length) return;
+
+        const temp = content[itemIndex];
+        content[itemIndex] = content[itemIndex + direction];
+        content[itemIndex + direction] = temp;
+
+        setData({ ...data, sections: newSections });
+    };
+
+
 
     const updateContentItem = (sectionIndex: number, itemIndex: number, field: keyof ContentItem, value: any) => {
         const newSections = [...data.sections];
@@ -155,9 +187,21 @@ const CourseBuilder: React.FC<CourseBuilderProps> = ({ initialData, onSave, onCa
                             <div key={section.id} className="section-editor-item">
                                 <div className="section-header-bar" onClick={() => setExpandedSection(expandedSection === sIdx ? null : sIdx)}>
                                     <span className="font-bold">Section {sIdx + 1}: {section.title}</span>
-                                    <div className="flex gap-2">
-                                        <button className="btn-icon-sm" onClick={(e) => { e.stopPropagation(); removeSection(sIdx); }}>🗑️</button>
-                                        <span>{expandedSection === sIdx ? '▲' : '▼'}</span>
+                                    <div className="flex gap-2 items-center">
+                                        <button
+                                            className="btn-icon-sm"
+                                            disabled={sIdx === 0}
+                                            onClick={(e) => { e.stopPropagation(); moveSection(sIdx, -1); }}
+                                            title="Monter"
+                                        >⬆️</button>
+                                        <button
+                                            className="btn-icon-sm"
+                                            disabled={sIdx === data.sections.length - 1}
+                                            onClick={(e) => { e.stopPropagation(); moveSection(sIdx, 1); }}
+                                            title="Descendre"
+                                        >⬇️</button>
+                                        <button className="btn-icon-sm ml-2" onClick={(e) => { e.stopPropagation(); removeSection(sIdx); }} title="Supprimer">🗑️</button>
+                                        <span className="ml-2">{expandedSection === sIdx ? '▲' : '▼'}</span>
                                     </div>
                                 </div>
 
@@ -176,9 +220,23 @@ const CourseBuilder: React.FC<CourseBuilderProps> = ({ initialData, onSave, onCa
                                             <h4>Contenus ({section.content.length})</h4>
                                             {section.content.map((item, cIdx) => (
                                                 <div key={cIdx} className="content-item-editor">
-                                                    <div className="flex justify-between mb-2">
+                                                    <div className="flex justify-between mb-2 items-center">
                                                         <span className="badge-type">{item.type}</span>
-                                                        <button className="text-red-500 text-sm" onClick={() => removeContentItem(sIdx, cIdx)}>Supprimer</button>
+                                                        <div className="flex gap-2">
+                                                            <button
+                                                                className="text-gray-500 hover:bg-gray-100 p-1 rounded"
+                                                                disabled={cIdx === 0}
+                                                                onClick={() => moveContentItem(sIdx, cIdx, -1)}
+                                                                title="Monter"
+                                                            >⬆️</button>
+                                                            <button
+                                                                className="text-gray-500 hover:bg-gray-100 p-1 rounded"
+                                                                disabled={cIdx === section.content.length - 1}
+                                                                onClick={() => moveContentItem(sIdx, cIdx, 1)}
+                                                                title="Descendre"
+                                                            >⬇️</button>
+                                                            <button className="text-red-500 text-sm ml-2" onClick={() => removeContentItem(sIdx, cIdx)}>Supprimer</button>
+                                                        </div>
                                                     </div>
 
                                                     {/* Editor based on type */}
@@ -210,7 +268,7 @@ const CourseBuilder: React.FC<CourseBuilderProps> = ({ initialData, onSave, onCa
                                                             <div className="flex gap-2 mb-2">
                                                                 <input
                                                                     type="file"
-                                                                    accept="image/*"
+                                                                    accept="image/*,.heic,.heif"
                                                                     onChange={e => e.target.files?.[0] && handleImageUpload(e.target.files[0], (url) => updateContentItem(sIdx, cIdx, 'src', url))}
                                                                 />
                                                             </div>
@@ -268,6 +326,95 @@ const CourseBuilder: React.FC<CourseBuilderProps> = ({ initialData, onSave, onCa
                                                             />
                                                         </div>
                                                     )}
+
+                                                    {item.type === 'table' && (
+                                                        <div className="table-editor p-2 border rounded bg-gray-50">
+                                                            {/* Headers Management */}
+                                                            <div className="flex gap-2 mb-2 overflow-x-auto pb-2 border-b border-gray-200">
+                                                                {item.headers?.map((header, hIdx) => (
+                                                                    <div key={hIdx} className="flex-shrink-0 flex flex-col gap-1 w-32">
+                                                                        <div className="flex items-center gap-1">
+                                                                            <input
+                                                                                value={header}
+                                                                                onChange={(e) => {
+                                                                                    const newHeaders = [...(item.headers || [])];
+                                                                                    newHeaders[hIdx] = e.target.value;
+                                                                                    updateContentItem(sIdx, cIdx, 'headers', newHeaders);
+                                                                                }}
+                                                                                className="p-1 border rounded w-full text-sm font-bold text-center"
+                                                                                placeholder={`Col ${hIdx + 1}`}
+                                                                            />
+                                                                            <button
+                                                                                className="text-red-500 hover:bg-red-100 rounded px-1"
+                                                                                onClick={() => {
+                                                                                    const newHeaders = item.headers?.filter((_, i) => i !== hIdx);
+                                                                                    const newRows = item.rows?.map(row => row.filter((_, i) => i !== hIdx));
+                                                                                    updateContentItem(sIdx, cIdx, 'headers', newHeaders);
+                                                                                    updateContentItem(sIdx, cIdx, 'rows', newRows);
+                                                                                }}
+                                                                                title="Supprimer colonne"
+                                                                            >✕</button>
+                                                                        </div>
+                                                                    </div>
+                                                                ))}
+                                                                <button
+                                                                    className="btn-sm bg-blue-100 text-blue-600 rounded px-2 flex-shrink-0 h-8 self-start"
+                                                                    onClick={() => {
+                                                                        const newHeaders = [...(item.headers || []), `Col ${item.headers ? item.headers.length + 1 : 1}`];
+                                                                        const newRows = item.rows?.map(row => [...row, '']);
+                                                                        updateContentItem(sIdx, cIdx, 'headers', newHeaders);
+                                                                        updateContentItem(sIdx, cIdx, 'rows', newRows);
+                                                                    }}
+                                                                >+ Colonne</button>
+                                                            </div>
+
+                                                            {/* Rows Management */}
+                                                            <div className="flex flex-col gap-2">
+                                                                {item.rows?.map((row, rIdx) => (
+                                                                    <div key={rIdx} className="flex gap-2 items-center">
+                                                                        {row.map((cell, cellIdx) => (
+                                                                            <div key={cellIdx} className="w-32 flex-shrink-0">
+                                                                                <input
+                                                                                    value={cell}
+                                                                                    onChange={(e) => {
+                                                                                        const newRows = [...(item.rows || [])];
+                                                                                        newRows[rIdx] = [...newRows[rIdx]]; // copy inner array
+                                                                                        newRows[rIdx][cellIdx] = e.target.value;
+                                                                                        updateContentItem(sIdx, cIdx, 'rows', newRows);
+                                                                                    }}
+                                                                                    className="w-full p-1 border rounded text-sm"
+                                                                                    placeholder="Val..."
+                                                                                />
+                                                                            </div>
+                                                                        ))}
+                                                                        <button
+                                                                            className="text-red-500 hover:bg-red-100 p-1 rounded"
+                                                                            onClick={() => {
+                                                                                const newRows = item.rows?.filter((_, i) => i !== rIdx);
+                                                                                updateContentItem(sIdx, cIdx, 'rows', newRows);
+                                                                            }}
+                                                                            title="Supprimer ligne"
+                                                                        >🗑️</button>
+                                                                    </div>
+                                                                ))}
+                                                                <button
+                                                                    className="btn-sm bg-green-100 text-green-600 rounded px-3 py-1 self-start mt-2"
+                                                                    onClick={() => {
+                                                                        const newRow = new Array(item.headers?.length || 1).fill('');
+                                                                        const newRows = [...(item.rows || []), newRow];
+                                                                        updateContentItem(sIdx, cIdx, 'rows', newRows);
+                                                                    }}
+                                                                >+ Ajouter une ligne</button>
+                                                            </div>
+
+                                                            <input
+                                                                value={item.caption || ''}
+                                                                onChange={e => updateContentItem(sIdx, cIdx, 'caption', e.target.value)}
+                                                                placeholder="Titre du tableau (Légende)"
+                                                                className="w-full p-2 border rounded mt-4"
+                                                            />
+                                                        </div>
+                                                    )}
                                                 </div>
                                             ))}
 
@@ -281,6 +428,7 @@ const CourseBuilder: React.FC<CourseBuilderProps> = ({ initialData, onSave, onCa
                                                 <button onClick={() => addContentItem(sIdx, 'image')}>Image</button>
                                                 <button onClick={() => addContentItem(sIdx, 'video')}>Vidéo</button>
                                                 <button onClick={() => addContentItem(sIdx, 'document')}>Fichier</button>
+                                                <button onClick={() => addContentItem(sIdx, 'table')}>Tableau</button>
                                             </div>
                                         </div>
                                     </div>
